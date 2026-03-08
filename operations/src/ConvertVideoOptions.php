@@ -1,0 +1,16 @@
+<?php
+
+// Auto-generated -- do not edit
+
+declare(strict_types=1);
+
+namespace Gisl\Generated\Operations;
+
+final class ConvertVideoOptions
+{
+    public function __construct(
+        public readonly ConvertVideoOutputFormat $output_format,
+        public readonly int $quality = 23,
+        public readonly ?ConvertVideoCodec $codec = null,
+    ) {}
+}
