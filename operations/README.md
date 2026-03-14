@@ -12,6 +12,6 @@
 
 ## Contents
 
-PHP 8.1 backed enums and readonly classes for per-operation options, using PSR-4 autoloading under the `Gisl\Generated\Operations` namespace. Includes `composer.json`.
+PHP 8.1 backed enums and readonly classes for per-operation options, using PSR-4 autoloading under the `Gisl\Generated\Operations` namespace.
 
 Operation types covered: compress, convert, merge, thumbnail, archive.
