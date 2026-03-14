@@ -2,13 +2,13 @@
 
 > **Auto-generated** -- do not edit manually. Changes will be overwritten on the next generation run.
 >
-> Regenerate with: `make project/generate`
+> Regenerate with: `make project/generate-tests`
 
 ## Source
 
 - **Spec:** `compression_contracts/schemas/operations/*.yaml` (custom schema format)
 - **Generator:** Custom Python emitter (`scripts/generators/operation_schema/php.py`)
-- **Files:** 60
+- **Files:** 66
 
 ## Contents
 

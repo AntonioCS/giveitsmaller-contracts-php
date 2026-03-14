@@ -10,5 +10,13 @@
         "psr-4": {
             "Gisl\\Generated\\Operations\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Gisl\\Generated\\Operations\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10"
     }
 }

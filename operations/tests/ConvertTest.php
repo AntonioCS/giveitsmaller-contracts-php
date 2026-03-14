@@ -1,0 +1,320 @@
+<?php
+
+// Auto-generated -- do not edit
+
+declare(strict_types=1);
+
+namespace Gisl\Generated\Operations\Tests;
+
+use PHPUnit\Framework\TestCase;
+use Gisl\Generated\Operations\ConvertAudioBitrate;
+use Gisl\Generated\Operations\ConvertAudioOptions;
+use Gisl\Generated\Operations\ConvertAudioOutputFormat;
+use Gisl\Generated\Operations\ConvertDocumentPdfOptions;
+use Gisl\Generated\Operations\ConvertDocumentPdfOutputFormat;
+use Gisl\Generated\Operations\ConvertImageOptions;
+use Gisl\Generated\Operations\ConvertImageOutputFormat;
+use Gisl\Generated\Operations\ConvertVideoCodec;
+use Gisl\Generated\Operations\ConvertVideoOptions;
+use Gisl\Generated\Operations\ConvertVideoOutputFormat;
+
+final class ConvertTest extends TestCase
+{
+    public function testConvertImageOutputFormatJpegBackingValue(): void
+    {
+        $enum = ConvertImageOutputFormat::from('jpeg');
+        $this->assertSame(ConvertImageOutputFormat::Jpeg, $enum);
+        $this->assertSame('jpeg', $enum->value);
+    }
+
+    public function testConvertImageOutputFormatPngBackingValue(): void
+    {
+        $enum = ConvertImageOutputFormat::from('png');
+        $this->assertSame(ConvertImageOutputFormat::Png, $enum);
+        $this->assertSame('png', $enum->value);
+    }
+
+    public function testConvertImageOutputFormatWebpBackingValue(): void
+    {
+        $enum = ConvertImageOutputFormat::from('webp');
+        $this->assertSame(ConvertImageOutputFormat::Webp, $enum);
+        $this->assertSame('webp', $enum->value);
+    }
+
+    public function testConvertImageOutputFormatAvifBackingValue(): void
+    {
+        $enum = ConvertImageOutputFormat::from('avif');
+        $this->assertSame(ConvertImageOutputFormat::Avif, $enum);
+        $this->assertSame('avif', $enum->value);
+    }
+
+    public function testConvertImageOutputFormatGifBackingValue(): void
+    {
+        $enum = ConvertImageOutputFormat::from('gif');
+        $this->assertSame(ConvertImageOutputFormat::Gif, $enum);
+        $this->assertSame('gif', $enum->value);
+    }
+
+    public function testConvertImageOutputFormatTiffBackingValue(): void
+    {
+        $enum = ConvertImageOutputFormat::from('tiff');
+        $this->assertSame(ConvertImageOutputFormat::Tiff, $enum);
+        $this->assertSame('tiff', $enum->value);
+    }
+
+    public function testConvertImageOutputFormatCaseCount(): void
+    {
+        $this->assertCount(6, ConvertImageOutputFormat::cases());
+    }
+
+    public function testConvertImageOptionsDefaultConstruction(): void
+    {
+        $obj = new ConvertImageOptions(
+            output_format: ConvertImageOutputFormat::Jpeg,
+        );
+        $this->assertInstanceOf(ConvertImageOptions::class, $obj);
+        $this->assertNull($obj->quality);
+        $this->assertNull($obj->background);
+    }
+
+    public function testConvertImageOptionsFullConstruction(): void
+    {
+        $obj = new ConvertImageOptions(
+            output_format: ConvertImageOutputFormat::Jpeg,
+            quality: 1,
+            background: 'test_value',
+        );
+        $this->assertInstanceOf(ConvertImageOptions::class, $obj);
+    }
+
+    public function testConvertVideoOutputFormatMp4BackingValue(): void
+    {
+        $enum = ConvertVideoOutputFormat::from('mp4');
+        $this->assertSame(ConvertVideoOutputFormat::Mp4, $enum);
+        $this->assertSame('mp4', $enum->value);
+    }
+
+    public function testConvertVideoOutputFormatWebmBackingValue(): void
+    {
+        $enum = ConvertVideoOutputFormat::from('webm');
+        $this->assertSame(ConvertVideoOutputFormat::Webm, $enum);
+        $this->assertSame('webm', $enum->value);
+    }
+
+    public function testConvertVideoOutputFormatOggBackingValue(): void
+    {
+        $enum = ConvertVideoOutputFormat::from('ogg');
+        $this->assertSame(ConvertVideoOutputFormat::Ogg, $enum);
+        $this->assertSame('ogg', $enum->value);
+    }
+
+    public function testConvertVideoOutputFormatGifBackingValue(): void
+    {
+        $enum = ConvertVideoOutputFormat::from('gif');
+        $this->assertSame(ConvertVideoOutputFormat::Gif, $enum);
+        $this->assertSame('gif', $enum->value);
+    }
+
+    public function testConvertVideoOutputFormatCaseCount(): void
+    {
+        $this->assertCount(4, ConvertVideoOutputFormat::cases());
+    }
+
+    public function testConvertVideoCodecH264BackingValue(): void
+    {
+        $enum = ConvertVideoCodec::from('h264');
+        $this->assertSame(ConvertVideoCodec::H264, $enum);
+        $this->assertSame('h264', $enum->value);
+    }
+
+    public function testConvertVideoCodecH265BackingValue(): void
+    {
+        $enum = ConvertVideoCodec::from('h265');
+        $this->assertSame(ConvertVideoCodec::H265, $enum);
+        $this->assertSame('h265', $enum->value);
+    }
+
+    public function testConvertVideoCodecVp9BackingValue(): void
+    {
+        $enum = ConvertVideoCodec::from('vp9');
+        $this->assertSame(ConvertVideoCodec::Vp9, $enum);
+        $this->assertSame('vp9', $enum->value);
+    }
+
+    public function testConvertVideoCodecAv1BackingValue(): void
+    {
+        $enum = ConvertVideoCodec::from('av1');
+        $this->assertSame(ConvertVideoCodec::Av1, $enum);
+        $this->assertSame('av1', $enum->value);
+    }
+
+    public function testConvertVideoCodecCaseCount(): void
+    {
+        $this->assertCount(4, ConvertVideoCodec::cases());
+    }
+
+    public function testConvertVideoOptionsDefaultConstruction(): void
+    {
+        $obj = new ConvertVideoOptions(
+            output_format: ConvertVideoOutputFormat::Mp4,
+        );
+        $this->assertInstanceOf(ConvertVideoOptions::class, $obj);
+        $this->assertSame(23, $obj->quality);
+        $this->assertNull($obj->codec);
+    }
+
+    public function testConvertVideoOptionsFullConstruction(): void
+    {
+        $obj = new ConvertVideoOptions(
+            output_format: ConvertVideoOutputFormat::Mp4,
+            codec: ConvertVideoCodec::H264,
+            quality: 0,
+        );
+        $this->assertInstanceOf(ConvertVideoOptions::class, $obj);
+    }
+
+    public function testConvertAudioOutputFormatMp3BackingValue(): void
+    {
+        $enum = ConvertAudioOutputFormat::from('mp3');
+        $this->assertSame(ConvertAudioOutputFormat::Mp3, $enum);
+        $this->assertSame('mp3', $enum->value);
+    }
+
+    public function testConvertAudioOutputFormatAacBackingValue(): void
+    {
+        $enum = ConvertAudioOutputFormat::from('aac');
+        $this->assertSame(ConvertAudioOutputFormat::Aac, $enum);
+        $this->assertSame('aac', $enum->value);
+    }
+
+    public function testConvertAudioOutputFormatOggBackingValue(): void
+    {
+        $enum = ConvertAudioOutputFormat::from('ogg');
+        $this->assertSame(ConvertAudioOutputFormat::Ogg, $enum);
+        $this->assertSame('ogg', $enum->value);
+    }
+
+    public function testConvertAudioOutputFormatFlacBackingValue(): void
+    {
+        $enum = ConvertAudioOutputFormat::from('flac');
+        $this->assertSame(ConvertAudioOutputFormat::Flac, $enum);
+        $this->assertSame('flac', $enum->value);
+    }
+
+    public function testConvertAudioOutputFormatWavBackingValue(): void
+    {
+        $enum = ConvertAudioOutputFormat::from('wav');
+        $this->assertSame(ConvertAudioOutputFormat::Wav, $enum);
+        $this->assertSame('wav', $enum->value);
+    }
+
+    public function testConvertAudioOutputFormatCaseCount(): void
+    {
+        $this->assertCount(5, ConvertAudioOutputFormat::cases());
+    }
+
+    public function testConvertAudioBitrate_64BackingValue(): void
+    {
+        $enum = ConvertAudioBitrate::from(64);
+        $this->assertSame(ConvertAudioBitrate::_64, $enum);
+        $this->assertSame(64, $enum->value);
+    }
+
+    public function testConvertAudioBitrate_96BackingValue(): void
+    {
+        $enum = ConvertAudioBitrate::from(96);
+        $this->assertSame(ConvertAudioBitrate::_96, $enum);
+        $this->assertSame(96, $enum->value);
+    }
+
+    public function testConvertAudioBitrate_128BackingValue(): void
+    {
+        $enum = ConvertAudioBitrate::from(128);
+        $this->assertSame(ConvertAudioBitrate::_128, $enum);
+        $this->assertSame(128, $enum->value);
+    }
+
+    public function testConvertAudioBitrate_192BackingValue(): void
+    {
+        $enum = ConvertAudioBitrate::from(192);
+        $this->assertSame(ConvertAudioBitrate::_192, $enum);
+        $this->assertSame(192, $enum->value);
+    }
+
+    public function testConvertAudioBitrate_256BackingValue(): void
+    {
+        $enum = ConvertAudioBitrate::from(256);
+        $this->assertSame(ConvertAudioBitrate::_256, $enum);
+        $this->assertSame(256, $enum->value);
+    }
+
+    public function testConvertAudioBitrate_320BackingValue(): void
+    {
+        $enum = ConvertAudioBitrate::from(320);
+        $this->assertSame(ConvertAudioBitrate::_320, $enum);
+        $this->assertSame(320, $enum->value);
+    }
+
+    public function testConvertAudioBitrateCaseCount(): void
+    {
+        $this->assertCount(6, ConvertAudioBitrate::cases());
+    }
+
+    public function testConvertAudioOptionsDefaultConstruction(): void
+    {
+        $obj = new ConvertAudioOptions(
+            output_format: ConvertAudioOutputFormat::Mp3,
+        );
+        $this->assertInstanceOf(ConvertAudioOptions::class, $obj);
+        $this->assertNull($obj->bitrate);
+    }
+
+    public function testConvertAudioOptionsFullConstruction(): void
+    {
+        $obj = new ConvertAudioOptions(
+            output_format: ConvertAudioOutputFormat::Mp3,
+            bitrate: ConvertAudioBitrate::_64,
+        );
+        $this->assertInstanceOf(ConvertAudioOptions::class, $obj);
+    }
+
+    public function testConvertDocumentPdfOutputFormatPngBackingValue(): void
+    {
+        $enum = ConvertDocumentPdfOutputFormat::from('png');
+        $this->assertSame(ConvertDocumentPdfOutputFormat::Png, $enum);
+        $this->assertSame('png', $enum->value);
+    }
+
+    public function testConvertDocumentPdfOutputFormatJpegBackingValue(): void
+    {
+        $enum = ConvertDocumentPdfOutputFormat::from('jpeg');
+        $this->assertSame(ConvertDocumentPdfOutputFormat::Jpeg, $enum);
+        $this->assertSame('jpeg', $enum->value);
+    }
+
+    public function testConvertDocumentPdfOutputFormatCaseCount(): void
+    {
+        $this->assertCount(2, ConvertDocumentPdfOutputFormat::cases());
+    }
+
+    public function testConvertDocumentPdfOptionsDefaultConstruction(): void
+    {
+        $obj = new ConvertDocumentPdfOptions(
+            output_format: ConvertDocumentPdfOutputFormat::Png,
+        );
+        $this->assertInstanceOf(ConvertDocumentPdfOptions::class, $obj);
+        $this->assertSame('1', $obj->pages);
+        $this->assertSame(150, $obj->dpi);
+    }
+
+    public function testConvertDocumentPdfOptionsFullConstruction(): void
+    {
+        $obj = new ConvertDocumentPdfOptions(
+            output_format: ConvertDocumentPdfOutputFormat::Png,
+            pages: 'test_value',
+            dpi: 72,
+        );
+        $this->assertInstanceOf(ConvertDocumentPdfOptions::class, $obj);
+    }
+
+}

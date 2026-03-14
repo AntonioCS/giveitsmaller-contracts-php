@@ -2,7 +2,7 @@
 
 > **Auto-generated** -- do not edit manually. Changes will be overwritten on the next generation run.
 >
-> Regenerate with: `make project/generate`
+> Regenerate with: `make project/generate-tests`
 
 ## Source
 
@@ -10,7 +10,7 @@
 - **Generator:** [openapi-generator-cli](https://openapi-generator.tech/) v7.13.0
   (Docker image: `openapitools/openapi-generator-cli:v7.13.0`)
 - **Generator preset:** `php`, models only
-- **Files:** 66
+- **Files:** 68
 
 ## Contents
 

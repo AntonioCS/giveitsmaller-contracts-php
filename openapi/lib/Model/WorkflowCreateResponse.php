@@ -59,7 +59,8 @@ class WorkflowCreateResponse implements ModelInterface, ArrayAccess, \JsonSerial
     protected static $openAPITypes = [
         'workflow_id' => 'string',
         'status' => '\Gisl\Generated\OpenApi\Model\WorkflowStatus',
-        'jobs' => '\Gisl\Generated\OpenApi\Model\JobResponse[]'
+        'jobs' => '\Gisl\Generated\OpenApi\Model\JobResponse[]',
+        'webhook_secret' => 'string'
     ];
 
     /**
@@ -72,7 +73,8 @@ class WorkflowCreateResponse implements ModelInterface, ArrayAccess, \JsonSerial
     protected static $openAPIFormats = [
         'workflow_id' => 'uuid',
         'status' => null,
-        'jobs' => null
+        'jobs' => null,
+        'webhook_secret' => null
     ];
 
     /**
@@ -83,7 +85,8 @@ class WorkflowCreateResponse implements ModelInterface, ArrayAccess, \JsonSerial
     protected static array $openAPINullables = [
         'workflow_id' => false,
         'status' => false,
-        'jobs' => false
+        'jobs' => false,
+        'webhook_secret' => true
     ];
 
     /**
@@ -174,7 +177,8 @@ class WorkflowCreateResponse implements ModelInterface, ArrayAccess, \JsonSerial
     protected static $attributeMap = [
         'workflow_id' => 'workflow_id',
         'status' => 'status',
-        'jobs' => 'jobs'
+        'jobs' => 'jobs',
+        'webhook_secret' => 'webhook_secret'
     ];
 
     /**
@@ -185,7 +189,8 @@ class WorkflowCreateResponse implements ModelInterface, ArrayAccess, \JsonSerial
     protected static $setters = [
         'workflow_id' => 'setWorkflowId',
         'status' => 'setStatus',
-        'jobs' => 'setJobs'
+        'jobs' => 'setJobs',
+        'webhook_secret' => 'setWebhookSecret'
     ];
 
     /**
@@ -196,7 +201,8 @@ class WorkflowCreateResponse implements ModelInterface, ArrayAccess, \JsonSerial
     protected static $getters = [
         'workflow_id' => 'getWorkflowId',
         'status' => 'getStatus',
-        'jobs' => 'getJobs'
+        'jobs' => 'getJobs',
+        'webhook_secret' => 'getWebhookSecret'
     ];
 
     /**
@@ -259,6 +265,7 @@ class WorkflowCreateResponse implements ModelInterface, ArrayAccess, \JsonSerial
         $this->setIfExists('workflow_id', $data ?? [], null);
         $this->setIfExists('status', $data ?? [], null);
         $this->setIfExists('jobs', $data ?? [], null);
+        $this->setIfExists('webhook_secret', $data ?? [], null);
     }
 
     /**
@@ -301,6 +308,18 @@ class WorkflowCreateResponse implements ModelInterface, ArrayAccess, \JsonSerial
         if ($this->container['jobs'] === null) {
             $invalidProperties[] = "'jobs' can't be null";
         }
+        if (!is_null($this->container['webhook_secret']) && (mb_strlen($this->container['webhook_secret']) > 64)) {
+            $invalidProperties[] = "invalid value for 'webhook_secret', the character length must be smaller than or equal to 64.";
+        }
+
+        if (!is_null($this->container['webhook_secret']) && (mb_strlen($this->container['webhook_secret']) < 64)) {
+            $invalidProperties[] = "invalid value for 'webhook_secret', the character length must be bigger than or equal to 64.";
+        }
+
+        if (!is_null($this->container['webhook_secret']) && !preg_match("/^[0-9a-f]{64}$/", $this->container['webhook_secret'])) {
+            $invalidProperties[] = "invalid value for 'webhook_secret', must be conform to the pattern /^[0-9a-f]{64}$/.";
+        }
+
         return $invalidProperties;
     }
 
@@ -398,6 +417,50 @@ class WorkflowCreateResponse implements ModelInterface, ArrayAccess, \JsonSerial
             throw new \InvalidArgumentException('non-nullable jobs cannot be null');
         }
         $this->container['jobs'] = $jobs;
+
+        return $this;
+    }
+
+    /**
+     * Gets webhook_secret
+     *
+     * @return string|null
+     */
+    public function getWebhookSecret()
+    {
+        return $this->container['webhook_secret'];
+    }
+
+    /**
+     * Sets webhook_secret
+     *
+     * @param string|null $webhook_secret HMAC-SHA256 signing key for webhook verification. Present only when `callback_url` was provided in the request. This is the only time the secret is exposed — it does not appear in status queries.  Use this key to verify the `X-GIS-Signature` header on incoming webhook requests: `sha256=<hex(hmac-sha256(webhook_secret, raw_body))>`.
+     *
+     * @return self
+     */
+    public function setWebhookSecret($webhook_secret)
+    {
+        if (is_null($webhook_secret)) {
+            array_push($this->openAPINullablesSetToNull, 'webhook_secret');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('webhook_secret', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
+        }
+        if (!is_null($webhook_secret) && (mb_strlen($webhook_secret) > 64)) {
+            throw new \InvalidArgumentException('invalid length for $webhook_secret when calling WorkflowCreateResponse., must be smaller than or equal to 64.');
+        }
+        if (!is_null($webhook_secret) && (mb_strlen($webhook_secret) < 64)) {
+            throw new \InvalidArgumentException('invalid length for $webhook_secret when calling WorkflowCreateResponse., must be bigger than or equal to 64.');
+        }
+        if (!is_null($webhook_secret) && (!preg_match("/^[0-9a-f]{64}$/", ObjectSerializer::toString($webhook_secret)))) {
+            throw new \InvalidArgumentException("invalid value for \$webhook_secret when calling WorkflowCreateResponse., must conform to the pattern /^[0-9a-f]{64}$/.");
+        }
+
+        $this->container['webhook_secret'] = $webhook_secret;
 
         return $this;
     }

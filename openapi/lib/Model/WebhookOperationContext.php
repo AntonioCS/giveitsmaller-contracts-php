@@ -1,6 +1,6 @@
 <?php
 /**
- * WorkflowCreateRequest
+ * WebhookOperationContext
  *
  * PHP version 8.1
  *
@@ -32,15 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * WorkflowCreateRequest Class Doc Comment
+ * WebhookOperationContext Class Doc Comment
  *
  * @category Class
+ * @description Identifies which operation triggered the callback. Present only for &#x60;operation.completed&#x60; events; null for workflow-level events.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSerializable
+class WebhookOperationContext implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -49,7 +50,7 @@ class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSeriali
       *
       * @var string
       */
-    protected static $openAPIModelName = 'WorkflowCreateRequest';
+    protected static $openAPIModelName = 'WebhookOperationContext';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -57,11 +58,8 @@ class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSeriali
       * @var string[]
       */
     protected static $openAPITypes = [
-        'jobs' => '\Gisl\Generated\OpenApi\Model\JobDefinition[]',
-        'workflow_edges' => '\Gisl\Generated\OpenApi\Model\WorkflowEdge[]',
-        'callback_url' => 'string',
-        'callback_events' => '\Gisl\Generated\OpenApi\Model\CallbackEventType[]',
-        'export' => '\Gisl\Generated\OpenApi\Model\ExportConfig'
+        'job_ref' => 'string',
+        'operation_id' => 'string'
     ];
 
     /**
@@ -72,11 +70,8 @@ class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSeriali
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'jobs' => null,
-        'workflow_edges' => null,
-        'callback_url' => 'uri',
-        'callback_events' => null,
-        'export' => null
+        'job_ref' => null,
+        'operation_id' => 'uuid'
     ];
 
     /**
@@ -85,11 +80,8 @@ class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSeriali
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'jobs' => false,
-        'workflow_edges' => false,
-        'callback_url' => true,
-        'callback_events' => false,
-        'export' => false
+        'job_ref' => false,
+        'operation_id' => false
     ];
 
     /**
@@ -178,11 +170,8 @@ class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $attributeMap = [
-        'jobs' => 'jobs',
-        'workflow_edges' => 'workflow_edges',
-        'callback_url' => 'callback_url',
-        'callback_events' => 'callback_events',
-        'export' => 'export'
+        'job_ref' => 'job_ref',
+        'operation_id' => 'operation_id'
     ];
 
     /**
@@ -191,11 +180,8 @@ class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $setters = [
-        'jobs' => 'setJobs',
-        'workflow_edges' => 'setWorkflowEdges',
-        'callback_url' => 'setCallbackUrl',
-        'callback_events' => 'setCallbackEvents',
-        'export' => 'setExport'
+        'job_ref' => 'setJobRef',
+        'operation_id' => 'setOperationId'
     ];
 
     /**
@@ -204,11 +190,8 @@ class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $getters = [
-        'jobs' => 'getJobs',
-        'workflow_edges' => 'getWorkflowEdges',
-        'callback_url' => 'getCallbackUrl',
-        'callback_events' => 'getCallbackEvents',
-        'export' => 'getExport'
+        'job_ref' => 'getJobRef',
+        'operation_id' => 'getOperationId'
     ];
 
     /**
@@ -268,11 +251,8 @@ class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('jobs', $data ?? [], null);
-        $this->setIfExists('workflow_edges', $data ?? [], null);
-        $this->setIfExists('callback_url', $data ?? [], null);
-        $this->setIfExists('callback_events', $data ?? [], null);
-        $this->setIfExists('export', $data ?? [], null);
+        $this->setIfExists('job_ref', $data ?? [], null);
+        $this->setIfExists('operation_id', $data ?? [], null);
     }
 
     /**
@@ -302,15 +282,14 @@ class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         $invalidProperties = [];
 
-        if ($this->container['jobs'] === null) {
-            $invalidProperties[] = "'jobs' can't be null";
+        if ($this->container['job_ref'] === null) {
+            $invalidProperties[] = "'job_ref' can't be null";
         }
-        if ((count($this->container['jobs']) < 1)) {
-            $invalidProperties[] = "invalid value for 'jobs', number of items must be greater than or equal to 1.";
+        if ($this->container['operation_id'] === null) {
+            $invalidProperties[] = "'operation_id' can't be null";
         }
-
-        if (!is_null($this->container['callback_url']) && !preg_match("/^https:\/\//", $this->container['callback_url'])) {
-            $invalidProperties[] = "invalid value for 'callback_url', must be conform to the pattern /^https:\/\//.";
+        if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['operation_id'])) {
+            $invalidProperties[] = "invalid value for 'operation_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
         }
 
         return $invalidProperties;
@@ -329,153 +308,60 @@ class WorkflowCreateRequest implements ModelInterface, ArrayAccess, \JsonSeriali
 
 
     /**
-     * Gets jobs
+     * Gets job_ref
      *
-     * @return \Gisl\Generated\OpenApi\Model\JobDefinition[]
+     * @return string
      */
-    public function getJobs()
+    public function getJobRef()
     {
-        return $this->container['jobs'];
+        return $this->container['job_ref'];
     }
 
     /**
-     * Sets jobs
+     * Sets job_ref
      *
-     * @param \Gisl\Generated\OpenApi\Model\JobDefinition[] $jobs List of jobs in this workflow
+     * @param string $job_ref Reference label of the job containing the operation
      *
      * @return self
      */
-    public function setJobs($jobs)
+    public function setJobRef($job_ref)
     {
-        if (is_null($jobs)) {
-            throw new \InvalidArgumentException('non-nullable jobs cannot be null');
+        if (is_null($job_ref)) {
+            throw new \InvalidArgumentException('non-nullable job_ref cannot be null');
         }
-
-
-        if ((count($jobs) < 1)) {
-            throw new \InvalidArgumentException('invalid length for $jobs when calling WorkflowCreateRequest., number of items must be greater than or equal to 1.');
-        }
-        $this->container['jobs'] = $jobs;
+        $this->container['job_ref'] = $job_ref;
 
         return $this;
     }
 
     /**
-     * Gets workflow_edges
+     * Gets operation_id
      *
-     * @return \Gisl\Generated\OpenApi\Model\WorkflowEdge[]|null
+     * @return string
      */
-    public function getWorkflowEdges()
+    public function getOperationId()
     {
-        return $this->container['workflow_edges'];
+        return $this->container['operation_id'];
     }
 
     /**
-     * Sets workflow_edges
+     * Sets operation_id
      *
-     * @param \Gisl\Generated\OpenApi\Model\WorkflowEdge[]|null $workflow_edges DAG dependency edges between jobs. Each edge defines that a downstream job depends on an upstream job's output. Jobs with no incoming edges start immediately. Jobs with dependencies wait for all upstream jobs.
+     * @param string $operation_id UUID v7 format identifier (time-ordered)
      *
      * @return self
      */
-    public function setWorkflowEdges($workflow_edges)
+    public function setOperationId($operation_id)
     {
-        if (is_null($workflow_edges)) {
-            throw new \InvalidArgumentException('non-nullable workflow_edges cannot be null');
-        }
-        $this->container['workflow_edges'] = $workflow_edges;
-
-        return $this;
-    }
-
-    /**
-     * Gets callback_url
-     *
-     * @return string|null
-     */
-    public function getCallbackUrl()
-    {
-        return $this->container['callback_url'];
-    }
-
-    /**
-     * Sets callback_url
-     *
-     * @param string|null $callback_url Webhook URL (HTTPS only). The API POSTs a `WebhookPayload` JSON body to this URL when matching events occur. The payload includes event type, delivery ID, timestamp, and full workflow state with job results and download URLs. Must use HTTPS to prevent credential leakage and SSRF against internal endpoints.  **Signature verification:** Each request includes an `X-GIS-Signature` header containing an HMAC-SHA256 hex digest of the raw request body, using the per-workflow `webhook_secret` (returned in the workflow creation response) as the key. Header format: `sha256=<hex(hmac-sha256(webhook_secret, raw_body))>`. Consumers MUST verify the signature before processing the payload.
-     *
-     * @return self
-     */
-    public function setCallbackUrl($callback_url)
-    {
-        if (is_null($callback_url)) {
-            array_push($this->openAPINullablesSetToNull, 'callback_url');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('callback_url', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
+        if (is_null($operation_id)) {
+            throw new \InvalidArgumentException('non-nullable operation_id cannot be null');
         }
 
-        if (!is_null($callback_url) && (!preg_match("/^https:\/\//", ObjectSerializer::toString($callback_url)))) {
-            throw new \InvalidArgumentException("invalid value for \$callback_url when calling WorkflowCreateRequest., must conform to the pattern /^https:\/\//.");
+        if ((!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", ObjectSerializer::toString($operation_id)))) {
+            throw new \InvalidArgumentException("invalid value for \$operation_id when calling WebhookOperationContext., must conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.");
         }
 
-        $this->container['callback_url'] = $callback_url;
-
-        return $this;
-    }
-
-    /**
-     * Gets callback_events
-     *
-     * @return \Gisl\Generated\OpenApi\Model\CallbackEventType[]|null
-     */
-    public function getCallbackEvents()
-    {
-        return $this->container['callback_events'];
-    }
-
-    /**
-     * Sets callback_events
-     *
-     * @param \Gisl\Generated\OpenApi\Model\CallbackEventType[]|null $callback_events Which events trigger the webhook callback. Defaults to terminal events only.
-     *
-     * @return self
-     */
-    public function setCallbackEvents($callback_events)
-    {
-        if (is_null($callback_events)) {
-            throw new \InvalidArgumentException('non-nullable callback_events cannot be null');
-        }
-        $this->container['callback_events'] = $callback_events;
-
-        return $this;
-    }
-
-    /**
-     * Gets export
-     *
-     * @return \Gisl\Generated\OpenApi\Model\ExportConfig|null
-     */
-    public function getExport()
-    {
-        return $this->container['export'];
-    }
-
-    /**
-     * Sets export
-     *
-     * @param \Gisl\Generated\OpenApi\Model\ExportConfig|null $export export
-     *
-     * @return self
-     */
-    public function setExport($export)
-    {
-        if (is_null($export)) {
-            throw new \InvalidArgumentException('non-nullable export cannot be null');
-        }
-        $this->container['export'] = $export;
+        $this->container['operation_id'] = $operation_id;
 
         return $this;
     }
