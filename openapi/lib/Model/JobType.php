@@ -33,7 +33,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * JobType Class Doc Comment
  *
  * @category Class
- * @description Media type category derived from MIME type. Used for SNS routing: - image/_* -&gt; image - video/_* -&gt; video - audio/_* -&gt; audio - document types -&gt; document (PDF, DOCX, XLSX, PPTX, ODT, ODS, ODP, EPUB)
+ * @description Media type category derived from MIME type. Used as the &#x60;job_type&#x60; SNS message attribute on the &#x60;job-requests&#x60; topic — the single filter attribute that routes compression traffic to per-media-type compression queues. Not used by any other SNS topic; non-compression operations are routed by &#x60;operation_type&#x60; on the separate &#x60;operations&#x60; topic.  Derivation: - image/_* -&gt; image - video/_* -&gt; video - audio/_* -&gt; audio - document types -&gt; document (PDF, DOCX, XLSX, PPTX, ODT, ODS, ODP, EPUB)
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech

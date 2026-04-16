@@ -33,7 +33,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * OperationType Class Doc Comment
  *
  * @category Class
- * @description Available operation types: - compress: Reduce file size (images, audio, video, documents) - thumbnail: Generate preview image (images, video, documents) - watermark: Apply branding/protection (images, video, audio, documents) - merge: Concatenate/combine multiple files into one (images, video, audio, documents/PDF). Multi-input. - archive: Bundle files into ZIP/tar.gz (all types). Multi-input. - convert: Change file format (all types)
+ * @description Available operation types: - compress: Reduce file size (images, audio, video, documents) - thumbnail: Legacy thumbnail value. Generates a preview image   for any media type via a single Lambda. Currently the only   thumbnail value the compression_api publisher emits; retirement   is planned after the publisher adopts the four sub-type values   below in a follow-up API PR. - thumbnail_image: Image thumbnail sub-type. Backed by a dedicated   Rust image Lambda. Not yet emitted by the publisher. - thumbnail_video: Video thumbnail sub-type. Backed by a dedicated   FFmpeg Lambda. Not yet emitted. - thumbnail_document: PDF/EPUB thumbnail sub-type. Backed by a   dedicated Ghostscript Lambda. Not yet emitted. - thumbnail_office: Office document (DOCX/XLSX/PPTX/ODT/ODS/ODP)   thumbnail sub-type. Backed by a dedicated LibreOffice Lambda.   Not yet emitted. - watermark: Apply branding/protection (images only) - merge: Concatenate/combine multiple files into one (images, video, audio, documents/PDF). Multi-input. - archive: Bundle files into ZIP/tar.gz (all types). Multi-input. - convert: Change file format (all types)  Both the legacy &#x60;thumbnail&#x60; value and the four sub-type values are valid routing targets today during the thumbnail migration window. See &#x60;asyncapi/events.yaml&#x60; for the full routing vocabulary and the publisher branching rule.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -46,6 +46,14 @@ class OperationType
     public const COMPRESS = 'compress';
 
     public const THUMBNAIL = 'thumbnail';
+
+    public const THUMBNAIL_IMAGE = 'thumbnail_image';
+
+    public const THUMBNAIL_VIDEO = 'thumbnail_video';
+
+    public const THUMBNAIL_DOCUMENT = 'thumbnail_document';
+
+    public const THUMBNAIL_OFFICE = 'thumbnail_office';
 
     public const WATERMARK = 'watermark';
 
@@ -64,6 +72,10 @@ class OperationType
         return [
             self::COMPRESS,
             self::THUMBNAIL,
+            self::THUMBNAIL_IMAGE,
+            self::THUMBNAIL_VIDEO,
+            self::THUMBNAIL_DOCUMENT,
+            self::THUMBNAIL_OFFICE,
             self::WATERMARK,
             self::MERGE,
             self::ARCHIVE,

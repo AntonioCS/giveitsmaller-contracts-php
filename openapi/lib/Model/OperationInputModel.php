@@ -33,7 +33,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * OperationInputModel Class Doc Comment
  *
  * @category Class
- * @description Whether the operation accepts a single file or multiple files: - single: One input file (compress, thumbnail, watermark, convert) - multi: Multiple input files (merge, archive)
+ * @description Whether the operation accepts a single file or multiple files: - single: One input file (compress, thumbnail, thumbnail_image,   thumbnail_video, thumbnail_document, thumbnail_office,   watermark, convert) - multi: Multiple input files (merge, archive)
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
