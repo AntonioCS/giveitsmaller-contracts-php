@@ -57,7 +57,7 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
       * @var string[]
       */
     protected static $openAPITypes = [
-        'file_id' => 'string',
+        'upload_id' => 'string',
         'mime_type' => 'string',
         'first_chunk_etag' => 'string',
         'first_chunk_size_bytes' => 'int',
@@ -74,7 +74,7 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'file_id' => 'uuid',
+        'upload_id' => 'uuid',
         'mime_type' => null,
         'first_chunk_etag' => null,
         'first_chunk_size_bytes' => null,
@@ -89,7 +89,7 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'file_id' => false,
+        'upload_id' => false,
         'mime_type' => false,
         'first_chunk_etag' => false,
         'first_chunk_size_bytes' => false,
@@ -184,7 +184,7 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
      * @var string[]
      */
     protected static $attributeMap = [
-        'file_id' => 'file_id',
+        'upload_id' => 'upload_id',
         'mime_type' => 'mime_type',
         'first_chunk_etag' => 'first_chunk_etag',
         'first_chunk_size_bytes' => 'first_chunk_size_bytes',
@@ -199,7 +199,7 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
      * @var string[]
      */
     protected static $setters = [
-        'file_id' => 'setFileId',
+        'upload_id' => 'setUploadId',
         'mime_type' => 'setMimeType',
         'first_chunk_etag' => 'setFirstChunkEtag',
         'first_chunk_size_bytes' => 'setFirstChunkSizeBytes',
@@ -214,7 +214,7 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
      * @var string[]
      */
     protected static $getters = [
-        'file_id' => 'getFileId',
+        'upload_id' => 'getUploadId',
         'mime_type' => 'getMimeType',
         'first_chunk_etag' => 'getFirstChunkEtag',
         'first_chunk_size_bytes' => 'getFirstChunkSizeBytes',
@@ -280,7 +280,7 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('file_id', $data ?? [], null);
+        $this->setIfExists('upload_id', $data ?? [], null);
         $this->setIfExists('mime_type', $data ?? [], null);
         $this->setIfExists('first_chunk_etag', $data ?? [], null);
         $this->setIfExists('first_chunk_size_bytes', $data ?? [], null);
@@ -316,11 +316,11 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
     {
         $invalidProperties = [];
 
-        if ($this->container['file_id'] === null) {
-            $invalidProperties[] = "'file_id' can't be null";
+        if ($this->container['upload_id'] === null) {
+            $invalidProperties[] = "'upload_id' can't be null";
         }
-        if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['file_id'])) {
-            $invalidProperties[] = "invalid value for 'file_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
+        if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['upload_id'])) {
+            $invalidProperties[] = "invalid value for 'upload_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
         }
 
         if ($this->container['mime_type'] === null) {
@@ -373,33 +373,33 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
 
 
     /**
-     * Gets file_id
+     * Gets upload_id
      *
      * @return string
      */
-    public function getFileId()
+    public function getUploadId()
     {
-        return $this->container['file_id'];
+        return $this->container['upload_id'];
     }
 
     /**
-     * Sets file_id
+     * Sets upload_id
      *
-     * @param string $file_id UUID v7 format identifier (time-ordered)
+     * @param string $upload_id UUID v7 format identifier (time-ordered)
      *
      * @return self
      */
-    public function setFileId($file_id)
+    public function setUploadId($upload_id)
     {
-        if (is_null($file_id)) {
-            throw new \InvalidArgumentException('non-nullable file_id cannot be null');
+        if (is_null($upload_id)) {
+            throw new \InvalidArgumentException('non-nullable upload_id cannot be null');
         }
 
-        if ((!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", ObjectSerializer::toString($file_id)))) {
-            throw new \InvalidArgumentException("invalid value for \$file_id when calling MultipartInitiateResponse., must conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.");
+        if ((!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", ObjectSerializer::toString($upload_id)))) {
+            throw new \InvalidArgumentException("invalid value for \$upload_id when calling MultipartInitiateResponse., must conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.");
         }
 
-        $this->container['file_id'] = $file_id;
+        $this->container['upload_id'] = $upload_id;
 
         return $this;
     }

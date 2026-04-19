@@ -57,7 +57,7 @@ class MultipartCompleteRequest implements ModelInterface, ArrayAccess, \JsonSeri
       * @var string[]
       */
     protected static $openAPITypes = [
-        'file_id' => 'string',
+        'upload_id' => 'string',
         'parts' => '\Gisl\Generated\OpenApi\Model\MultipartCompleteRequestPartsInner[]'
     ];
 
@@ -69,7 +69,7 @@ class MultipartCompleteRequest implements ModelInterface, ArrayAccess, \JsonSeri
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'file_id' => 'uuid',
+        'upload_id' => 'uuid',
         'parts' => null
     ];
 
@@ -79,7 +79,7 @@ class MultipartCompleteRequest implements ModelInterface, ArrayAccess, \JsonSeri
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'file_id' => false,
+        'upload_id' => false,
         'parts' => false
     ];
 
@@ -169,7 +169,7 @@ class MultipartCompleteRequest implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $attributeMap = [
-        'file_id' => 'file_id',
+        'upload_id' => 'upload_id',
         'parts' => 'parts'
     ];
 
@@ -179,7 +179,7 @@ class MultipartCompleteRequest implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $setters = [
-        'file_id' => 'setFileId',
+        'upload_id' => 'setUploadId',
         'parts' => 'setParts'
     ];
 
@@ -189,7 +189,7 @@ class MultipartCompleteRequest implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $getters = [
-        'file_id' => 'getFileId',
+        'upload_id' => 'getUploadId',
         'parts' => 'getParts'
     ];
 
@@ -250,7 +250,7 @@ class MultipartCompleteRequest implements ModelInterface, ArrayAccess, \JsonSeri
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('file_id', $data ?? [], null);
+        $this->setIfExists('upload_id', $data ?? [], null);
         $this->setIfExists('parts', $data ?? [], null);
     }
 
@@ -281,11 +281,11 @@ class MultipartCompleteRequest implements ModelInterface, ArrayAccess, \JsonSeri
     {
         $invalidProperties = [];
 
-        if ($this->container['file_id'] === null) {
-            $invalidProperties[] = "'file_id' can't be null";
+        if ($this->container['upload_id'] === null) {
+            $invalidProperties[] = "'upload_id' can't be null";
         }
-        if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['file_id'])) {
-            $invalidProperties[] = "invalid value for 'file_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
+        if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['upload_id'])) {
+            $invalidProperties[] = "invalid value for 'upload_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
         }
 
         if ($this->container['parts'] === null) {
@@ -311,33 +311,33 @@ class MultipartCompleteRequest implements ModelInterface, ArrayAccess, \JsonSeri
 
 
     /**
-     * Gets file_id
+     * Gets upload_id
      *
      * @return string
      */
-    public function getFileId()
+    public function getUploadId()
     {
-        return $this->container['file_id'];
+        return $this->container['upload_id'];
     }
 
     /**
-     * Sets file_id
+     * Sets upload_id
      *
-     * @param string $file_id UUID v7 format identifier (time-ordered)
+     * @param string $upload_id UUID v7 format identifier (time-ordered)
      *
      * @return self
      */
-    public function setFileId($file_id)
+    public function setUploadId($upload_id)
     {
-        if (is_null($file_id)) {
-            throw new \InvalidArgumentException('non-nullable file_id cannot be null');
+        if (is_null($upload_id)) {
+            throw new \InvalidArgumentException('non-nullable upload_id cannot be null');
         }
 
-        if ((!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", ObjectSerializer::toString($file_id)))) {
-            throw new \InvalidArgumentException("invalid value for \$file_id when calling MultipartCompleteRequest., must conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.");
+        if ((!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", ObjectSerializer::toString($upload_id)))) {
+            throw new \InvalidArgumentException("invalid value for \$upload_id when calling MultipartCompleteRequest., must conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.");
         }
 
-        $this->container['file_id'] = $file_id;
+        $this->container['upload_id'] = $upload_id;
 
         return $this;
     }
