@@ -10,7 +10,7 @@
 - **Generator:** [openapi-generator-cli](https://openapi-generator.tech/) v7.13.0
   (Docker image: `openapitools/openapi-generator-cli:v7.13.0`)
 - **Generator preset:** `php`, models only
-- **Files:** 68
+- **Files:** 70
 
 ## Contents
 
