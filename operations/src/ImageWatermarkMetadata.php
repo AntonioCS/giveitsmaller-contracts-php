@@ -1,0 +1,110 @@
+<?php
+
+// Auto-generated -- do not edit
+
+declare(strict_types=1);
+
+namespace Gisl\Generated\Operations;
+
+final class ImageWatermarkMetadata
+{
+    public static function instance(): OperationMetadata
+    {
+        return new OperationMetadata(
+            features: [
+                'multi_overlay_stack' => new FeatureEntry(
+                    availability: 'planned',
+                    description: 'Allow up to 8 overlay inputs per job (currently capped at 1 overlay). Per-overlay placement via JobInputV2.per_input_options. Lambda-side support not yet confirmed; tagged planned per ADR-0001 §1.4. Scope is image-base only at the time this feature was specified; extension to GIF / video bases tracks alongside the corresponding mime_group `planned` → `stable` flips. ',
+                ),
+            ],
+            mime_groups: [
+                'image' => new MimeGroupMetadata(
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'anchor' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_x' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_y' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'opacity' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'overlay_width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'image_gif' => new MimeGroupMetadata(
+                    availability: 'planned',
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'anchor' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_x' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_y' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'opacity' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'overlay_width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'video' => new MimeGroupMetadata(
+                    availability: 'planned',
+                    processing_class: [
+                        'short_form' => new AvailabilityEntry(
+                            availability: 'planned',
+                            constraints: new ProcessingClassConstraints(
+                                max_input_duration: 'PT5M',
+                                max_input_size_bytes: 524288000,
+                                max_output_size_bytes: 524288000,
+                            ),
+                        ),
+                        'long_form' => new AvailabilityEntry(
+                            availability: 'planned',
+                            required_tier: 'pro',
+                            constraints: new ProcessingClassConstraints(
+                                max_input_duration: 'PT12H',
+                                max_input_size_bytes: 21474836480,
+                                max_output_size_bytes: 21474836480,
+                            ),
+                        ),
+                    ],
+                    per_mime_availability: [],
+                    options: [
+                        'anchor' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_x' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_y' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'opacity' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'overlay_width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+            ],
+        );
+    }
+}

@@ -1,0 +1,2400 @@
+{
+  "capabilities_version": 20,
+  "environment": "baseline",
+  "generated_at": null,
+  "operations": {
+    "archive": {
+      "accepts_mixed_types": true,
+      "default": false,
+      "description": "Bundle multiple files into a single archive",
+      "input_model": "multi",
+      "max_inputs": 50,
+      "min_inputs": 2,
+      "options": {
+        "folder_structure": {
+          "default": "flat",
+          "description": "flat = all files in root, by_job = subfolder per source job",
+          "type": "enum",
+          "values": [
+            "flat",
+            "by_job"
+          ]
+        },
+        "format": {
+          "default": "zip",
+          "description": "Archive format",
+          "type": "enum",
+          "values": [
+            "zip",
+            "tar.gz"
+          ]
+        }
+      }
+    },
+    "audio_overlay": {
+      "availability": "planned",
+      "default": false,
+      "description": "Mix a secondary audio asset (overlay) over a primary audio or\nvideo base. Use cases: DJ tags, podcast intros/outros, station\nIDs, jingles, branded mid-rolls.\n\n**Industry naming.** This is \"audio overlay\" or \"audio branding\"\n\u2014 NOT \"audio watermark\". Audio watermarking is steganographic\n(imperceptible identifier embedded in audio for ownership /\nforensic tracking) and is owned by the separate `audio_watermark`\noperation (planned per ticket I20).\n\nMulti-input (Path B with `role: base` + `role: overlay` per\n`JobInputV2.role`). `min_inputs: 2 = max_inputs: 2` for V2.0;\nmulti-overlay support is advertised as a planned feature\n(`features.multi_overlay_stack`) but Lambda-side implementation\ndeferred.\n\nThe overlay can be uploaded directly, imported externally, or\nreferenced from a vault connection per `WorkflowSource` (from\nI10). The base is whatever single-asset source the workflow\nupstream has \u2014 for `mime_groups.audio`, the base is the primary\naudio track; for `mime_groups.video`, the overlay is mixed into\nthe video's audio track and the visual track passes through\nuntouched.\n\nPer ADR-0001 \u00a71.3 (Tension 1 \u2014 `planned` operations return\n`feature_not_available` 422 until Lambda support ships). Per\nADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1 round 6.\n",
+      "features": {
+        "multi_overlay_stack": {
+          "availability": "planned",
+          "description": "Allow up to 8 overlay inputs per job (currently capped at 1\noverlay). Per-overlay placement via\n`JobInputV2.per_input_options`. Lambda-side support not yet\nconfirmed; tagged `planned` per ADR-0001 \u00a71.4. Mirrors the\nsame-named feature on `image_watermark`.\n"
+        },
+        "sync_to_silence": {
+          "availability": "planned",
+          "description": "Anchor overlay placement to detected silence regions in the\nbase track (e.g. drop a podcast jingle into the natural\nbreath after the host says \"back in a sec\"). Server-side\nsilence detection runs at workflow-create time; the actual\noverlay start position is reported on\n`OperationMetrics.overlay_anchor_ms`. Gates two extra\noptions: `silence_threshold_db` and `min_silence_ms`. Lambda\nsupport not yet shipped.\n"
+        }
+      },
+      "input_model": "multi",
+      "max_inputs": 2,
+      "mime_groups": {
+        "audio": {
+          "availability": "planned",
+          "mimes": [
+            "audio/mpeg",
+            "audio/aac",
+            "audio/wav",
+            "audio/ogg",
+            "audio/flac"
+          ],
+          "options": {
+            "duck_attack_ms": {
+              "default": 50,
+              "depends_on": {
+                "mode": "duck"
+              },
+              "description": "Time (milliseconds) for the ducker to reach full\nattenuation once the overlay crosses `duck_threshold`.\nOnly applies when `mode: duck`.\n",
+              "max": 5000,
+              "min": 0,
+              "type": "integer"
+            },
+            "duck_ratio": {
+              "default": 4.0,
+              "depends_on": {
+                "mode": "duck"
+              },
+              "description": "Side-chain compression ratio. Higher values produce more\naggressive ducking. Only applies when `mode: duck`.\n",
+              "max": 20.0,
+              "min": 1.0,
+              "type": "float"
+            },
+            "duck_release_ms": {
+              "default": 300,
+              "depends_on": {
+                "mode": "duck"
+              },
+              "description": "Time (milliseconds) for the ducker to release back to\nunity gain after the overlay drops below\n`duck_threshold`. Only applies when `mode: duck`.\n",
+              "max": 5000,
+              "min": 0,
+              "type": "integer"
+            },
+            "duck_threshold": {
+              "default": -20.0,
+              "depends_on": {
+                "mode": "duck"
+              },
+              "description": "Side-chain threshold (dB). Base audio is ducked when the\noverlay exceeds this level. Only applies when `mode: duck`.\n",
+              "max": 0.0,
+              "min": -60.0,
+              "type": "float"
+            },
+            "duration": {
+              "description": "Maximum duration (seconds) of the overlay AS PLAYED \u2014 the\noverlay asset is trimmed to this length if longer. Omit\n(or set 0) to play the overlay's full natural length.\n**Disambiguation:** this is overlay-trim duration, NOT\noutput duration. The output duration always matches the\nbase track's duration.\n",
+              "min": 0.0,
+              "type": "float"
+            },
+            "fade_in_ms": {
+              "default": 0,
+              "description": "Linear fade-in applied to the overlay (milliseconds).\nDefault 0 = hard start.\n",
+              "max": 10000,
+              "min": 0,
+              "type": "integer"
+            },
+            "fade_out_ms": {
+              "default": 0,
+              "description": "Linear fade-out applied to the overlay (milliseconds).\nDefault 0 = hard stop.\n",
+              "max": 10000,
+              "min": 0,
+              "type": "integer"
+            },
+            "loop": {
+              "default": false,
+              "description": "When true, the overlay loops continuously across the\nduration of the base track (or up to the trimmed\n`duration`). Useful for ambient bed music / background\nstings.\n",
+              "type": "boolean"
+            },
+            "loop_interval": {
+              "default": 0.0,
+              "depends_on": {
+                "loop": true
+              },
+              "description": "Silence gap (seconds) inserted between overlay loops.\nDefault 0 = back-to-back. Only applies when `loop: true`.\n",
+              "max": 600.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "min_silence_ms": {
+              "availability": "planned",
+              "default": 500,
+              "description": "Minimum silence duration (milliseconds) to qualify as an\nanchor region for `sync_to_silence`. Inert until that\nfeature flips to stable.\n",
+              "max": 30000,
+              "min": 50,
+              "type": "integer"
+            },
+            "mode": {
+              "default": "mix",
+              "description": "How the overlay combines with the base audio:\n- `mix`: simple sum (overlay + base; both audible).\n- `duck`: side-chain compress the base under the overlay\n  (base attenuates while overlay plays \u2014 broadcast pattern).\n- `replace`: mute the base for the overlay's duration\n  (overlay only; useful for hard-cut station IDs).\n",
+              "per_value_availability": {
+                "duck": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "mix",
+                "duck",
+                "replace"
+              ]
+            },
+            "overlay_gain_db": {
+              "default": -3.0,
+              "description": "Gain applied to the overlay in decibels before mixing.\nDefault -3 dB matches typical podcast intro / DJ-tag\nlevel. Positive values amplify (clip risk); negative\nvalues attenuate. Clamped to range.\n",
+              "max": 12.0,
+              "min": -60.0,
+              "type": "float"
+            },
+            "silence_threshold_db": {
+              "availability": "planned",
+              "default": -50.0,
+              "description": "Silence threshold (dB) for the `sync_to_silence` feature.\nBase audio below this level for at least `min_silence_ms`\nqualifies as a silence region into which the overlay can\nbe anchored. Inert until\n`features.sync_to_silence.availability` flips to stable.\n",
+              "max": -10.0,
+              "min": -80.0,
+              "type": "float"
+            },
+            "start_at": {
+              "default": 0.0,
+              "description": "Start position (seconds) on the base track at which the\noverlay begins playing. Default 0.0 = mix from the\nbeginning. Inert when\n`features.sync_to_silence.availability` flips to\n`stable` and `mode: sync_to_silence` is selected\n(placement is then anchored to detected silence).\n",
+              "min": 0.0,
+              "type": "float"
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 21474836480,
+                "max_output_size_bytes": 21474836480
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              }
+            }
+          }
+        },
+        "video": {
+          "availability": "planned",
+          "mimes": [
+            "video/mp4",
+            "video/webm"
+          ],
+          "options": {
+            "duck_attack_ms": {
+              "default": 50,
+              "depends_on": {
+                "mode": "duck"
+              },
+              "description": "Ducker attack (milliseconds). Only applies when `mode: duck`.",
+              "max": 5000,
+              "min": 0,
+              "type": "integer"
+            },
+            "duck_ratio": {
+              "default": 4.0,
+              "depends_on": {
+                "mode": "duck"
+              },
+              "description": "Side-chain compression ratio. Only applies when `mode: duck`.",
+              "max": 20.0,
+              "min": 1.0,
+              "type": "float"
+            },
+            "duck_release_ms": {
+              "default": 300,
+              "depends_on": {
+                "mode": "duck"
+              },
+              "description": "Ducker release (milliseconds). Only applies when `mode: duck`.",
+              "max": 5000,
+              "min": 0,
+              "type": "integer"
+            },
+            "duck_threshold": {
+              "default": -20.0,
+              "depends_on": {
+                "mode": "duck"
+              },
+              "description": "Side-chain threshold (dB). Only applies when `mode: duck`.",
+              "max": 0.0,
+              "min": -60.0,
+              "type": "float"
+            },
+            "duration": {
+              "description": "Maximum duration (seconds) of the overlay AS PLAYED. The\noverlay asset is trimmed to this length if longer. Output\nvideo duration always matches the base.\n",
+              "min": 0.0,
+              "type": "float"
+            },
+            "fade_in_ms": {
+              "default": 0,
+              "description": "Linear fade-in applied to the overlay (milliseconds).",
+              "max": 10000,
+              "min": 0,
+              "type": "integer"
+            },
+            "fade_out_ms": {
+              "default": 0,
+              "description": "Linear fade-out applied to the overlay (milliseconds).",
+              "max": 10000,
+              "min": 0,
+              "type": "integer"
+            },
+            "loop": {
+              "default": false,
+              "description": "When true, the overlay loops continuously across the\nduration of the base video.\n",
+              "type": "boolean"
+            },
+            "loop_interval": {
+              "default": 0.0,
+              "depends_on": {
+                "loop": true
+              },
+              "description": "Silence gap (seconds) between overlay loops.",
+              "max": 600.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "min_silence_ms": {
+              "availability": "planned",
+              "default": 500,
+              "description": "Minimum silence duration (milliseconds) for\n`sync_to_silence`. Inert until that feature flips to\nstable.\n",
+              "max": 30000,
+              "min": 50,
+              "type": "integer"
+            },
+            "mode": {
+              "default": "mix",
+              "description": "Same modes as the audio mime_group. `replace` mutes the\nbase video's audio for the overlay's duration.\n",
+              "per_value_availability": {
+                "duck": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "mix",
+                "duck",
+                "replace"
+              ]
+            },
+            "no_audio_track_behaviour": {
+              "default": "reject",
+              "description": "Controls behaviour when the base video has no audio\ntrack:\n- `reject`: workflow-create returns 422 (default \u2014 surfaces\n  the problem at the API edge rather than producing a\n  surprising silent-base output).\n- `create_silent`: synthesise a silent base track at the\n  video's framerate and mix the overlay into that.\n- `replace`: same as `create_silent` but signals intent\n  (\"the overlay IS the audio track\"), letting Lambda\n  skip the base-track synthesis when the overlay covers\n  the full video duration.\n",
+              "type": "enum",
+              "values": [
+                "reject",
+                "create_silent",
+                "replace"
+              ]
+            },
+            "overlay_gain_db": {
+              "default": -3.0,
+              "description": "Gain applied to the overlay in decibels before mixing.",
+              "max": 12.0,
+              "min": -60.0,
+              "type": "float"
+            },
+            "silence_threshold_db": {
+              "availability": "planned",
+              "default": -50.0,
+              "description": "Silence threshold (dB) for `sync_to_silence`. Inert\nuntil that feature flips to stable.\n",
+              "max": -10.0,
+              "min": -80.0,
+              "type": "float"
+            },
+            "start_at": {
+              "default": 0.0,
+              "description": "Start position (seconds) on the base video's audio track\nat which the overlay begins playing.\n",
+              "min": 0.0,
+              "type": "float"
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 21474836480,
+                "max_output_size_bytes": 21474836480
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              }
+            }
+          }
+        }
+      },
+      "min_inputs": 2
+    },
+    "audio_watermark": {
+      "availability": "planned",
+      "default": false,
+      "description": "Embed a steganographic forensic watermark into an audio asset (or\na video's audio track). The watermark is psychoacoustically masked\nto be inaudible and engineered to survive lossy compression,\ntranscoding, broadcast chains, and analog-hole capture (Cinavia /\nResemble PerTh territory).\n\n**Industry naming.** This is *audio watermarking* (steganographic;\nused for ownership, forensic tracking, content provenance) \u2014 NOT\n*audio overlay* (audible mixing of secondary audio for branding).\nAudio overlay is owned by the separate `audio_overlay` operation\n(per ticket I19).\n\nSingle-input. Watermark embedding takes the base asset and writes\nout an indistinguishable-to-the-ear copy with the encoded payload.\n\n**Decode endpoint.** A paired `POST /api/audio-watermark/decode`\nendpoint extracts the embedded watermark from a previously-marked\nasset, returning `{watermark_id, payload?, confidence, method,\ndetected_at}`. Decode is **own-watermarks-only** (rate-limited\n+ audited; the decoder will refuse to extract from media the\ncaller did not mark themselves) \u2014 pin per spike S11 acceptance.\n\nPer ADR-0001 \u00a71.3 (Tension 1 \u2014 `planned` operations return\n`feature_not_available` 422 until Lambda support ships).\nPer plan v5 \u00a7F1 round 6 (codex narrowed methods enum from 5 to 3,\ndropping `spread_spectrum` / `echo_hiding` / `phase_coding` \u2014\ntextbook families, not product choices).\n",
+      "input_model": "single",
+      "mime_groups": {
+        "audio": {
+          "availability": "planned",
+          "mimes": [
+            "audio/mpeg",
+            "audio/aac",
+            "audio/wav",
+            "audio/ogg",
+            "audio/flac"
+          ],
+          "options": {
+            "density": {
+              "default": "normal",
+              "description": "Watermark spatial density along the asset duration:\n- `sparse`: payload bits inserted at wider intervals;\n  decode confidence drops on short clips.\n- `normal` (default): balanced.\n- `dense`: maximum decode confidence on short clips at\n  the cost of slightly higher perceptual risk.\n",
+              "type": "enum",
+              "values": [
+                "sparse",
+                "normal",
+                "dense"
+              ]
+            },
+            "method": {
+              "default": "auto",
+              "description": "Watermarking algorithm:\n- `auto`: server selects the best available method for the\n  input (currently maps to `psychoacoustic`; will widen as\n  `neural` ships).\n- `psychoacoustic`: classical masking-curve embedding.\n  Resemble's open-source PerTh library provides the path-\n  to-prod reference implementation. Survives MP3/AAC at\n  moderate bitrates and broadcast chains.\n- `neural`: ML-based embedding (deep generative). Higher\n  survival under aggressive transcoding + analog-hole\n  capture; longer encoding time + non-deterministic.\n",
+              "per_value_availability": {
+                "neural": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "auto",
+                "psychoacoustic",
+                "neural"
+              ]
+            },
+            "payload": {
+              "description": "Optional caller-supplied payload to embed (max 256\ncharacters). Use cases: ownership marker, distribution\nchannel ID, license key. When omitted, the server\ngenerates a UUID-v7 `watermark_id` and embeds that\ninstead; the generated ID is returned on\n`OperationResult` so the caller can subsequently call\nthe decode endpoint to verify.\n",
+              "required": false,
+              "type": "string"
+            },
+            "robustness": {
+              "default": "compression_resistant",
+              "description": "Survival profile:\n- `light`: minimal payload-strength; smallest perceptual\n  footprint. Survives a single re-encode pass at moderate\n  bitrate.\n- `compression_resistant` (default): survives multiple\n  MP3/AAC re-encodes at typical streaming bitrates.\n- `broadcast_grade`: survives broadcast compression\n  chains, EQ, dynamic-range compression, and analog-hole\n  capture (microphone re-recording). Higher embedding\n  time + slightly larger perceptual footprint.\n",
+              "type": "enum",
+              "values": [
+                "light",
+                "compression_resistant",
+                "broadcast_grade"
+              ]
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 21474836480,
+                "max_output_size_bytes": 21474836480
+              },
+              "required_tier": "enterprise"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              },
+              "required_tier": "enterprise"
+            }
+          }
+        },
+        "video": {
+          "availability": "planned",
+          "mimes": [
+            "video/mp4",
+            "video/webm"
+          ],
+          "options": {
+            "density": {
+              "default": "normal",
+              "description": "Watermark density along the asset duration.",
+              "type": "enum",
+              "values": [
+                "sparse",
+                "normal",
+                "dense"
+              ]
+            },
+            "method": {
+              "default": "auto",
+              "description": "Watermarking algorithm. Same semantics as the `audio`\nmime_group; embedded into the video's audio track only.\n",
+              "per_value_availability": {
+                "neural": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "auto",
+                "psychoacoustic",
+                "neural"
+              ]
+            },
+            "payload": {
+              "description": "Optional caller-supplied payload to embed (max 256\ncharacters). When omitted, the server generates a UUID-v7\n`watermark_id` and embeds that instead.\n",
+              "required": false,
+              "type": "string"
+            },
+            "robustness": {
+              "default": "compression_resistant",
+              "description": "Survival profile. Same semantics as audio mime_group.",
+              "type": "enum",
+              "values": [
+                "light",
+                "compression_resistant",
+                "broadcast_grade"
+              ]
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 21474836480,
+                "max_output_size_bytes": 21474836480
+              },
+              "required_tier": "enterprise"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              },
+              "required_tier": "enterprise"
+            }
+          }
+        }
+      },
+      "required_tier": "enterprise"
+    },
+    "compress": {
+      "default": true,
+      "description": "Reduce file size while maintaining acceptable quality",
+      "input_model": "single",
+      "mime_groups": {
+        "audio": {
+          "mimes": [
+            "audio/mpeg",
+            "audio/aac",
+            "audio/ogg",
+            "audio/flac",
+            "audio/wav",
+            "audio/mp4"
+          ],
+          "options": {
+            "bitrate": {
+              "default": 128,
+              "description": "Output bitrate in kbps",
+              "type": "enum",
+              "value_type": "integer",
+              "values": [
+                64,
+                96,
+                128,
+                192,
+                256,
+                320
+              ]
+            },
+            "channels": {
+              "description": "Number of audio channels (1 = mono, 2 = stereo)",
+              "max": 2,
+              "min": 1,
+              "type": "integer"
+            },
+            "normalize": {
+              "default": false,
+              "description": "Apply loudness normalization (EBU R128 / -14 LUFS target)",
+              "type": "boolean"
+            },
+            "sample_rate": {
+              "description": "Audio sample rate in Hz",
+              "type": "enum",
+              "value_type": "integer",
+              "values": [
+                22050,
+                44100,
+                48000
+              ]
+            },
+            "trim_end": {
+              "description": "Trim from end in seconds",
+              "min": 0,
+              "type": "float"
+            },
+            "trim_start": {
+              "description": "Trim from beginning in seconds",
+              "min": 0,
+              "type": "float"
+            }
+          }
+        },
+        "document_epub": {
+          "mimes": [
+            "application/epub+zip"
+          ],
+          "options": {
+            "font_subsetting": {
+              "default": true,
+              "description": "Subset embedded fonts to only include glyphs used in the document. Significant size reduction for books with large font files",
+              "type": "boolean"
+            },
+            "image_quality": {
+              "default": 80,
+              "description": "Recompress embedded images at this quality level",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "strip_unused_css": {
+              "default": false,
+              "description": "Remove CSS rules not referenced by any content. Risk: may affect rendering in some readers",
+              "type": "boolean"
+            }
+          }
+        },
+        "document_odf": {
+          "mimes": [
+            "application/vnd.oasis.opendocument.text",
+            "application/vnd.oasis.opendocument.spreadsheet",
+            "application/vnd.oasis.opendocument.presentation"
+          ],
+          "options": {
+            "image_quality": {
+              "default": 80,
+              "description": "Recompress embedded images at this quality level",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "strip_metadata": {
+              "default": true,
+              "description": "Remove document metadata (author, revision history, comments)",
+              "type": "boolean"
+            },
+            "strip_unused_styles": {
+              "default": false,
+              "description": "Remove style definitions not referenced in document content",
+              "type": "boolean"
+            }
+          }
+        },
+        "document_office": {
+          "mimes": [
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          ],
+          "options": {
+            "image_quality": {
+              "default": 80,
+              "description": "Recompress embedded images at this quality level (1 = smallest, 100 = best)",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "strip_hidden_data": {
+              "default": true,
+              "description": "Remove revisions, comments, personal info, hidden rows/columns, and speaker notes",
+              "type": "boolean"
+            },
+            "strip_macros": {
+              "default": true,
+              "description": "Remove VBA macros and ActiveX controls",
+              "type": "boolean"
+            },
+            "strip_unused_fonts": {
+              "default": false,
+              "description": "Remove embedded fonts not referenced in the document. Risk: may affect rendering on systems without the font installed",
+              "type": "boolean"
+            }
+          }
+        },
+        "document_pdf": {
+          "mimes": [
+            "application/pdf"
+          ],
+          "options": {
+            "colorspace": {
+              "default": "unchanged",
+              "description": "Output color space",
+              "type": "enum",
+              "values": [
+                "unchanged",
+                "rgb",
+                "cmyk",
+                "grayscale"
+              ]
+            },
+            "flatten_forms": {
+              "default": false,
+              "description": "Flatten interactive form fields into static content",
+              "type": "boolean"
+            },
+            "pages": {
+              "description": "Page selection (e.g. '1-5,8,10-12'). Omit to keep all pages.",
+              "type": "string"
+            },
+            "profile": {
+              "default": "web",
+              "description": "Optimization profile. web = aggressive (downsample images, strip metadata), print = preserve quality, archive = PDF/A compliance, max = smallest file",
+              "type": "enum",
+              "values": [
+                "web",
+                "print",
+                "archive",
+                "max"
+              ]
+            }
+          }
+        },
+        "image": {
+          "mimes": [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+            "image/svg+xml",
+            "image/tiff",
+            "image/bmp",
+            "image/vnd.microsoft.icon",
+            "image/avif",
+            "image/heic"
+          ],
+          "options": {
+            "auto_orient": {
+              "default": true,
+              "description": "Auto-rotate based on EXIF orientation",
+              "type": "boolean"
+            },
+            "fit": {
+              "default": "max",
+              "depends_on": {
+                "height": "set",
+                "logic": "or",
+                "width": "set"
+              },
+              "description": "Resize mode. max = fit within bounds, crop = fill and trim, scale = force exact dimensions. Only applies when width or height is set.",
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "height": {
+              "description": "Maximum output height in pixels",
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            },
+            "icc_profile": {
+              "default": "preserve",
+              "description": "ICC color profile handling. preserve = keep original, strip = remove, srgb = convert to sRGB",
+              "type": "enum",
+              "values": [
+                "preserve",
+                "strip",
+                "srgb"
+              ]
+            },
+            "metadata": {
+              "default": "all",
+              "description": "Metadata handling. all = strip everything (smallest file), none = keep all EXIF/IPTC/XMP, copyright = keep only copyright/author fields, sensitive = keep EXIF but strip GPS/location (GDPR-friendly)",
+              "type": "enum",
+              "values": [
+                "all",
+                "none",
+                "copyright",
+                "sensitive"
+              ]
+            },
+            "mode": {
+              "default": "lossy",
+              "description": "Compression algorithm. lossy = smaller file, lossless = no quality loss, auto = best for format",
+              "type": "enum",
+              "values": [
+                "lossy",
+                "lossless",
+                "auto"
+              ]
+            },
+            "output_format": {
+              "default": "original",
+              "description": "Output format. original = keep input format, auto = best for browser support (AVIF > WebP > JPEG based on Accept header hint), smallest = try all supported formats and return the smallest file",
+              "type": "enum",
+              "values": [
+                "original",
+                "auto",
+                "smallest",
+                "jpeg",
+                "png",
+                "webp",
+                "avif"
+              ]
+            },
+            "progressive": {
+              "default": true,
+              "description": "Enable progressive rendering (JPEG only). Renders low-quality preview first, then refines.",
+              "type": "boolean"
+            },
+            "quality": {
+              "default": 80,
+              "depends_on": {
+                "mode": "lossy"
+              },
+              "description": "Compression quality (1 = smallest file, 100 = best quality). Only applies to lossy mode.",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "width": {
+              "description": "Maximum output width in pixels",
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            }
+          }
+        },
+        "video": {
+          "mimes": [
+            "video/mp4",
+            "video/webm",
+            "video/ogg"
+          ],
+          "options": {
+            "audio_bitrate": {
+              "default": 128,
+              "description": "Audio track bitrate in kbps",
+              "type": "enum",
+              "value_type": "integer",
+              "values": [
+                64,
+                96,
+                128,
+                192,
+                256,
+                320
+              ]
+            },
+            "audio_codec": {
+              "default": "aac",
+              "description": "Audio codec. aac = widest compatibility, opus = best quality/size, copy = passthrough",
+              "type": "enum",
+              "values": [
+                "aac",
+                "opus",
+                "vorbis",
+                "copy"
+              ]
+            },
+            "codec": {
+              "default": "h264",
+              "description": "Video codec. h264 = widest compatibility, h265/av1 = better compression but slower",
+              "type": "enum",
+              "values": [
+                "h264",
+                "h265",
+                "vp9",
+                "av1"
+              ]
+            },
+            "crf": {
+              "default": 23,
+              "depends_on": {
+                "encoding_mode": "crf"
+              },
+              "description": "Constant Rate Factor (0 = lossless, 51 = worst, 23 = visually good). Only applies to CRF mode.",
+              "max": 51,
+              "min": 0,
+              "type": "integer"
+            },
+            "encoding_mode": {
+              "default": "crf",
+              "description": "crf = constant quality (variable file size), target_size = constrained file size (two-pass)",
+              "type": "enum",
+              "values": [
+                "crf",
+                "target_size"
+              ]
+            },
+            "faststart": {
+              "default": true,
+              "description": "Move MP4 moov atom to start for progressive web playback (MP4 only)",
+              "type": "boolean"
+            },
+            "fit": {
+              "default": "max",
+              "depends_on": {
+                "height": "set",
+                "logic": "or",
+                "width": "set"
+              },
+              "description": "Resize mode. max = fit within bounds (preserves ratio), crop/scale/pad = exact dimensions. Only applies when width or height is set.",
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale",
+                "pad"
+              ]
+            },
+            "fps": {
+              "description": "Output frame rate",
+              "max": 120,
+              "min": 1,
+              "type": "float"
+            },
+            "height": {
+              "description": "Output height in pixels",
+              "max": 4320,
+              "min": 1,
+              "type": "integer"
+            },
+            "preset": {
+              "default": "medium",
+              "description": "Encoding speed vs compression ratio trade-off",
+              "type": "enum",
+              "values": [
+                "ultrafast",
+                "superfast",
+                "veryfast",
+                "faster",
+                "fast",
+                "medium",
+                "slow",
+                "slower",
+                "veryslow"
+              ]
+            },
+            "target_size_bytes": {
+              "depends_on": {
+                "encoding_mode": "target_size"
+              },
+              "description": "Target output file size in bytes (min 1MB). Two-pass encoding to meet this target.",
+              "min": 1048576,
+              "type": "integer"
+            },
+            "trim_end": {
+              "description": "Trim from end in seconds",
+              "min": 0,
+              "type": "float"
+            },
+            "trim_start": {
+              "description": "Trim from beginning in seconds",
+              "min": 0,
+              "type": "float"
+            },
+            "width": {
+              "description": "Output width in pixels",
+              "max": 7680,
+              "min": 1,
+              "type": "integer"
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 21474836480,
+                "max_output_size_bytes": 21474836480
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "stable",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              }
+            }
+          }
+        }
+      }
+    },
+    "convert": {
+      "default": false,
+      "description": "Convert file to a different format",
+      "input_model": "single",
+      "mime_groups": {
+        "audio": {
+          "mimes": [
+            "audio/mpeg",
+            "audio/aac",
+            "audio/ogg",
+            "audio/flac",
+            "audio/wav",
+            "audio/mp4"
+          ],
+          "options": {
+            "bitrate": {
+              "default": 128,
+              "depends_on": {
+                "output_format": [
+                  "mp3",
+                  "aac",
+                  "ogg"
+                ]
+              },
+              "description": "Output bitrate in kbps (lossy formats only)",
+              "type": "enum",
+              "value_type": "integer",
+              "values": [
+                64,
+                96,
+                128,
+                192,
+                256,
+                320
+              ]
+            },
+            "output_format": {
+              "description": "Target format",
+              "required": true,
+              "type": "enum",
+              "values": [
+                "mp3",
+                "aac",
+                "ogg",
+                "flac",
+                "wav"
+              ]
+            }
+          }
+        },
+        "document_pdf": {
+          "mimes": [
+            "application/pdf"
+          ],
+          "options": {
+            "dpi": {
+              "default": 150,
+              "description": "Render resolution in DPI",
+              "max": 600,
+              "min": 72,
+              "type": "integer"
+            },
+            "output_format": {
+              "description": "Target image format (renders PDF pages as images)",
+              "required": true,
+              "type": "enum",
+              "values": [
+                "png",
+                "jpeg"
+              ]
+            },
+            "pages": {
+              "default": "1",
+              "description": "Page selection (e.g. '1-5,8'). Each page produces a separate output file.",
+              "type": "string"
+            }
+          }
+        },
+        "image": {
+          "mimes": [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+            "image/svg+xml",
+            "image/tiff",
+            "image/bmp",
+            "image/vnd.microsoft.icon",
+            "image/avif",
+            "image/heic"
+          ],
+          "options": {
+            "background": {
+              "depends_on": {
+                "output_format": "jpeg"
+              },
+              "description": "Background colour (hex, e.g. '#ffffff') for transparent images converted to JPEG",
+              "type": "string"
+            },
+            "output_format": {
+              "description": "Target format",
+              "required": true,
+              "type": "enum",
+              "values": [
+                "jpeg",
+                "png",
+                "webp",
+                "avif",
+                "gif",
+                "tiff"
+              ]
+            },
+            "quality": {
+              "default": 85,
+              "depends_on": {
+                "output_format": [
+                  "jpeg",
+                  "webp",
+                  "avif"
+                ]
+              },
+              "description": "Output quality for lossy formats",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            }
+          }
+        },
+        "video": {
+          "mimes": [
+            "video/mp4",
+            "video/webm",
+            "video/ogg"
+          ],
+          "options": {
+            "codec": {
+              "description": "Video codec for target format. Defaults to format's standard codec.",
+              "type": "enum",
+              "values": [
+                "h264",
+                "h265",
+                "vp9",
+                "av1"
+              ]
+            },
+            "output_format": {
+              "description": "Target format",
+              "required": true,
+              "type": "enum",
+              "values": [
+                "mp4",
+                "webm",
+                "ogg",
+                "gif"
+              ]
+            },
+            "quality": {
+              "default": 23,
+              "description": "CRF value (0 = lossless, 51 = worst)",
+              "max": 51,
+              "min": 0,
+              "type": "integer"
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 21474836480,
+                "max_output_size_bytes": 21474836480
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "stable",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              }
+            }
+          }
+        }
+      }
+    },
+    "custom_luma": {
+      "availability": "planned",
+      "default": false,
+      "description": "Apply a caller-uploaded luma matte (transition-mask) over a base\nvideo to produce a custom luma-matte transition effect. Inspired\nby Cloudinary's deprecated luma-matte custom transitions and\nintended as a paid-tier (`pro`+) creative feature.\n\n**NOT** related to FFmpeg's `xfade=custom` filter (which is an\nexpression-mode parameter on the same `xfade` filter). The\n`merge.transition.custom` value is tagged `planned` with\ndocumentation_url pointing at this operation; once `custom_luma`\nships, the merge slot is repurposed to a \"use the dedicated\n`custom_luma` operation instead\" advisory.\n\nMulti-input: exactly one input with `role: base` (the source\nvideo being transitioned) + exactly one input with\n`role: transition_mask` (the luma matte \u2014 a video whose pixel\nluminance drives the transition reveal \u2014 bright = revealed,\ndark = held). The mask can be uploaded directly, imported\nexternally, or referenced from a vault connection per\n`WorkflowSource` (from I10).\n\nPer ADR-0001 \u00a71.3 (Tension 1 \u2014 `planned` operations return\n`feature_not_available` HTTP 422 until Lambda support ships).\nPer ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F4 round 6\n(codex-corrected \u2014 `xfade=custom` is an expression, not a\ntransition; this operation is the deliberate alternative).\n",
+      "input_model": "multi",
+      "max_inputs": 2,
+      "mime_groups": {
+        "video": {
+          "mimes": [
+            "video/mp4",
+            "video/webm"
+          ],
+          "options": {
+            "duration": {
+              "default": 1.0,
+              "description": "Transition duration in seconds. The mask is time-stretched\nor trimmed to this duration when applied.\n",
+              "max": 30.0,
+              "min": 0.1,
+              "type": "float"
+            },
+            "mask_blur": {
+              "default": 0.0,
+              "description": "Gaussian blur radius (pixels) applied to the luma matte\nbefore compositing. Softens the transition edge. Default\n0.0 = no blur. Larger values produce a more diffused\ntransition.\n",
+              "max": 10.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "mask_contrast": {
+              "default": 1.0,
+              "description": "Contrast multiplier applied to the luma matte before\ncompositing. Sharpens (>1) or softens (<1) the\ntransition edge. Default 1.0 = no contrast adjustment.\n",
+              "max": 4.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "mask_invert": {
+              "default": false,
+              "description": "When true, inverts the luma matte (bright \u2194 dark). Lets\ncallers reuse a single mask asset for both reveal and\nhide directions.\n",
+              "type": "boolean"
+            },
+            "start_offset": {
+              "default": 0.0,
+              "description": "Offset (seconds) from the base clip start at which the\ntransition begins. The transition runs for `duration`\nseconds starting at `start_offset`.\n",
+              "min": 0.0,
+              "type": "float"
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 21474836480,
+                "max_output_size_bytes": 21474836480
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              },
+              "required_tier": "pro"
+            }
+          }
+        }
+      },
+      "min_inputs": 2,
+      "required_tier": "pro"
+    },
+    "image_watermark": {
+      "default": false,
+      "description": "Apply an image overlay (file or external source) onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). The overlay\ncan be an upload, an external_import handle, or a vault connection\nper WorkflowSource (ticket I10).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF and video bases are advertised as\n`planned` via parallel mime_groups (`image_gif`, `video`) \u2014 schema\nis contract-defined, dispatch returns `feature_not_available` (422)\nuntil Lambda support ships. Per Tension 1 (ADR-0001) +\nplan v5 \u00a7F4 round 6.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 25 megapixels for image bases (V1 watermark\nprecedent retained); per-frame caps for GIF / video bases will be\ndefined when the corresponding Lambda support ships.\nPer ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n",
+      "features": {
+        "multi_overlay_stack": {
+          "availability": "planned",
+          "description": "Allow up to 8 overlay inputs per job (currently capped at 1\noverlay). Per-overlay placement via JobInputV2.per_input_options.\nLambda-side support not yet confirmed; tagged planned per\nADR-0001 \u00a71.4. Scope is image-base only at the time this feature\nwas specified; extension to GIF / video bases tracks alongside\nthe corresponding mime_group `planned` \u2192 `stable` flips.\n"
+        }
+      },
+      "input_model": "multi",
+      "max_inputs": 2,
+      "mime_groups": {
+        "image": {
+          "mimes": [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+          ],
+          "options": {
+            "anchor": {
+              "default": "bottom_right",
+              "description": "9-grid anchor position on the base image. Mirrors\nMux/Cloudinary positioning. Combined with margin_x and\nmargin_y for fine-grained offset from the anchor point.\n",
+              "type": "enum",
+              "values": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "center_left",
+                "center",
+                "center_right",
+                "bottom_left",
+                "bottom_center",
+                "bottom_right"
+              ]
+            },
+            "margin_x": {
+              "default": "0px",
+              "description": "Horizontal offset from the anchor as either pixels (e.g.\n\"40px\") or percentage of base image width (e.g. \"5%\").\nDirection is anchor-relative \u2014 positive moves toward image\ncentre.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "margin_y": {
+              "default": "0px",
+              "description": "Vertical offset from the anchor as either pixels (e.g.\n\"20px\") or percentage of base image height (e.g. \"3%\").\nDirection is anchor-relative \u2014 positive moves toward image\ncentre.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "opacity": {
+              "default": 0.5,
+              "description": "Overlay opacity (0 = fully transparent, 1 = fully opaque).\nClamped to range.\n",
+              "max": 1.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "overlay_width": {
+              "description": "Optional overlay width as either pixels (e.g. \"200px\") or\npercentage of base image width (e.g. \"30%\"). Aspect ratio is\npreserved. Omit to use the original overlay size.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            }
+          }
+        },
+        "image_gif": {
+          "availability": "planned",
+          "mimes": [
+            "image/gif"
+          ],
+          "options": {
+            "anchor": {
+              "default": "bottom_right",
+              "description": "9-grid anchor position on the base GIF (applied uniformly\nacross frames). Same semantics as the `image` group.\n",
+              "type": "enum",
+              "values": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "center_left",
+                "center",
+                "center_right",
+                "bottom_left",
+                "bottom_center",
+                "bottom_right"
+              ]
+            },
+            "margin_x": {
+              "default": "0px",
+              "description": "Horizontal offset from the anchor in pixels or percentage of\nbase width. Anchor-relative; positive moves toward the\nframe centre.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "margin_y": {
+              "default": "0px",
+              "description": "Vertical offset from the anchor in pixels or percentage of\nbase height. Anchor-relative; positive moves toward the\nframe centre.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "opacity": {
+              "default": 0.5,
+              "description": "Overlay opacity (0 = fully transparent, 1 = fully opaque).\nClamped to range.\n",
+              "max": 1.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "overlay_width": {
+              "description": "Optional overlay width as pixels or percentage of base\nwidth. Aspect ratio preserved. Omit to use the original\noverlay size.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            }
+          }
+        },
+        "video": {
+          "availability": "planned",
+          "mimes": [
+            "video/mp4",
+            "video/webm"
+          ],
+          "options": {
+            "anchor": {
+              "default": "bottom_right",
+              "description": "9-grid anchor position on each video frame. Same semantics\nas the `image` group.\n",
+              "type": "enum",
+              "values": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "center_left",
+                "center",
+                "center_right",
+                "bottom_left",
+                "bottom_center",
+                "bottom_right"
+              ]
+            },
+            "margin_x": {
+              "default": "0px",
+              "description": "Horizontal offset from the anchor in pixels or percentage of\nvideo frame width. Anchor-relative; positive moves toward\nthe frame centre.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "margin_y": {
+              "default": "0px",
+              "description": "Vertical offset from the anchor in pixels or percentage of\nvideo frame height. Anchor-relative; positive moves toward\nthe frame centre.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "opacity": {
+              "default": 0.5,
+              "description": "Overlay opacity (0 = fully transparent, 1 = fully opaque).\nClamped to range.\n",
+              "max": 1.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "overlay_width": {
+              "description": "Optional overlay width as pixels or percentage of video\nframe width. Aspect ratio preserved. Omit to use the\noriginal overlay size.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 21474836480,
+                "max_output_size_bytes": 21474836480
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              }
+            }
+          }
+        }
+      },
+      "min_inputs": 2
+    },
+    "merge": {
+      "default": false,
+      "description": "Combine multiple files into one",
+      "input_model": "multi",
+      "max_inputs": 10,
+      "mime_groups": {
+        "audio": {
+          "mimes": [
+            "audio/mpeg",
+            "audio/aac",
+            "audio/wav",
+            "audio/ogg",
+            "audio/flac"
+          ],
+          "options": {
+            "crossfade_duration": {
+              "default": 0,
+              "depends_on": {
+                "transition": "crossfade"
+              },
+              "description": "Crossfade duration in seconds",
+              "max": 10.0,
+              "min": 0,
+              "type": "float"
+            },
+            "gap_duration": {
+              "default": 0,
+              "description": "Silence duration between clips in seconds",
+              "max": 10.0,
+              "min": 0,
+              "type": "float"
+            },
+            "normalize_audio": {
+              "default": true,
+              "description": "Normalize audio levels across all clips",
+              "type": "boolean"
+            },
+            "output_type": {
+              "description": "Output format for audio merge (concatenation). Currently fixed at 'audio'. Optional \u2014 API injects this default post-validation so callers may omit it.",
+              "required": false,
+              "type": "enum",
+              "values": [
+                "audio"
+              ]
+            },
+            "transition": {
+              "default": "none",
+              "description": "Default transition between clips. Audio-only catalog\n(acrossfade-backed); see FORMAT.md \u00a7\"Audio vs visual\ntransition catalogs (merge)\" for additions policy. Future\nvalues (e.g. `fade_curve` variants) will be added with\n`per_value_availability` per ADR-0001 \u00a71.4.\n",
+              "type": "enum",
+              "values": [
+                "none",
+                "crossfade"
+              ]
+            }
+          },
+          "per_input_options": {
+            "crossfade_duration": {
+              "depends_on": {
+                "transition": "crossfade"
+              },
+              "description": "Override crossfade duration for this join point",
+              "max": 10.0,
+              "min": 0,
+              "type": "float"
+            },
+            "gap_duration": {
+              "description": "Override gap duration for this join point",
+              "max": 10.0,
+              "min": 0,
+              "type": "float"
+            },
+            "transition": {
+              "description": "Override transition for the join point preceding this\ninput. Audio-only catalog (acrossfade-backed); see\nFORMAT.md \u00a7\"Audio vs visual transition catalogs (merge)\".\n",
+              "type": "enum",
+              "values": [
+                "none",
+                "crossfade"
+              ]
+            }
+          }
+        },
+        "image": {
+          "mimes": [
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/gif",
+            "image/tiff",
+            "image/bmp"
+          ],
+          "options": {
+            "delay": {
+              "default": 500,
+              "depends_on": {
+                "output_type": "gif"
+              },
+              "description": "Milliseconds between frames",
+              "max": 5000,
+              "min": 10,
+              "type": "integer"
+            },
+            "duration_per_image": {
+              "default": 3.0,
+              "depends_on": {
+                "output_type": "video"
+              },
+              "description": "Seconds each image is displayed",
+              "max": 30.0,
+              "min": 0.5,
+              "type": "float"
+            },
+            "fps": {
+              "default": 30,
+              "depends_on": {
+                "output_type": "video"
+              },
+              "description": "Output frame rate",
+              "max": 60,
+              "min": 1,
+              "type": "integer"
+            },
+            "loop_count": {
+              "default": 0,
+              "depends_on": {
+                "output_type": "gif"
+              },
+              "description": "Number of loops (0 = infinite)",
+              "max": 100,
+              "min": 0,
+              "type": "integer"
+            },
+            "output_type": {
+              "description": "Result format: animated GIF or slideshow video. No default \u2014 caller must pick explicitly (image/collage and document/PDF concat are not supported by the V1 merge Lambda).",
+              "required": true,
+              "type": "enum",
+              "values": [
+                "gif",
+                "video"
+              ]
+            },
+            "transition": {
+              "default": "none",
+              "depends_on": {
+                "output_type": "video"
+              },
+              "description": "Transition effect between images in the slideshow output.\nCatalog from FFmpeg 7.1.1 xfade filter (per ADR-0007). See\nper_value_availability for per-value rollout state. The\n`none` value is a sentinel (\"no transition / hard cut\"),\nnot an FFmpeg preset.\n",
+              "per_value_availability": {
+                "circleclose": {
+                  "availability": "beta"
+                },
+                "circlecrop": {
+                  "availability": "beta"
+                },
+                "circleopen": {
+                  "availability": "beta"
+                },
+                "custom": {
+                  "availability": "planned",
+                  "documentation_url": "https://trello.com/c/EPUE5Vs1"
+                },
+                "diagbl": {
+                  "availability": "beta"
+                },
+                "diagtl": {
+                  "availability": "beta"
+                },
+                "diagtr": {
+                  "availability": "beta"
+                },
+                "distance": {
+                  "availability": "experimental"
+                },
+                "hblur": {
+                  "availability": "experimental"
+                },
+                "hlslice": {
+                  "availability": "experimental"
+                },
+                "pixelize": {
+                  "availability": "experimental"
+                },
+                "radial": {
+                  "availability": "beta"
+                },
+                "rectcrop": {
+                  "availability": "beta"
+                },
+                "slidedown": {
+                  "availability": "beta"
+                },
+                "slideleft": {
+                  "availability": "beta"
+                },
+                "slideright": {
+                  "availability": "beta"
+                },
+                "slideup": {
+                  "availability": "beta"
+                },
+                "smoothdown": {
+                  "availability": "beta"
+                },
+                "smoothleft": {
+                  "availability": "beta"
+                },
+                "smoothright": {
+                  "availability": "beta"
+                },
+                "smoothup": {
+                  "availability": "beta"
+                },
+                "squeezeh": {
+                  "availability": "experimental"
+                },
+                "vlslice": {
+                  "availability": "experimental"
+                },
+                "wipebl": {
+                  "availability": "planned",
+                  "eta": "2026-Q3"
+                },
+                "wipetl": {
+                  "availability": "planned",
+                  "eta": "2026-Q3"
+                },
+                "wipetr": {
+                  "availability": "planned",
+                  "eta": "2026-Q3"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "none",
+                "fade",
+                "fadeblack",
+                "fadewhite",
+                "dissolve",
+                "wipeleft",
+                "wiperight",
+                "wipeup",
+                "wipedown",
+                "crossfade",
+                "smoothleft",
+                "smoothright",
+                "smoothup",
+                "smoothdown",
+                "circleopen",
+                "circleclose",
+                "circlecrop",
+                "rectcrop",
+                "slideleft",
+                "slideright",
+                "slideup",
+                "slidedown",
+                "radial",
+                "diagtl",
+                "diagtr",
+                "diagbl",
+                "pixelize",
+                "hlslice",
+                "vlslice",
+                "hblur",
+                "distance",
+                "squeezeh",
+                "custom",
+                "wipetl",
+                "wipetr",
+                "wipebl"
+              ]
+            },
+            "transition_duration": {
+              "default": 0.5,
+              "depends_on": {
+                "output_type": "video"
+              },
+              "description": "Duration of transition effect in seconds",
+              "max": 5.0,
+              "min": 0.1,
+              "type": "float"
+            },
+            "video_format": {
+              "default": "mp4",
+              "depends_on": {
+                "output_type": "video"
+              },
+              "description": "Output video container format",
+              "type": "enum",
+              "values": [
+                "mp4",
+                "webm"
+              ]
+            }
+          }
+        },
+        "video": {
+          "mimes": [
+            "video/mp4",
+            "video/webm"
+          ],
+          "options": {
+            "codec": {
+              "default": "h264",
+              "depends_on": {
+                "re_encode_mode": [
+                  "auto",
+                  "always"
+                ]
+              },
+              "description": "Output codec when merge re-encodes. Inert when stream-copy\nconcat is selected (re_encode_mode=auto + compatible inputs).\n",
+              "per_value_availability": {
+                "av1": {
+                  "availability": "beta"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "h264",
+                "h265",
+                "vp9",
+                "av1"
+              ]
+            },
+            "crf": {
+              "default": 23,
+              "depends_on": {
+                "encoding_mode": "crf",
+                "re_encode_mode": [
+                  "auto",
+                  "always"
+                ]
+              },
+              "description": "Constant Rate Factor when encoding_mode=crf. Lower = higher quality / larger file.",
+              "max": 51,
+              "min": 0,
+              "type": "integer"
+            },
+            "crossfade_duration": {
+              "default": 1.0,
+              "depends_on": {
+                "transition": "crossfade"
+              },
+              "description": "Crossfade duration in seconds",
+              "max": 5.0,
+              "min": 0.1,
+              "type": "float"
+            },
+            "encoding_mode": {
+              "default": "crf",
+              "depends_on": {
+                "re_encode_mode": [
+                  "auto",
+                  "always"
+                ]
+              },
+              "description": "CRF (quality-targeted) vs target_size (two-pass to fixed file size).",
+              "type": "enum",
+              "values": [
+                "crf",
+                "target_size"
+              ]
+            },
+            "normalize_audio": {
+              "default": true,
+              "description": "Normalize audio levels across all clips",
+              "type": "boolean"
+            },
+            "output_type": {
+              "description": "Output format for video merge (concatenation). Currently fixed at 'video'. Optional \u2014 API injects this default post-validation so callers may omit it.",
+              "required": false,
+              "type": "enum",
+              "values": [
+                "video"
+              ]
+            },
+            "preset": {
+              "default": "medium",
+              "depends_on": {
+                "re_encode_mode": [
+                  "auto",
+                  "always"
+                ]
+              },
+              "description": "Encoder speed/compression trade-off when re-encoding.",
+              "type": "enum",
+              "values": [
+                "ultrafast",
+                "superfast",
+                "veryfast",
+                "faster",
+                "fast",
+                "medium",
+                "slow",
+                "slower",
+                "veryslow"
+              ]
+            },
+            "re_encode_mode": {
+              "default": "auto",
+              "description": "Re-encode policy for video concat.\n- `auto`: probe inputs and choose stream-copy concat (when\n  codec/container/timebase/framerate/resolution/pixel-format\n  match) or full re-encode.\n- `always`: force re-encode (use when caller wants\n  normalised output options).\n- `never`: return 422 `REQUIRES_REENCODE` if inputs are not\n  concat-compatible.\nCompatibility algorithm is server-side and deliberately\nopaque (per plan v5 \u00a7F8.2). The actual path taken is\nreported on `OperationMetrics.re_encode_decision`.\n",
+              "type": "enum",
+              "values": [
+                "auto",
+                "always",
+                "never"
+              ]
+            },
+            "target_resolution": {
+              "depends_on": {
+                "re_encode_mode": [
+                  "auto",
+                  "always"
+                ]
+              },
+              "description": "Output dimensions WxH (e.g. \"1920x1080\"). Omit to inherit from inputs.",
+              "pattern": "^\\d+x\\d+$",
+              "type": "string"
+            },
+            "target_size_bytes": {
+              "depends_on": {
+                "encoding_mode": "target_size",
+                "re_encode_mode": [
+                  "auto",
+                  "always"
+                ]
+              },
+              "description": "Two-pass target file size in bytes (minimum 1 MiB). Required when encoding_mode=target_size.",
+              "min": 1048576,
+              "type": "integer"
+            },
+            "transition": {
+              "default": "none",
+              "description": "Default transition between clips. Catalog from FFmpeg 7.1.1\nxfade filter (per ADR-0007). See per_value_availability for\nper-value rollout state.\n",
+              "per_value_availability": {
+                "circleclose": {
+                  "availability": "beta"
+                },
+                "circlecrop": {
+                  "availability": "beta"
+                },
+                "circleopen": {
+                  "availability": "beta"
+                },
+                "custom": {
+                  "availability": "planned",
+                  "documentation_url": "https://trello.com/c/EPUE5Vs1"
+                },
+                "diagbl": {
+                  "availability": "beta"
+                },
+                "diagtl": {
+                  "availability": "beta"
+                },
+                "diagtr": {
+                  "availability": "beta"
+                },
+                "distance": {
+                  "availability": "experimental"
+                },
+                "hblur": {
+                  "availability": "experimental"
+                },
+                "hlslice": {
+                  "availability": "experimental"
+                },
+                "pixelize": {
+                  "availability": "experimental"
+                },
+                "radial": {
+                  "availability": "beta"
+                },
+                "rectcrop": {
+                  "availability": "beta"
+                },
+                "slidedown": {
+                  "availability": "beta"
+                },
+                "slideleft": {
+                  "availability": "beta"
+                },
+                "slideright": {
+                  "availability": "beta"
+                },
+                "slideup": {
+                  "availability": "beta"
+                },
+                "smoothdown": {
+                  "availability": "beta"
+                },
+                "smoothleft": {
+                  "availability": "beta"
+                },
+                "smoothright": {
+                  "availability": "beta"
+                },
+                "smoothup": {
+                  "availability": "beta"
+                },
+                "squeezeh": {
+                  "availability": "experimental"
+                },
+                "vlslice": {
+                  "availability": "experimental"
+                },
+                "wipebl": {
+                  "availability": "planned",
+                  "eta": "2026-Q3"
+                },
+                "wipetl": {
+                  "availability": "planned",
+                  "eta": "2026-Q3"
+                },
+                "wipetr": {
+                  "availability": "planned",
+                  "eta": "2026-Q3"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "none",
+                "fade",
+                "fadeblack",
+                "fadewhite",
+                "dissolve",
+                "wipeleft",
+                "wiperight",
+                "wipeup",
+                "wipedown",
+                "crossfade",
+                "smoothleft",
+                "smoothright",
+                "smoothup",
+                "smoothdown",
+                "circleopen",
+                "circleclose",
+                "circlecrop",
+                "rectcrop",
+                "slideleft",
+                "slideright",
+                "slideup",
+                "slidedown",
+                "radial",
+                "diagtl",
+                "diagtr",
+                "diagbl",
+                "pixelize",
+                "hlslice",
+                "vlslice",
+                "hblur",
+                "distance",
+                "squeezeh",
+                "custom",
+                "wipetl",
+                "wipetr",
+                "wipebl"
+              ]
+            }
+          },
+          "per_input_options": {
+            "crossfade_duration": {
+              "depends_on": {
+                "transition": "crossfade"
+              },
+              "description": "Override crossfade duration for this join point",
+              "max": 5.0,
+              "min": 0.1,
+              "type": "float"
+            },
+            "transition": {
+              "description": "Override transition for the join point preceding this input.",
+              "per_value_availability": {
+                "circleclose": {
+                  "availability": "beta"
+                },
+                "circlecrop": {
+                  "availability": "beta"
+                },
+                "circleopen": {
+                  "availability": "beta"
+                },
+                "custom": {
+                  "availability": "planned",
+                  "documentation_url": "https://trello.com/c/EPUE5Vs1"
+                },
+                "diagbl": {
+                  "availability": "beta"
+                },
+                "diagtl": {
+                  "availability": "beta"
+                },
+                "diagtr": {
+                  "availability": "beta"
+                },
+                "distance": {
+                  "availability": "experimental"
+                },
+                "hblur": {
+                  "availability": "experimental"
+                },
+                "hlslice": {
+                  "availability": "experimental"
+                },
+                "pixelize": {
+                  "availability": "experimental"
+                },
+                "radial": {
+                  "availability": "beta"
+                },
+                "rectcrop": {
+                  "availability": "beta"
+                },
+                "slidedown": {
+                  "availability": "beta"
+                },
+                "slideleft": {
+                  "availability": "beta"
+                },
+                "slideright": {
+                  "availability": "beta"
+                },
+                "slideup": {
+                  "availability": "beta"
+                },
+                "smoothdown": {
+                  "availability": "beta"
+                },
+                "smoothleft": {
+                  "availability": "beta"
+                },
+                "smoothright": {
+                  "availability": "beta"
+                },
+                "smoothup": {
+                  "availability": "beta"
+                },
+                "squeezeh": {
+                  "availability": "experimental"
+                },
+                "vlslice": {
+                  "availability": "experimental"
+                },
+                "wipebl": {
+                  "availability": "planned",
+                  "eta": "2026-Q3"
+                },
+                "wipetl": {
+                  "availability": "planned",
+                  "eta": "2026-Q3"
+                },
+                "wipetr": {
+                  "availability": "planned",
+                  "eta": "2026-Q3"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "none",
+                "fade",
+                "fadeblack",
+                "fadewhite",
+                "dissolve",
+                "wipeleft",
+                "wiperight",
+                "wipeup",
+                "wipedown",
+                "crossfade",
+                "smoothleft",
+                "smoothright",
+                "smoothup",
+                "smoothdown",
+                "circleopen",
+                "circleclose",
+                "circlecrop",
+                "rectcrop",
+                "slideleft",
+                "slideright",
+                "slideup",
+                "slidedown",
+                "radial",
+                "diagtl",
+                "diagtr",
+                "diagbl",
+                "pixelize",
+                "hlslice",
+                "vlslice",
+                "hblur",
+                "distance",
+                "squeezeh",
+                "custom",
+                "wipetl",
+                "wipetr",
+                "wipebl"
+              ]
+            }
+          },
+          "processing_class": {
+            "long_form_re_encode": {
+              "availability": "planned",
+              "constraints": {
+                "max_total_duration": "PT12H",
+                "max_total_input_size_bytes": 21474836480
+              },
+              "required_tier": "pro"
+            },
+            "short_form_concat": {
+              "availability": "stable",
+              "constraints": {
+                "max_total_duration": "PT5M",
+                "max_total_input_size_bytes": 1073741824
+              }
+            }
+          }
+        }
+      },
+      "min_inputs": 2
+    },
+    "text_watermark": {
+      "default": false,
+      "description": "Render a text overlay onto an image using bundled Liberation Sans\n(SIL OFL). Single-input \u2014 text comes from options, not from a file\ninput. Source capped at 25 megapixels (V1 watermark precedent\nretained). Per ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n\nTwo rendering modes:\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source image (Cinavia / Adobe Stock\n  pattern); rotation default -45\u00b0 and tile_spacing controls density.\n",
+      "input_model": "single",
+      "mime_groups": {
+        "image": {
+          "mimes": [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+          ],
+          "options": {
+            "anchor": {
+              "default": "bottom_right",
+              "description": "9-grid anchor position. For watermark_mode: single, the text\nlabel is placed at this anchor + margin_x/margin_y offset.\nFor watermark_mode: tiled, anchor is ignored (tiles fill the\nsource image).\n",
+              "type": "enum",
+              "values": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "center_left",
+                "center",
+                "center_right",
+                "bottom_left",
+                "bottom_center",
+                "bottom_right"
+              ]
+            },
+            "color": {
+              "default": "#FFFFFF80",
+              "description": "Text colour as hex RGB (#RRGGBB) or RGBA (#RRGGBBAA).\nDefault is white with 50% alpha.\n",
+              "pattern": "^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$",
+              "type": "string"
+            },
+            "font_family": {
+              "default": "liberation_sans",
+              "description": "Font family. V2.0 ships with bundled Liberation Sans only;\nuser-uploaded fonts are a future extension (separate ticket).\n",
+              "type": "enum",
+              "values": [
+                "liberation_sans"
+              ]
+            },
+            "font_size": {
+              "default": 48.0,
+              "description": "Font size in pixels. Clamped to range.",
+              "max": 512.0,
+              "min": 8.0,
+              "type": "float"
+            },
+            "margin_x": {
+              "default": "0px",
+              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\") or\npercentage of base width (e.g. \"5%\"). Direction is\nanchor-relative. Ignored when watermark_mode: tiled.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "margin_y": {
+              "default": "0px",
+              "description": "Vertical offset from the anchor as pixels or percentage of\nbase height. Ignored when watermark_mode: tiled.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "opacity": {
+              "default": 1.0,
+              "description": "Text overlay opacity. Default 1.0 \u2014 the alpha channel of\n`color` already encodes transparency, so opacity is usually\nleft at 1.0 and transparency is set via the color hex.\n",
+              "max": 1.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "rotation": {
+              "default": -45.0,
+              "description": "Rotation angle in degrees. Default -45\u00b0 suits tiled mode\n(angled diagonal pattern). Clamped to range. Tiled canvas is\ncapped at 25 megapixels pre-rotation with 5000 px maximum\nside length.\n",
+              "max": 360.0,
+              "min": -360.0,
+              "type": "float"
+            },
+            "text": {
+              "description": "Watermark text. Must be non-empty. Rendered with bundled\nLiberation Sans (SIL OFL). A single text overlay is capped\nat 4 megapixels before rendering fails.\n",
+              "required": true,
+              "type": "string"
+            },
+            "tile_spacing": {
+              "depends_on": {
+                "watermark_mode": "tiled"
+              },
+              "description": "Spacing between tiled labels in pixels. Defaults to font_size\nwhen omitted. Only applies when watermark_mode is tiled.\n",
+              "max": 1000,
+              "min": 0,
+              "type": "integer"
+            },
+            "watermark_mode": {
+              "default": "single",
+              "description": "Rendering mode:\n- `single`: one label placed at the anchor + margin offset.\n- `tiled`: repeated tiles across the entire source image at\n  the rotation angle.\n",
+              "type": "enum",
+              "values": [
+                "single",
+                "tiled"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "thumbnail": {
+      "default": false,
+      "description": "Generate a preview image from the source file",
+      "input_model": "single",
+      "mime_groups": {
+        "document": {
+          "mimes": [
+            "application/pdf",
+            "application/epub+zip",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "application/vnd.oasis.opendocument.text",
+            "application/vnd.oasis.opendocument.spreadsheet",
+            "application/vnd.oasis.opendocument.presentation"
+          ],
+          "options": {
+            "fit": {
+              "default": "crop",
+              "description": "Resize mode",
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "format": {
+              "default": "jpg",
+              "description": "Output format for the thumbnail",
+              "type": "enum",
+              "values": [
+                "jpg",
+                "png",
+                "webp"
+              ]
+            },
+            "height": {
+              "description": "Thumbnail height in pixels",
+              "max": 4096,
+              "min": 1,
+              "required": true,
+              "type": "integer"
+            },
+            "page": {
+              "default": 1,
+              "depends_on": {
+                "source": "page"
+              },
+              "description": "Page/sheet/slide number to render",
+              "min": 1,
+              "type": "integer"
+            },
+            "source": {
+              "default": "page",
+              "description": "page = render a specific page/slide, cover = extract cover image (EPUB only, ignored for other formats)",
+              "type": "enum",
+              "values": [
+                "page",
+                "cover"
+              ]
+            },
+            "width": {
+              "description": "Thumbnail width in pixels",
+              "max": 4096,
+              "min": 1,
+              "required": true,
+              "type": "integer"
+            }
+          }
+        },
+        "image": {
+          "mimes": [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+            "image/tiff",
+            "image/bmp",
+            "image/avif",
+            "image/heic"
+          ],
+          "options": {
+            "fit": {
+              "default": "crop",
+              "description": "Resize mode",
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "format": {
+              "default": "jpg",
+              "description": "Output format for the thumbnail",
+              "type": "enum",
+              "values": [
+                "jpg",
+                "png",
+                "webp"
+              ]
+            },
+            "height": {
+              "description": "Thumbnail height in pixels",
+              "max": 4096,
+              "min": 1,
+              "required": true,
+              "type": "integer"
+            },
+            "width": {
+              "description": "Thumbnail width in pixels",
+              "max": 4096,
+              "min": 1,
+              "required": true,
+              "type": "integer"
+            }
+          }
+        },
+        "video": {
+          "mimes": [
+            "video/mp4",
+            "video/webm",
+            "video/ogg"
+          ],
+          "options": {
+            "fit": {
+              "default": "crop",
+              "description": "Resize mode",
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "format": {
+              "default": "jpg",
+              "description": "Output format for the thumbnail",
+              "type": "enum",
+              "values": [
+                "jpg",
+                "png",
+                "webp"
+              ]
+            },
+            "height": {
+              "description": "Thumbnail height in pixels",
+              "max": 4096,
+              "min": 1,
+              "required": true,
+              "type": "integer"
+            },
+            "timestamp": {
+              "default": "00:00:01",
+              "description": "Frame to extract (HH:MM:SS or seconds)",
+              "type": "string"
+            },
+            "width": {
+              "description": "Thumbnail width in pixels",
+              "max": 4096,
+              "min": 1,
+              "required": true,
+              "type": "integer"
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 21474836480
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "stable",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "schema_version": "2.3.0",
+  "source_commit": null,
+  "user_tier": null
+}

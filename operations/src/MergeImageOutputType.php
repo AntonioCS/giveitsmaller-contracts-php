@@ -8,7 +8,6 @@ namespace Gisl\Generated\Operations;
 
 enum MergeImageOutputType: string
 {
-    case Image = 'image';
     case Gif = 'gif';
     case Video = 'video';
 }

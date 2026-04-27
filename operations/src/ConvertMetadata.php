@@ -1,0 +1,98 @@
+<?php
+
+// Auto-generated -- do not edit
+
+declare(strict_types=1);
+
+namespace Gisl\Generated\Operations;
+
+final class ConvertMetadata
+{
+    public static function instance(): OperationMetadata
+    {
+        return new OperationMetadata(
+            features: [],
+            mime_groups: [
+                'image' => new MimeGroupMetadata(
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'background' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'video' => new MimeGroupMetadata(
+                    processing_class: [
+                        'short_form' => new AvailabilityEntry(
+                            availability: 'stable',
+                            constraints: new ProcessingClassConstraints(
+                                max_input_duration: 'PT5M',
+                                max_input_size_bytes: 524288000,
+                                max_output_size_bytes: 524288000,
+                            ),
+                        ),
+                        'long_form' => new AvailabilityEntry(
+                            availability: 'planned',
+                            required_tier: 'pro',
+                            constraints: new ProcessingClassConstraints(
+                                max_input_duration: 'PT12H',
+                                max_input_size_bytes: 21474836480,
+                                max_output_size_bytes: 21474836480,
+                            ),
+                        ),
+                    ],
+                    per_mime_availability: [],
+                    options: [
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'codec' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'audio' => new MimeGroupMetadata(
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'bitrate' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'document_pdf' => new MimeGroupMetadata(
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'pages' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'dpi' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+            ],
+        );
+    }
+}
