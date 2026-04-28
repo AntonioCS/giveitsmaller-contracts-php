@@ -14,4 +14,4 @@
 
 PHP 8.1 backed enums and readonly classes for per-operation options, using PSR-4 autoloading under the `Gisl\Generated\Operations` namespace.
 
-Operation types covered: compress, convert, merge, thumbnail, archive.
+Operation types covered: archive, audio_overlay, audio_watermark, compress, convert, custom_luma, image_watermark, merge, text_watermark, thumbnail.
