@@ -13,9 +13,9 @@
 /**
  * GISL Compression API
  *
- * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag/Last-Modified revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per ticket [u0ar7Yye](https://trello.com/c/u0ar7Yye)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
+ * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag/Last-Modified revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.3.1
+ * The version of the OpenAPI document: 2.6.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -60,7 +60,8 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPITypes = [
         'single_shot_max_bytes' => 'int',
         'multipart_chunk_size' => 'int',
-        'multipart_concurrency_default' => 'int'
+        'multipart_concurrency_default' => 'int',
+        'multipart_first_chunk_size' => 'int'
     ];
 
     /**
@@ -73,7 +74,8 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPIFormats = [
         'single_shot_max_bytes' => 'int64',
         'multipart_chunk_size' => 'int64',
-        'multipart_concurrency_default' => null
+        'multipart_concurrency_default' => null,
+        'multipart_first_chunk_size' => 'int64'
     ];
 
     /**
@@ -84,7 +86,8 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static array $openAPINullables = [
         'single_shot_max_bytes' => false,
         'multipart_chunk_size' => false,
-        'multipart_concurrency_default' => false
+        'multipart_concurrency_default' => false,
+        'multipart_first_chunk_size' => false
     ];
 
     /**
@@ -175,7 +178,8 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $attributeMap = [
         'single_shot_max_bytes' => 'single_shot_max_bytes',
         'multipart_chunk_size' => 'multipart_chunk_size',
-        'multipart_concurrency_default' => 'multipart_concurrency_default'
+        'multipart_concurrency_default' => 'multipart_concurrency_default',
+        'multipart_first_chunk_size' => 'multipart_first_chunk_size'
     ];
 
     /**
@@ -186,7 +190,8 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $setters = [
         'single_shot_max_bytes' => 'setSingleShotMaxBytes',
         'multipart_chunk_size' => 'setMultipartChunkSize',
-        'multipart_concurrency_default' => 'setMultipartConcurrencyDefault'
+        'multipart_concurrency_default' => 'setMultipartConcurrencyDefault',
+        'multipart_first_chunk_size' => 'setMultipartFirstChunkSize'
     ];
 
     /**
@@ -197,7 +202,8 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $getters = [
         'single_shot_max_bytes' => 'getSingleShotMaxBytes',
         'multipart_chunk_size' => 'getMultipartChunkSize',
-        'multipart_concurrency_default' => 'getMultipartConcurrencyDefault'
+        'multipart_concurrency_default' => 'getMultipartConcurrencyDefault',
+        'multipart_first_chunk_size' => 'getMultipartFirstChunkSize'
     ];
 
     /**
@@ -244,6 +250,7 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     public const SINGLE_SHOT_MAX_BYTES_NUMBER_10000000 = 10000000;
     public const MULTIPART_CHUNK_SIZE_NUMBER_5242880 = 5242880;
     public const MULTIPART_CONCURRENCY_DEFAULT_NUMBER_4 = 4;
+    public const MULTIPART_FIRST_CHUNK_SIZE_NUMBER_8388608 = 8388608;
 
     /**
      * Gets allowable values of the enum
@@ -282,6 +289,18 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     }
 
     /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getMultipartFirstChunkSizeAllowableValues()
+    {
+        return [
+            self::MULTIPART_FIRST_CHUNK_SIZE_NUMBER_8388608,
+        ];
+    }
+
+    /**
      * Associative array for storing property values
      *
      * @var mixed[]
@@ -299,6 +318,7 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('single_shot_max_bytes', $data ?? [], null);
         $this->setIfExists('multipart_chunk_size', $data ?? [], null);
         $this->setIfExists('multipart_concurrency_default', $data ?? [], null);
+        $this->setIfExists('multipart_first_chunk_size', $data ?? [], null);
     }
 
     /**
@@ -366,6 +386,18 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
 
         if (($this->container['multipart_concurrency_default'] < 1)) {
             $invalidProperties[] = "invalid value for 'multipart_concurrency_default', must be bigger than or equal to 1.";
+        }
+
+        if ($this->container['multipart_first_chunk_size'] === null) {
+            $invalidProperties[] = "'multipart_first_chunk_size' can't be null";
+        }
+        $allowedValues = $this->getMultipartFirstChunkSizeAllowableValues();
+        if (!is_null($this->container['multipart_first_chunk_size']) && !in_array($this->container['multipart_first_chunk_size'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'multipart_first_chunk_size', must be one of '%s'",
+                $this->container['multipart_first_chunk_size'],
+                implode("', '", $allowedValues)
+            );
         }
 
         return $invalidProperties;
@@ -495,6 +527,43 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
         }
 
         $this->container['multipart_concurrency_default'] = $multipart_concurrency_default;
+
+        return $this;
+    }
+
+    /**
+     * Gets multipart_first_chunk_size
+     *
+     * @return int
+     */
+    public function getMultipartFirstChunkSize()
+    {
+        return $this->container['multipart_first_chunk_size'];
+    }
+
+    /**
+     * Sets multipart_first_chunk_size
+     *
+     * @param int $multipart_first_chunk_size Fixed size in bytes for the FIRST chunk PUT in a multipart upload (8 MiB / 8,388,608 bytes — 1024-based). The server uses this chunk for MIME-type detection and throughput measurement; the 8 MiB window is assumed by the server's container-metadata probe (see `MultipartInitiateRequest.metadata_hint`). SDKs MUST send exactly this size for chunk index 0; for chunks 1+ they SHOULD prefer the runtime `MultipartInitiateResponse.recommended_chunk_size` and fall back to `multipart_chunk_size` when absent.
+     *
+     * @return self
+     */
+    public function setMultipartFirstChunkSize($multipart_first_chunk_size)
+    {
+        if (is_null($multipart_first_chunk_size)) {
+            throw new \InvalidArgumentException('non-nullable multipart_first_chunk_size cannot be null');
+        }
+        $allowedValues = $this->getMultipartFirstChunkSizeAllowableValues();
+        if (!in_array($multipart_first_chunk_size, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'multipart_first_chunk_size', must be one of '%s'",
+                    $multipart_first_chunk_size,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['multipart_first_chunk_size'] = $multipart_first_chunk_size;
 
         return $this;
     }

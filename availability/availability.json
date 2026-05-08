@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 21,
+  "capabilities_version": 25,
   "environment": "baseline",
   "generated_at": null,
   "operations": {
@@ -1247,13 +1247,13 @@
             },
             "margin_x": {
               "default": "0px",
-              "description": "Horizontal offset from the anchor as either pixels (e.g.\n\"40px\") or percentage of base image width (e.g. \"5%\").\nDirection is anchor-relative \u2014 positive moves toward image\ncentre.\n",
+              "description": "Horizontal offset from the anchor as either pixels (e.g.\n\"40px\") or percentage of base image width (e.g. \"5%\").\nDirection is anchor-relative \u2014 positive moves toward image\ncentre.\n\n**`anchor: center` exception.** When the anchor is `center`\nthe centre is the centre \u2014 there is no anchor-relative\ndirection. Non-zero `margin_x` (anything other than the\ndefault `\"0px\"` or the equivalent `\"0%\"`) combined with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422). To nudge a\nroughly-centred overlay, pick a peripheral anchor (e.g.\n`top_left`) and use `margin_x` / `margin_y` to position it.\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
             },
             "margin_y": {
               "default": "0px",
-              "description": "Vertical offset from the anchor as either pixels (e.g.\n\"20px\") or percentage of base image height (e.g. \"3%\").\nDirection is anchor-relative \u2014 positive moves toward image\ncentre.\n",
+              "description": "Vertical offset from the anchor as either pixels (e.g.\n\"20px\") or percentage of base image height (e.g. \"3%\").\nDirection is anchor-relative \u2014 positive moves toward image\ncentre.\n\n**`anchor: center` exception.** Same rejection rule as\n`margin_x` \u2014 non-zero `margin_y` with `anchor: center` is\nrejected by the API at workflow-create time as\n`invalid_options` (HTTP 422).\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
             },
@@ -1295,13 +1295,13 @@
             },
             "margin_x": {
               "default": "0px",
-              "description": "Horizontal offset from the anchor in pixels or percentage of\nbase width. Anchor-relative; positive moves toward the\nframe centre.\n",
+              "description": "Horizontal offset from the anchor in pixels or percentage of\nbase width. Anchor-relative; positive moves toward the\nframe centre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_x` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
             },
             "margin_y": {
               "default": "0px",
-              "description": "Vertical offset from the anchor in pixels or percentage of\nbase height. Anchor-relative; positive moves toward the\nframe centre.\n",
+              "description": "Vertical offset from the anchor in pixels or percentage of\nbase height. Anchor-relative; positive moves toward the\nframe centre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_y` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
             },
@@ -1344,13 +1344,13 @@
             },
             "margin_x": {
               "default": "0px",
-              "description": "Horizontal offset from the anchor in pixels or percentage of\nvideo frame width. Anchor-relative; positive moves toward\nthe frame centre.\n",
+              "description": "Horizontal offset from the anchor in pixels or percentage of\nvideo frame width. Anchor-relative; positive moves toward\nthe frame centre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_x` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
             },
             "margin_y": {
               "default": "0px",
-              "description": "Vertical offset from the anchor in pixels or percentage of\nvideo frame height. Anchor-relative; positive moves toward\nthe frame centre.\n",
+              "description": "Vertical offset from the anchor in pixels or percentage of\nvideo frame height. Anchor-relative; positive moves toward\nthe frame centre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_y` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
             },
@@ -2156,13 +2156,13 @@
             },
             "margin_x": {
               "default": "0px",
-              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\") or\npercentage of base width (e.g. \"5%\"). Direction is\nanchor-relative. Ignored when watermark_mode: tiled.\n",
+              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\") or\npercentage of base width (e.g. \"5%\"). Direction is\nanchor-relative. Ignored when watermark_mode: tiled.\n\n**`anchor: center` exception** (watermark_mode: single only).\nWhen the anchor is `center` the centre is the centre \u2014 there\nis no anchor-relative direction. Non-zero `margin_x`\n(anything other than the default `\"0px\"` or the equivalent\n`\"0%\"`) combined with `anchor: center` is rejected by the\nAPI at workflow-create time as `invalid_options` (HTTP 422).\nTo nudge a roughly-centred label, pick a peripheral anchor\n(e.g. `top_left`) and use `margin_x` / `margin_y` to\nposition it. Not applicable to watermark_mode: tiled, where\nanchor + margin are ignored entirely.\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
             },
             "margin_y": {
               "default": "0px",
-              "description": "Vertical offset from the anchor as pixels or percentage of\nbase height. Ignored when watermark_mode: tiled.\n",
+              "description": "Vertical offset from the anchor as pixels or percentage of\nbase height. Ignored when watermark_mode: tiled.\n\n**`anchor: center` exception** (watermark_mode: single only).\nSame rejection rule as `margin_x` \u2014 non-zero `margin_y` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
             },
@@ -2394,7 +2394,7 @@
       }
     }
   },
-  "schema_version": "2.3.1",
+  "schema_version": "2.6.0",
   "source_commit": null,
   "user_tier": null
 }

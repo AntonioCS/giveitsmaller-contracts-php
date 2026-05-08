@@ -13,9 +13,9 @@
 /**
  * GISL Compression API
  *
- * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag/Last-Modified revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per ticket [u0ar7Yye](https://trello.com/c/u0ar7Yye)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
+ * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag/Last-Modified revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.3.1
+ * The version of the OpenAPI document: 2.6.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -114,8 +114,8 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
         'purchased_balance_before' => false,
         'purchased_balance_after' => false,
         'source_bucket' => false,
-        'monthly_amount' => false,
-        'purchased_amount' => false,
+        'monthly_amount' => true,
+        'purchased_amount' => true,
         'pricing_version' => false,
         'description' => false,
         'reference_type' => false,
@@ -417,10 +417,10 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
         if ($this->container['source_bucket'] === null) {
             $invalidProperties[] = "'source_bucket' can't be null";
         }
-        if ($this->container['monthly_amount'] === null) {
+        if ($this->container['monthly_amount'] === null && !$this->isNullableSetToNull('monthly_amount')) {
             $invalidProperties[] = "'monthly_amount' can't be null";
         }
-        if ($this->container['purchased_amount'] === null) {
+        if ($this->container['purchased_amount'] === null && !$this->isNullableSetToNull('purchased_amount')) {
             $invalidProperties[] = "'purchased_amount' can't be null";
         }
         if ($this->container['pricing_version'] === null) {
@@ -697,7 +697,7 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets monthly_amount
      *
-     * @return int
+     * @return int|null
      */
     public function getMonthlyAmount()
     {
@@ -707,14 +707,21 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets monthly_amount
      *
-     * @param int $monthly_amount Signed portion debited from / credited to the monthly pool. Zero when `source_bucket: purchased`. Non-zero on both `monthly_amount` and `purchased_amount` when `source_bucket: mixed`.
+     * @param int|null $monthly_amount Signed portion debited from / credited to the monthly pool. `null` when the monthly bucket did not contribute to this transaction (`source_bucket: purchased` or `source_bucket: overdraft`). Non-null on both `monthly_amount` and `purchased_amount` when `source_bucket: mixed`. May be `0` (not `null`) on the specific `OverdraftRepayment` ledger row that `applyMonthlyGrant()` emits when an inbound grant is fully absorbed by overdraft debt — that row carries `type: overdraft_repayment` + `amount: 0` and distinguishes itself from \"no contribution\" by the non-null zero rather than null.  **Partial-overdraft reconstruction.** A transaction can split across a normal bucket *and* the overdraft pool (e.g. monthly partially covered the cost and the shortfall fell to overdraft). In that case the resolver returns `source_bucket: monthly` / `purchased` / `mixed` based on which normal bucket(s) contributed, NOT `overdraft`. Consumers that need the overdraft contribution can reconstruct it as `abs(amount) - abs(monthly_amount ?? 0) - abs(purchased_amount ?? 0)`; a positive remainder is the overdraft draw. Pure-overdraft rows still have `source_bucket: overdraft` with both fields `null`.
      *
      * @return self
      */
     public function setMonthlyAmount($monthly_amount)
     {
         if (is_null($monthly_amount)) {
-            throw new \InvalidArgumentException('non-nullable monthly_amount cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'monthly_amount');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('monthly_amount', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
         }
         $this->container['monthly_amount'] = $monthly_amount;
 
@@ -724,7 +731,7 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets purchased_amount
      *
-     * @return int
+     * @return int|null
      */
     public function getPurchasedAmount()
     {
@@ -734,14 +741,21 @@ class CreditTransaction implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets purchased_amount
      *
-     * @param int $purchased_amount Signed portion debited from / credited to the purchased pool. Zero when `source_bucket: monthly`. Non-zero on both `monthly_amount` and `purchased_amount` when `source_bucket: mixed`.
+     * @param int|null $purchased_amount Signed portion debited from / credited to the purchased pool. `null` when the purchased bucket did not contribute to this transaction (`source_bucket: monthly` or `source_bucket: overdraft`). Non-null on both `monthly_amount` and `purchased_amount` when `source_bucket: mixed`. Same `null`-when-not-applicable convention as `monthly_amount`; partial-overdraft reconstruction formula in `monthly_amount` description applies symmetrically.
      *
      * @return self
      */
     public function setPurchasedAmount($purchased_amount)
     {
         if (is_null($purchased_amount)) {
-            throw new \InvalidArgumentException('non-nullable purchased_amount cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'purchased_amount');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('purchased_amount', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
         }
         $this->container['purchased_amount'] = $purchased_amount;
 
