@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 25,
+  "capabilities_version": 27,
   "environment": "baseline",
   "generated_at": null,
   "operations": {
@@ -1744,7 +1744,7 @@
                   "always"
                 ]
               },
-              "description": "CRF (quality-targeted) vs target_size (two-pass to fixed file size).",
+              "description": "CRF (quality-targeted) vs target_size (two-pass to fixed file size).\n`target_size` is currently `codec=h264` only \u2014 libx265 / libvpx-vp9 / libsvtav1 each\nrequire a different two-pass invocation and are tracked as separate per-codec\nLambda follow-ups. The contract narrows `target_size_bytes.depends_on` with\n`codec: [h264]`, which rejects `encoding_mode=target_size + codec \u2208 {h265, vp9, av1}`\nas `invalid_options` **when `target_size_bytes` is present in the request**. Fully\ngating `encoding_mode=target_size` itself on codec (so that omitting\n`target_size_bytes` is also rejected) awaits a `per_value_depends_on` schema\nvocab extension (ticket bsV3FWM5); Lambda continues to catch the residual\n`target_size + non-h264 + no target_size_bytes` case in the meantime.\n",
               "type": "enum",
               "values": [
                 "crf",
@@ -1809,13 +1809,16 @@
             },
             "target_size_bytes": {
               "depends_on": {
+                "codec": [
+                  "h264"
+                ],
                 "encoding_mode": "target_size",
                 "re_encode_mode": [
                   "auto",
                   "always"
                 ]
               },
-              "description": "Two-pass target file size in bytes (minimum 1 MiB). Required when encoding_mode=target_size.",
+              "description": "Two-pass target file size in bytes (minimum 1 MiB). Required when\n`encoding_mode=target_size`. h264-only today; see `encoding_mode` description\nfor per-codec rollout status.\n\nPractical floor: a ~100 kbps post-AAC video bitrate (i.e. `target_size_bytes`\ncorresponding to less than ~100 kbps of video after subtracting the 160 kbps\nAAC audio track over the merged duration) is silently floored by libx264 and\nthe resulting file will not honour the requested `target_size_bytes`.\nPublishers targeting very small outputs should size accordingly.\n",
               "min": 1048576,
               "type": "integer"
             },
@@ -2394,7 +2397,7 @@
       }
     }
   },
-  "schema_version": "2.6.0",
+  "schema_version": "2.7.0",
   "source_commit": null,
   "user_tier": null
 }
