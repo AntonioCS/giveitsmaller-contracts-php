@@ -342,8 +342,8 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
         if ($this->container['total_parts'] === null) {
             $invalidProperties[] = "'total_parts' can't be null";
         }
-        if (($this->container['total_parts'] > 500)) {
-            $invalidProperties[] = "invalid value for 'total_parts', must be smaller than or equal to 500.";
+        if (($this->container['total_parts'] > 10000)) {
+            $invalidProperties[] = "invalid value for 'total_parts', must be smaller than or equal to 10000.";
         }
 
         if (($this->container['total_parts'] < 2)) {
@@ -357,8 +357,8 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
             $invalidProperties[] = "invalid value for 'recommended_chunk_size', must be smaller than or equal to 104857600.";
         }
 
-        if (($this->container['recommended_chunk_size'] < 5242880)) {
-            $invalidProperties[] = "invalid value for 'recommended_chunk_size', must be bigger than or equal to 5242880.";
+        if (($this->container['recommended_chunk_size'] < 16777216)) {
+            $invalidProperties[] = "invalid value for 'recommended_chunk_size', must be bigger than or equal to 16777216.";
         }
 
         if ($this->container['presigned_urls'] === null) {
@@ -508,7 +508,7 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
     /**
      * Sets total_parts
      *
-     * @param int $total_parts Total number of parts. The client slices the remaining file into exactly (total_parts - 1) chunks using recommended_chunk_size. The last chunk may be smaller.
+     * @param int $total_parts Total number of parts. The client slices the remaining file into exactly (total_parts - 1) chunks using recommended_chunk_size. The last chunk may be smaller. Maximum raised 500 → 10,000 by CON-1 (ADR-0011) — 10,000 is the S3 multipart hard part limit; 500 contract-capped uploads at ≈ 50 GB, below the 120 GB Enterprise envelope.
      *
      * @return self
      */
@@ -518,8 +518,8 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
             throw new \InvalidArgumentException('non-nullable total_parts cannot be null');
         }
 
-        if (($total_parts > 500)) {
-            throw new \InvalidArgumentException('invalid value for $total_parts when calling MultipartInitiateResponse., must be smaller than or equal to 500.');
+        if (($total_parts > 10000)) {
+            throw new \InvalidArgumentException('invalid value for $total_parts when calling MultipartInitiateResponse., must be smaller than or equal to 10000.');
         }
         if (($total_parts < 2)) {
             throw new \InvalidArgumentException('invalid value for $total_parts when calling MultipartInitiateResponse., must be bigger than or equal to 2.');
@@ -543,7 +543,7 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
     /**
      * Sets recommended_chunk_size
      *
-     * @param int $recommended_chunk_size Chunk size in bytes for remaining parts. Calculated from first chunk throughput * 5s target, clamped to 5MB-100MB. The last chunk may be smaller than 5MB.
+     * @param int $recommended_chunk_size Chunk size in bytes for remaining parts. Calculated from first chunk throughput * 5s target, clamped to 16 MiB–100 MiB. The last chunk may be smaller than 16 MiB. Minimum raised 5 MiB → 16 MiB by CON-1 (ADR-0011) so the runtime value never falls below the `UploadThresholds.multipart_chunk_size` constant SDKs fall back to (the S3 10,000-part limit at the 120 GB Enterprise ceiling).
      *
      * @return self
      */
@@ -556,8 +556,8 @@ class MultipartInitiateResponse implements ModelInterface, ArrayAccess, \JsonSer
         if (($recommended_chunk_size > 104857600)) {
             throw new \InvalidArgumentException('invalid value for $recommended_chunk_size when calling MultipartInitiateResponse., must be smaller than or equal to 104857600.');
         }
-        if (($recommended_chunk_size < 5242880)) {
-            throw new \InvalidArgumentException('invalid value for $recommended_chunk_size when calling MultipartInitiateResponse., must be bigger than or equal to 5242880.');
+        if (($recommended_chunk_size < 16777216)) {
+            throw new \InvalidArgumentException('invalid value for $recommended_chunk_size when calling MultipartInitiateResponse., must be bigger than or equal to 16777216.');
         }
 
         $this->container['recommended_chunk_size'] = $recommended_chunk_size;

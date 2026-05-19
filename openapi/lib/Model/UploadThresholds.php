@@ -248,7 +248,7 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     }
 
     public const SINGLE_SHOT_MAX_BYTES_NUMBER_10000000 = 10000000;
-    public const MULTIPART_CHUNK_SIZE_NUMBER_5242880 = 5242880;
+    public const MULTIPART_CHUNK_SIZE_NUMBER_16777216 = 16777216;
     public const MULTIPART_CONCURRENCY_DEFAULT_NUMBER_4 = 4;
     public const MULTIPART_FIRST_CHUNK_SIZE_NUMBER_8388608 = 8388608;
 
@@ -272,7 +272,7 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     public function getMultipartChunkSizeAllowableValues()
     {
         return [
-            self::MULTIPART_CHUNK_SIZE_NUMBER_5242880,
+            self::MULTIPART_CHUNK_SIZE_NUMBER_16777216,
         ];
     }
 
@@ -465,7 +465,7 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets multipart_chunk_size
      *
-     * @param int $multipart_chunk_size Recommended chunk size in bytes for multipart upload chunks (5 MiB / 5,242,880 bytes — 1024-based). Matches the existing TS SDK default. The server's `MultipartInitiateResponse` returns a `recommended_chunk_size` per file based on first-chunk throughput; SDKs SHOULD prefer that runtime value when present and fall back to this constant otherwise.
+     * @param int $multipart_chunk_size Recommended chunk size in bytes for multipart upload chunks (16 MiB / 16,777,216 bytes — 1024-based). Raised from 5 MiB by CON-1 (ADR-0011): S3 caps a multipart upload at 10,000 parts, and the Enterprise envelope is a 120 GB hard ceiling. At 16 MiB a 120 GiB object needs 7,680 parts (≤ 10,000, inside AWS's 16–64 MB recommended band); 5 MiB would need 24,576 and 10 MiB 12,288 — both exceed the S3 limit. **Wire-incompatible change** — SDKs pin this as a compile-time constant, so CON-1 and SDK-2 ship as a non-independently-mergeable pair. The server's `MultipartInitiateResponse` returns a `recommended_chunk_size` per file based on first-chunk throughput; SDKs SHOULD prefer that runtime value when present and fall back to this constant otherwise.
      *
      * @return self
      */

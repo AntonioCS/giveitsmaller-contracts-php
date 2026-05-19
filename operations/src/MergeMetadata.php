@@ -137,11 +137,11 @@ final class MergeMetadata
                             ),
                         ),
                         'long_form_re_encode' => new AvailabilityEntry(
-                            availability: 'planned',
+                            availability: 'beta',
                             required_tier: 'pro',
                             constraints: new ProcessingClassConstraints(
-                                max_total_duration: 'PT12H',
-                                max_total_input_size_bytes: 21474836480,
+                                max_total_duration: 'PT24H',
+                                max_total_input_size_bytes: 5000000000,
                             ),
                         ),
                     ],
