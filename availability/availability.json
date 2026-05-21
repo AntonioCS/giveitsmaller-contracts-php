@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 29,
+  "capabilities_version": 33,
   "environment": "baseline",
   "generated_at": null,
   "operations": {
@@ -2443,7 +2443,7 @@
       }
     }
   },
-  "schema_version": "2.7.1",
+  "schema_version": "2.12.0",
   "source_commit": null,
   "user_tier": null
 }
