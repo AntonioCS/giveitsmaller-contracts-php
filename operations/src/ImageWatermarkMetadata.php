@@ -63,47 +63,6 @@ final class ImageWatermarkMetadata
                     ],
                     per_input_options: [],
                 ),
-                'video' => new MimeGroupMetadata(
-                    availability: 'planned',
-                    processing_class: [
-                        'short_form' => new AvailabilityEntry(
-                            availability: 'planned',
-                            constraints: new ProcessingClassConstraints(
-                                max_input_duration: 'PT5M',
-                                max_input_size_bytes: 524288000,
-                                max_output_size_bytes: 524288000,
-                            ),
-                        ),
-                        'long_form' => new AvailabilityEntry(
-                            availability: 'planned',
-                            required_tier: 'pro',
-                            constraints: new ProcessingClassConstraints(
-                                max_input_duration: 'PT12H',
-                                max_input_size_bytes: 5000000000,
-                                max_output_size_bytes: 5000000000,
-                            ),
-                        ),
-                    ],
-                    per_mime_availability: [],
-                    options: [
-                        'anchor' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
-                        'margin_x' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
-                        'margin_y' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
-                        'opacity' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
-                        'overlay_width' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
-                    ],
-                    per_input_options: [],
-                ),
             ],
         );
     }

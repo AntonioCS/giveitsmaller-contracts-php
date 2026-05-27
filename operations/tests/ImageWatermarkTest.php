@@ -11,8 +11,6 @@ use Gisl\Generated\Operations\ImageWatermarkImageAnchor;
 use Gisl\Generated\Operations\ImageWatermarkImageGifAnchor;
 use Gisl\Generated\Operations\ImageWatermarkImageGifOptions;
 use Gisl\Generated\Operations\ImageWatermarkImageOptions;
-use Gisl\Generated\Operations\ImageWatermarkVideoAnchor;
-use Gisl\Generated\Operations\ImageWatermarkVideoOptions;
 
 final class ImageWatermarkTest extends TestCase
 {
@@ -196,97 +194,6 @@ final class ImageWatermarkTest extends TestCase
             overlay_width: 'test_value',
         );
         $this->assertInstanceOf(ImageWatermarkImageGifOptions::class, $obj);
-    }
-
-    public function testImageWatermarkVideoAnchorTopLeftBackingValue(): void
-    {
-        $enum = ImageWatermarkVideoAnchor::from('top_left');
-        $this->assertSame(ImageWatermarkVideoAnchor::TopLeft, $enum);
-        $this->assertSame('top_left', $enum->value);
-    }
-
-    public function testImageWatermarkVideoAnchorTopCenterBackingValue(): void
-    {
-        $enum = ImageWatermarkVideoAnchor::from('top_center');
-        $this->assertSame(ImageWatermarkVideoAnchor::TopCenter, $enum);
-        $this->assertSame('top_center', $enum->value);
-    }
-
-    public function testImageWatermarkVideoAnchorTopRightBackingValue(): void
-    {
-        $enum = ImageWatermarkVideoAnchor::from('top_right');
-        $this->assertSame(ImageWatermarkVideoAnchor::TopRight, $enum);
-        $this->assertSame('top_right', $enum->value);
-    }
-
-    public function testImageWatermarkVideoAnchorCenterLeftBackingValue(): void
-    {
-        $enum = ImageWatermarkVideoAnchor::from('center_left');
-        $this->assertSame(ImageWatermarkVideoAnchor::CenterLeft, $enum);
-        $this->assertSame('center_left', $enum->value);
-    }
-
-    public function testImageWatermarkVideoAnchorCenterBackingValue(): void
-    {
-        $enum = ImageWatermarkVideoAnchor::from('center');
-        $this->assertSame(ImageWatermarkVideoAnchor::Center, $enum);
-        $this->assertSame('center', $enum->value);
-    }
-
-    public function testImageWatermarkVideoAnchorCenterRightBackingValue(): void
-    {
-        $enum = ImageWatermarkVideoAnchor::from('center_right');
-        $this->assertSame(ImageWatermarkVideoAnchor::CenterRight, $enum);
-        $this->assertSame('center_right', $enum->value);
-    }
-
-    public function testImageWatermarkVideoAnchorBottomLeftBackingValue(): void
-    {
-        $enum = ImageWatermarkVideoAnchor::from('bottom_left');
-        $this->assertSame(ImageWatermarkVideoAnchor::BottomLeft, $enum);
-        $this->assertSame('bottom_left', $enum->value);
-    }
-
-    public function testImageWatermarkVideoAnchorBottomCenterBackingValue(): void
-    {
-        $enum = ImageWatermarkVideoAnchor::from('bottom_center');
-        $this->assertSame(ImageWatermarkVideoAnchor::BottomCenter, $enum);
-        $this->assertSame('bottom_center', $enum->value);
-    }
-
-    public function testImageWatermarkVideoAnchorBottomRightBackingValue(): void
-    {
-        $enum = ImageWatermarkVideoAnchor::from('bottom_right');
-        $this->assertSame(ImageWatermarkVideoAnchor::BottomRight, $enum);
-        $this->assertSame('bottom_right', $enum->value);
-    }
-
-    public function testImageWatermarkVideoAnchorCaseCount(): void
-    {
-        $this->assertCount(9, ImageWatermarkVideoAnchor::cases());
-    }
-
-    public function testImageWatermarkVideoOptionsDefaultConstruction(): void
-    {
-        $obj = new ImageWatermarkVideoOptions();
-        $this->assertInstanceOf(ImageWatermarkVideoOptions::class, $obj);
-        $this->assertSame(ImageWatermarkVideoAnchor::BottomRight, $obj->anchor);
-        $this->assertSame('0px', $obj->margin_x);
-        $this->assertSame('0px', $obj->margin_y);
-        $this->assertSame(0.5, $obj->opacity);
-        $this->assertNull($obj->overlay_width);
-    }
-
-    public function testImageWatermarkVideoOptionsFullConstruction(): void
-    {
-        $obj = new ImageWatermarkVideoOptions(
-            anchor: ImageWatermarkVideoAnchor::TopLeft,
-            margin_x: 'test_value',
-            margin_y: 'test_value',
-            opacity: 0.0,
-            overlay_width: 'test_value',
-        );
-        $this->assertInstanceOf(ImageWatermarkVideoOptions::class, $obj);
     }
 
 }

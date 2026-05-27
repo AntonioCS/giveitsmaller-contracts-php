@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 33,
+  "capabilities_version": 38,
   "environment": "baseline",
   "generated_at": null,
   "operations": {
@@ -367,6 +367,80 @@
         }
       },
       "min_inputs": 2
+    },
+    "audio_to_video": {
+      "availability": "planned",
+      "default": false,
+      "description": "Produce a video from an audio input plus an OPTIONAL still image\noverlay. Use cases: podcast \u2192 YouTube uploads, audio-only tracks\nthat need a video container for platforms requiring it, branded\naudio releases with a static cover image.\n\n**Role asymmetry.** First role-based operation on the contract\nwith an OPTIONAL role \u2014 REQUIRED `base` (audio source) +\nOPTIONAL `overlay` (still image, 0..1). When `overlay` is\nomitted, the video uses a solid `background_color`. The\nmachine-readable cardinality lives in `per_role_cardinality`\non this schema (per ADR-0015). API consumption site:\n`OperationInputRoleValidator` (rule table) consumed by\n`SchemaValidationService.php` in `compression_api`.\n\n**Input vs output asymmetry.** The single `mime_groups.audio`\nblock keys the INPUT MIME family (the `base` role input is\naudio). The OUTPUT is always video \u2014 `output_format` controls\nthe container; `mime_groups` is NOT the output type. Mirrors\nthe `audio_overlay.video` group pattern (input-keyed).\n\nRe-encode required (audio \u2192 video composition always re-encodes).\nLower framerate + FFmpeg `-tune stillimage` keeps file size\ntiny when the overlay is a still image (the common case).\n\nPer ticket [`SlluxMBN`](https://trello.com/c/SlluxMBN) +\nADR-0015. `availability: planned` until the cross-repo Lambda\nsupport ships; the API rejects workflow-create with\n`feature_not_available` (422) until then.\n",
+      "input_model": "multi",
+      "max_inputs": 2,
+      "mime_groups": {
+        "audio": {
+          "mimes": [
+            "audio/mpeg",
+            "audio/aac",
+            "audio/wav",
+            "audio/x-wav",
+            "audio/flac",
+            "audio/ogg",
+            "audio/opus",
+            "audio/x-m4a"
+          ],
+          "options": {
+            "background_color": {
+              "default": "#000000",
+              "description": "Hex `#RRGGBB` solid background colour. Used only when\n`overlay` is omitted (no image input). When an `overlay`\nimage is provided, the background colour is invisible\nbehind the image (subject to `image_fit`).\n",
+              "type": "string"
+            },
+            "framerate": {
+              "default": 2,
+              "description": "Output video framerate. Default `2` fps \u2014 combined with\nFFmpeg `-tune stillimage`, keeps the file size tiny for\nthe common case of a single still overlay. Raise for\nanimated overlays (not supported in V1 \u2014 overlay must be\na still image) or platform requirements (e.g. YouTube\nrecommends 24+ fps; some platforms accept lower).\n",
+              "max": 60,
+              "min": 1,
+              "type": "integer"
+            },
+            "image_fit": {
+              "default": "contain",
+              "description": "How to fit the overlay image into the output frame.\n`contain` = letterbox (preserve aspect ratio, may show\nbackground); `cover` = crop (fill the frame, may crop\nthe image); `stretch` = distort to fit (preserves no\naspect ratio). Default `contain` preserves the image\naesthetic.\n",
+              "type": "enum",
+              "values": [
+                "contain",
+                "cover",
+                "stretch"
+              ]
+            },
+            "output_format": {
+              "default": "mp4",
+              "description": "Output container format. V1 supports `mp4` only. Future\nadditions (webm, mov) await Lambda follow-up.\n",
+              "type": "enum",
+              "values": [
+                "mp4"
+              ]
+            },
+            "output_resolution": {
+              "default": "hd_720p",
+              "description": "Output video resolution. `hd_720p` = 1280\u00d7720 (default),\n`fhd_1080p` = 1920\u00d71080, `sd_480p` = 854\u00d7480. Choose\nlower for small file size; higher when the overlay image\nquality warrants it.\n",
+              "type": "enum",
+              "values": [
+                "hd_720p",
+                "fhd_1080p",
+                "sd_480p"
+              ]
+            }
+          }
+        }
+      },
+      "min_inputs": 1,
+      "per_role_cardinality": {
+        "base": {
+          "max": 1,
+          "min": 1
+        },
+        "overlay": {
+          "max": 1,
+          "min": 0
+        }
+      }
     },
     "audio_watermark": {
       "availability": "planned",
@@ -1242,7 +1316,7 @@
     },
     "image_watermark": {
       "default": false,
-      "description": "Apply an image overlay (file or external source) onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). The overlay\ncan be an upload, an external_import handle, or a vault connection\nper WorkflowSource (ticket I10).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF and video bases are advertised as\n`planned` via parallel mime_groups (`image_gif`, `video`) \u2014 schema\nis contract-defined, dispatch returns `feature_not_available` (422)\nuntil Lambda support ships. Per Tension 1 (ADR-0001) +\nplan v5 \u00a7F4 round 6.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 25 megapixels for image bases (V1 watermark\nprecedent retained); per-frame caps for GIF / video bases will be\ndefined when the corresponding Lambda support ships.\nPer ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n",
+      "description": "Apply an image overlay (file or external source) onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). The overlay\ncan be an upload, an external_import handle, or a vault connection\nper WorkflowSource (ticket I10).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until Lambda\nsupport ships. Per Tension 1 (ADR-0001) + plan v5 \u00a7F4 round 6.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`) which routes through\nFFmpeg overlay + re-encode. Per ADR-0013.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 25 megapixels for image bases (V1 watermark\nprecedent retained); per-frame caps for animated GIF bases will be\ndefined when the corresponding Lambda support ships.\nPer ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n",
       "features": {
         "multi_overlay_stack": {
           "availability": "planned",
@@ -1346,80 +1420,6 @@
               "description": "Optional overlay width as pixels or percentage of base\nwidth. Aspect ratio preserved. Omit to use the original\noverlay size.\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
-            }
-          }
-        },
-        "video": {
-          "availability": "planned",
-          "mimes": [
-            "video/mp4",
-            "video/webm"
-          ],
-          "options": {
-            "anchor": {
-              "default": "bottom_right",
-              "description": "9-grid anchor position on each video frame. Same semantics\nas the `image` group.\n",
-              "type": "enum",
-              "values": [
-                "top_left",
-                "top_center",
-                "top_right",
-                "center_left",
-                "center",
-                "center_right",
-                "bottom_left",
-                "bottom_center",
-                "bottom_right"
-              ]
-            },
-            "margin_x": {
-              "default": "0px",
-              "description": "Horizontal offset from the anchor in pixels or percentage of\nvideo frame width. Anchor-relative; positive moves toward\nthe frame centre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_x` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
-              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
-              "type": "string"
-            },
-            "margin_y": {
-              "default": "0px",
-              "description": "Vertical offset from the anchor in pixels or percentage of\nvideo frame height. Anchor-relative; positive moves toward\nthe frame centre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_y` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
-              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
-              "type": "string"
-            },
-            "opacity": {
-              "default": 0.5,
-              "description": "Overlay opacity (0 = fully transparent, 1 = fully opaque).\nClamped to range.\n",
-              "max": 1.0,
-              "min": 0.0,
-              "type": "float"
-            },
-            "overlay_width": {
-              "description": "Optional overlay width as pixels or percentage of video\nframe width. Aspect ratio preserved. Omit to use the\noriginal overlay size.\n",
-              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
-              "type": "string"
-            }
-          },
-          "processing_class": {
-            "long_form": {
-              "availability": "planned",
-              "constraints": {
-                "max_input_duration": "PT12H",
-                "max_input_size_bytes": 5000000000,
-                "max_output_size_bytes": 5000000000
-              },
-              "per_tier_constraints": {
-                "enterprise": {
-                  "max_input_size_bytes": 120000000000,
-                  "max_output_size_bytes": 120000000000
-                }
-              },
-              "required_tier": "pro"
-            },
-            "short_form": {
-              "availability": "planned",
-              "constraints": {
-                "max_input_duration": "PT5M",
-                "max_input_size_bytes": 524288000,
-                "max_output_size_bytes": 524288000
-              }
             }
           }
         }
@@ -2149,6 +2149,229 @@
       },
       "min_inputs": 2
     },
+    "split": {
+      "availability": "planned",
+      "default": false,
+      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three modes** (audio + video; the mode discriminator gates which\nof the three options applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches FFmpeg /\nCloudinary / Shotstack / AWS MediaConvert conventions.\n\n**200-output hard cap** per ADR-0009 \u00a7D5\n(`OperationResult.outputs[].maxItems: 200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming**: 3-digit zero-padded \u2014 `output-001` ..\n`output-200`. Matches the convert PDF\u2192N precedent.\n\n**Output envelope binding** (per ADR-0014 + ADR-0009 \u00a7D2):\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based gapless page index)\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts. Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate `split-video-fargate`\nLambda (same `split` OperationType, different worker; routing\nvia `processing_class`). No schema-side discriminator beyond MIME\ndetection + `processing_class`.\n\n`availability: planned` until the cross-repo Lambda support ships\n([`vKI0CFDu`](https://trello.com/c/vKI0CFDu) + lambdas L1).\nDispatch returns `feature_not_available` (422) until then.\n\nPer ADR-0014.\n",
+      "features": {
+        "silence_mode_audio": {
+          "availability": "planned",
+          "description": "Silence-detect cut mode for audio (`mode: silence` \u2014\nCinavia/Resemble territory, server-side silence detection).\nOUT of V1 (Lambda support not yet shipped); declared as a\nfuture-work feature here so SDK consumers see the gate.\nPicked up as a separate post-launch ticket.\n"
+        }
+      },
+      "input_model": "single",
+      "mime_groups": {
+        "audio": {
+          "mimes": [
+            "audio/mpeg",
+            "audio/aac",
+            "audio/ogg",
+            "audio/flac",
+            "audio/wav",
+            "audio/mp4"
+          ],
+          "options": {
+            "count": {
+              "depends_on": {
+                "mode": "count"
+              },
+              "description": "Number of equal-duration output pieces. Range 2..=200\nenforced declaratively (1 = no-op, rejected;\ncap = 200-output ceiling). Only valid when `mode: count`.\n",
+              "max": 200,
+              "min": 2,
+              "required": true,
+              "type": "integer"
+            },
+            "cut_points": {
+              "depends_on": {
+                "mode": "cut_points"
+              },
+              "description": "Cut points in numeric seconds (float, sub-second allowed).\nArray entries; NOT a comma-separated string. MUST be\nstrictly increasing (preflight-validated against probe);\neach entry > 0 and < probed duration. `uniqueItems: true`\ncatches accidental duplicates at the OpenAPI layer; strict\nmonotonicity and the < probed-duration bound are\npreflight-checked at workflow-create. Output count =\n`cut_points.length + 1`; `maxItems: 199` expresses the\n200-output cap declaratively. Only valid when\n`mode: cut_points`.\n",
+              "items": {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              "maxItems": 199,
+              "minItems": 1,
+              "required": true,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "interval": {
+              "depends_on": {
+                "mode": "interval"
+              },
+              "description": "Cut interval in numeric seconds (float, sub-second\nallowed). `ceil(probed_duration / interval) <= 200`\npreflight rule applies. Only valid when `mode: interval`.\n",
+              "min": 0.001,
+              "required": true,
+              "type": "float"
+            },
+            "mode": {
+              "default": "interval",
+              "description": "Split strategy:\n- `interval`: cut every `interval` seconds.\n- `count`: cut into `count` equal-duration pieces.\n- `cut_points`: cut at explicit timestamps.\n",
+              "type": "enum",
+              "values": [
+                "interval",
+                "count",
+                "cut_points"
+              ]
+            },
+            "precision": {
+              "default": "fast",
+              "description": "Cut precision. Under `fast`, audio cuts are\npacket-boundary approximate (drift bounded by codec\npacket size \u2014 typically <= 23ms for AAC, <= 26ms for\nMP3). Under `exact`, the Lambda re-encodes to align cuts\nprecisely at the requested timestamps (slower, larger\noutput, but sample-accurate). Avoid \"keyframe\" language\n\u2014 that's video-only; audio drift is packet-boundary.\n",
+              "type": "enum",
+              "values": [
+                "fast",
+                "exact"
+              ]
+            }
+          }
+        },
+        "document_pdf": {
+          "mimes": [
+            "application/pdf"
+          ],
+          "options": {
+            "mode": {
+              "default": "page_range",
+              "description": "PDF split strategy:\n- `page_range`: select pages via a range expression.\n- `page_groups`: group N pages per output.\n",
+              "type": "enum",
+              "values": [
+                "page_range",
+                "page_groups"
+              ]
+            },
+            "page_groups": {
+              "depends_on": {
+                "mode": "page_groups"
+              },
+              "description": "Group N pages per output (e.g. `page_groups: 5` on a\n50-page PDF produces 10 outputs of 5 pages each).\nRequired when `mode: page_groups`. The page-count cap\napplies to the resolved group count: `ceil(total_pages /\npage_groups) <= 200`.\n",
+              "max": 200,
+              "min": 2,
+              "required": true,
+              "type": "integer"
+            },
+            "page_range": {
+              "depends_on": {
+                "mode": "page_range"
+              },
+              "description": "Page-range expression (e.g. \"1-5\", \"1,3,5-7\", \"10-20\").\n1-based inclusive. Required when `mode: page_range`.\nResolved page count MUST be <= 200 (`invalid_options`\n422 if exceeded \u2014 cross-ref\n[`WgCqnMRa`](https://trello.com/c/WgCqnMRa)).\n",
+              "pattern": "^\\d+(-\\d+)?(,\\d+(-\\d+)?)*$",
+              "required": true,
+              "type": "string"
+            }
+          }
+        },
+        "image_gif": {
+          "mimes": [
+            "image/gif"
+          ],
+          "options": {
+            "frame_range": {
+              "description": "Frame range as `start-end` integer pair (e.g. \"1-100\").\nREQUIRED in V1 \u2014 no silent default. Without explicit\nrange, a 30-second GIF at 24 fps = 720 frames would blow\nthe 200-output cap on every input. Both start and end are\n1-based, inclusive. Resolved frame count MUST be <= 200\n(`invalid_options` 422 if exceeded).\n",
+              "pattern": "^\\d+-\\d+$",
+              "required": true,
+              "type": "string"
+            },
+            "output_format": {
+              "default": "png",
+              "description": "Output image format for each extracted frame. Aspect ratio\nand dimensions preserved from the source GIF.\n",
+              "type": "enum",
+              "values": [
+                "png",
+                "webp",
+                "jpg"
+              ]
+            }
+          }
+        },
+        "video": {
+          "mimes": [
+            "video/mp4",
+            "video/webm"
+          ],
+          "options": {
+            "count": {
+              "depends_on": {
+                "mode": "count"
+              },
+              "description": "Number of equal-duration output pieces. Range 2..=200.\nOnly valid when `mode: count`.\n",
+              "max": 200,
+              "min": 2,
+              "required": true,
+              "type": "integer"
+            },
+            "cut_points": {
+              "depends_on": {
+                "mode": "cut_points"
+              },
+              "description": "Cut points in numeric seconds (float, sub-second allowed).\nArray entries; NOT a comma-separated string. Strictly\nincreasing (preflight-validated against probe); each entry\n> 0 and < probed duration. `uniqueItems: true` catches\naccidental duplicates at the OpenAPI layer; strict\nmonotonicity and the < probed-duration bound are\npreflight-checked at workflow-create. Output count =\n`cut_points.length + 1`; `maxItems: 199` expresses the\n200-output cap declaratively. Only valid when\n`mode: cut_points`.\n",
+              "items": {
+                "exclusiveMinimum": 0,
+                "type": "number"
+              },
+              "maxItems": 199,
+              "minItems": 1,
+              "required": true,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "interval": {
+              "depends_on": {
+                "mode": "interval"
+              },
+              "description": "Cut interval in numeric seconds. `ceil(probed_duration /\ninterval) <= 200`. Only valid when `mode: interval`.\n",
+              "min": 0.001,
+              "required": true,
+              "type": "float"
+            },
+            "mode": {
+              "default": "interval",
+              "description": "Split strategy:\n- `interval`: cut every `interval` seconds.\n- `count`: cut into `count` equal-duration pieces.\n- `cut_points`: cut at explicit timestamps.\n",
+              "type": "enum",
+              "values": [
+                "interval",
+                "count",
+                "cut_points"
+              ]
+            },
+            "precision": {
+              "default": "fast",
+              "description": "Cut precision. Under `fast`, video cuts are keyframe-\naligned (drift bounded by GOP size \u2014 typically up to 1-2\nseconds depending on encoder). Under `exact`, the Lambda\nre-encodes to align cuts precisely at the requested\ntimestamps (slower, larger output, but frame-accurate).\n",
+              "type": "enum",
+              "values": [
+                "fast",
+                "exact"
+              ]
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 5000000000,
+                "max_output_size_bytes": 5000000000
+              },
+              "per_tier_constraints": {
+                "enterprise": {
+                  "max_input_size_bytes": 120000000000,
+                  "max_output_size_bytes": 120000000000
+                }
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              }
+            }
+          }
+        }
+      }
+    },
     "text_watermark": {
       "default": false,
       "description": "Render a text overlay onto an image using bundled Liberation Sans\n(SIL OFL). Single-input \u2014 text comes from options, not from a file\ninput. Source capped at 25 megapixels (V1 watermark precedent\nretained). Per ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n\nTwo rendering modes:\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source image (Cinavia / Adobe Stock\n  pattern); rotation default -45\u00b0 and tile_spacing controls density.\n",
@@ -2300,7 +2523,7 @@
               "depends_on": {
                 "source": "page"
               },
-              "description": "Page/sheet/slide number to render",
+              "description": "1-based index of the printed page to render, after print-layout pagination is applied. For office formats this is the page in the LibreOffice PDF export \u2014 NOT a 1:1 sheet/slide index: a spreadsheet sheet may span multiple printed pages and multi-sheet workbooks paginate their sheets in order. For PDF inputs it is the PDF page number directly.",
               "min": 1,
               "type": "integer"
             },
@@ -2441,9 +2664,235 @@
           }
         }
       }
+    },
+    "video_text_watermark": {
+      "availability": "planned",
+      "default": false,
+      "description": "Render a text overlay onto a base video using bundled Liberation\nSans (SIL OFL) via FFmpeg's `drawtext` filter. Single-input \u2014 the\ntext and its styling come from options, not from a file input.\nPer ADR-0013.\n\n**Dedicated operation, not an extension of `text_watermark`.**\n`text_watermark` renders onto images (single-pass Rust path);\n`video_text_watermark` renders per-frame via FFmpeg drawtext +\nre-encode (overlay = pixel modification, no stream-copy escape).\nDifferent runtime, different deploy unit.\n\n**Audio passthrough.** The base video's audio stream is preserved\nunchanged via FFmpeg stream-copy \u2014 the watermark applies to the\nvisual track only.\n\nTwo rendering modes (mirrors `text_watermark`):\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source frames at the rotation\n  angle.\n\n`availability: planned` until the cross-repo Lambda support ships;\ndispatch returns `feature_not_available` (422) until then. Per\nADR-0013 + lambdas pre-launch epic Wave A (ticket\n[`4NrRPCgh`](https://trello.com/c/4NrRPCgh)).\n",
+      "input_model": "single",
+      "mime_groups": {
+        "video": {
+          "mimes": [
+            "video/mp4",
+            "video/webm"
+          ],
+          "options": {
+            "anchor": {
+              "default": "bottom_right",
+              "description": "9-grid anchor position. For `watermark_mode: single`, the\ntext label is placed at this anchor + margin_x/margin_y\noffset on each frame. For `watermark_mode: tiled`, anchor\nis ignored (tiles fill the frame).\n",
+              "type": "enum",
+              "values": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "center_left",
+                "center",
+                "center_right",
+                "bottom_left",
+                "bottom_center",
+                "bottom_right"
+              ]
+            },
+            "color": {
+              "default": "#FFFFFF80",
+              "description": "Text colour as hex RGB (#RRGGBB) or RGBA (#RRGGBBAA).\nDefault is white with 50% alpha. Same vocabulary as\n`text_watermark.image.color`.\n",
+              "pattern": "^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$",
+              "type": "string"
+            },
+            "font_family": {
+              "default": "liberation_sans",
+              "description": "Font family. V2.0 ships with bundled Liberation Sans only;\nuser-uploaded fonts are a future extension (separate\nticket).\n",
+              "type": "enum",
+              "values": [
+                "liberation_sans"
+              ]
+            },
+            "font_size": {
+              "default": 48.0,
+              "description": "Font size in pixels. Clamped to range.",
+              "max": 512.0,
+              "min": 8.0,
+              "type": "float"
+            },
+            "margin_x": {
+              "default": "0px",
+              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\")\nor percentage of video frame width (e.g. \"5%\").\nAnchor-relative. Ignored when `watermark_mode: tiled`.\n\n**`anchor: center` exception** (watermark_mode: single\nonly). Non-zero `margin_x` combined with `anchor: center`\nis rejected by the API at workflow-create time as\n`invalid_options` (HTTP 422).\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "margin_y": {
+              "default": "0px",
+              "description": "Vertical offset from the anchor as pixels or percentage of\nvideo frame height. Ignored when `watermark_mode: tiled`.\n\n**`anchor: center` exception** (watermark_mode: single\nonly). Same rejection rule as `margin_x`.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "opacity": {
+              "default": 1.0,
+              "description": "Text overlay opacity. Default 1.0 \u2014 the alpha channel of\n`color` already encodes transparency, so opacity is\nusually left at 1.0 and transparency is set via the color\nhex.\n",
+              "max": 1.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "rotation": {
+              "default": -45.0,
+              "description": "Rotation angle in degrees. Default -45\u00b0 suits tiled mode\n(angled diagonal pattern). Clamped to range.\n",
+              "max": 360.0,
+              "min": -360.0,
+              "type": "float"
+            },
+            "text": {
+              "description": "Watermark text. Must be non-empty. Rendered with bundled\nLiberation Sans (SIL OFL).\n",
+              "required": true,
+              "type": "string"
+            },
+            "tile_spacing": {
+              "depends_on": {
+                "watermark_mode": "tiled"
+              },
+              "description": "Spacing between tiled labels in pixels. Defaults to\nfont_size when omitted. Only applies when watermark_mode\nis tiled.\n",
+              "max": 1000,
+              "min": 0,
+              "type": "integer"
+            },
+            "watermark_mode": {
+              "default": "single",
+              "description": "Rendering mode:\n- `single`: one label placed at the anchor + margin offset\n  on each frame.\n- `tiled`: repeated tiles across the entire frame at the\n  rotation angle.\n",
+              "type": "enum",
+              "values": [
+                "single",
+                "tiled"
+              ]
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 5000000000,
+                "max_output_size_bytes": 5000000000
+              },
+              "per_tier_constraints": {
+                "enterprise": {
+                  "max_input_size_bytes": 120000000000,
+                  "max_output_size_bytes": 120000000000
+                }
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              }
+            }
+          }
+        }
+      }
+    },
+    "video_watermark": {
+      "availability": "planned",
+      "default": false,
+      "description": "Apply an image overlay (file or external source) onto a base video\nasset using FFmpeg's `overlay` filter. Multi-input role-based:\nexactly one input with `role: base` (the source video) + exactly\none with `role: overlay` (the watermark image). The overlay can be\nan upload, an external_import handle, or a vault connection per\n`WorkflowSource`.\n\n**Dedicated operation, not an extension of `image_watermark`.**\n`image_watermark` is pure-Rust/no-FFmpeg and handles\nimage-on-image overlay only. `video_watermark` requires FFmpeg's\noverlay filter + re-encode + a different deploy unit (no\nstream-copy escape \u2014 overlay = pixel modification). Per ADR-0013.\n\n**Audio passthrough.** The base video's audio stream is preserved\nunchanged via FFmpeg stream-copy \u2014 the watermark applies to the\nvisual track only.\n\n`availability: planned` until the cross-repo Lambda support ships;\ndispatch returns `feature_not_available` (422) until then. Per\nADR-0013 + lambdas pre-launch epic Wave A (ticket\n[`SlluxMBN`'s sibling `4NrRPCgh`](https://trello.com/c/4NrRPCgh)).\n",
+      "features": {
+        "multi_overlay_stack": {
+          "availability": "planned",
+          "description": "Allow up to 8 overlay inputs per job (currently capped at 1\noverlay). Per-overlay placement via JobInputV2.per_input_options.\nLambda-side support not yet confirmed; tagged planned per\nADR-0001 \u00a71.4. Mirrors the same-named feature on\n`image_watermark`.\n"
+        }
+      },
+      "input_model": "multi",
+      "max_inputs": 2,
+      "mime_groups": {
+        "video": {
+          "mimes": [
+            "video/mp4",
+            "video/webm"
+          ],
+          "options": {
+            "anchor": {
+              "default": "bottom_right",
+              "description": "9-grid anchor position on each video frame. Same vocabulary\nas `image_watermark.image` and `text_watermark.image`.\n",
+              "type": "enum",
+              "values": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "center_left",
+                "center",
+                "center_right",
+                "bottom_left",
+                "bottom_center",
+                "bottom_right"
+              ]
+            },
+            "margin_x": {
+              "default": "0px",
+              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\")\nor percentage of video frame width (e.g. \"5%\"). Direction\nis anchor-relative \u2014 positive moves toward the frame\ncentre.\n\n**`anchor: center` exception.** When the anchor is `center`\nthe centre is the centre \u2014 there is no anchor-relative\ndirection. Non-zero `margin_x` combined with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422). Same rule as the\nother watermark operations.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "margin_y": {
+              "default": "0px",
+              "description": "Vertical offset from the anchor as pixels or percentage of\nvideo frame height. Anchor-relative; positive moves toward\nthe frame centre.\n\n**`anchor: center` exception.** Same rejection rule as\n`margin_x`.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "opacity": {
+              "default": 0.5,
+              "description": "Overlay opacity (0 = fully transparent, 1 = fully opaque).\nClamped to range.\n",
+              "max": 1.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "overlay_width": {
+              "description": "Optional overlay width as pixels or percentage of video\nframe width. Aspect ratio preserved. Omit to use the\noriginal overlay size.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            }
+          },
+          "processing_class": {
+            "long_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT12H",
+                "max_input_size_bytes": 5000000000,
+                "max_output_size_bytes": 5000000000
+              },
+              "per_tier_constraints": {
+                "enterprise": {
+                  "max_input_size_bytes": 120000000000,
+                  "max_output_size_bytes": 120000000000
+                }
+              },
+              "required_tier": "pro"
+            },
+            "short_form": {
+              "availability": "planned",
+              "constraints": {
+                "max_input_duration": "PT5M",
+                "max_input_size_bytes": 524288000,
+                "max_output_size_bytes": 524288000
+              }
+            }
+          }
+        }
+      },
+      "min_inputs": 2,
+      "per_role_cardinality": {
+        "base": {
+          "max": 1,
+          "min": 1
+        },
+        "overlay": {
+          "max": 1,
+          "min": 1
+        }
+      }
     }
   },
-  "schema_version": "2.12.0",
+  "schema_version": "2.15.3",
   "source_commit": null,
   "user_tier": null
 }
