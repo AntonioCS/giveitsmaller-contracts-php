@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 38,
+  "capabilities_version": 42,
   "environment": "baseline",
   "generated_at": null,
   "operations": {
@@ -781,10 +781,7 @@
             "image/webp",
             "image/svg+xml",
             "image/tiff",
-            "image/bmp",
-            "image/vnd.microsoft.icon",
-            "image/avif",
-            "image/heic"
+            "image/avif"
           ],
           "options": {
             "auto_orient": {
@@ -2892,7 +2889,7 @@
       }
     }
   },
-  "schema_version": "2.15.3",
+  "schema_version": "2.16.3",
   "source_commit": null,
   "user_tier": null
 }

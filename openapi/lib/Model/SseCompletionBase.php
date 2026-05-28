@@ -1,6 +1,6 @@
 <?php
 /**
- * WorkflowProcessing
+ * SseCompletionBase
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * WorkflowProcessing Class Doc Comment
+ * SseCompletionBase Class Doc Comment
  *
  * @category Class
- * @description Caller-supplied workflow-level processing hints. Per ticket [I15-CONS](https://trello.com/c/YZpBKzOM). Optional — when omitted, server defaults &#x60;class_hint&#x60; to &#x60;auto&#x60;.
+ * @description Shared base schema for the two &#x60;SseOperationCompletionResult&#x60; branches. Declares the &#x60;result_kind&#x60; discriminator field as a &#x60;[single, multi]&#x60; enum with both literal values, then each branch wrapper allOf-merges this base + its body schema.  **Rationale (v2.16.1):** the v2.15.3 design declared &#x60;result_kind&#x60; as a single-value &#x60;enum [single]&#x60; / &#x60;enum [multi]&#x60; inside each branch&#39;s inline &#x60;allOf&#x60; block. The openapi-generator PHP template for this shape flattens only the FIRST branch&#39;s discriminator enum into the root &#x60;getResultKindAllowableValues()&#x60; list, so PHP deserialisation rejects the other branch&#39;s wire value as invalid. Promoting &#x60;result_kind&#x60; to a shared base with the full union &#x60;enum [single, multi]&#x60; makes PHP accept both values; the per-branch &#x60;enum [single]&#x60; / &#x60;enum [multi]&#x60; (kept on the wrappers for JSON Schema-level branch identification + OpenAPI discriminator semantics) does not regress. TypeScript dispatch continues to use &#x60;switch (json[&#39;result_kind&#39;])&#x60; — confirmed by codegen verification on openapi-generator-cli v7.21.0.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializable
+class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
      *
      * @var string
      */
-    protected static $openAPIModelName = 'WorkflowProcessing';
+    protected static $openAPIModelName = 'SseCompletionBase';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,7 +58,7 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $openAPITypes = [
-        'class_hint' => '\Gisl\Generated\OpenApi\Model\ProcessingClassHint'
+        'result_kind' => 'string'
     ];
 
     /**
@@ -69,7 +69,7 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'class_hint' => null
+        'result_kind' => null
     ];
 
     /**
@@ -78,7 +78,7 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'class_hint' => false
+        'result_kind' => false
     ];
 
     /**
@@ -167,7 +167,7 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $attributeMap = [
-        'class_hint' => 'class_hint'
+        'result_kind' => 'result_kind'
     ];
 
     /**
@@ -176,7 +176,7 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $setters = [
-        'class_hint' => 'setClassHint'
+        'result_kind' => 'setResultKind'
     ];
 
     /**
@@ -185,7 +185,7 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $getters = [
-        'class_hint' => 'getClassHint'
+        'result_kind' => 'getResultKind'
     ];
 
     /**
@@ -229,6 +229,21 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
         return self::$openAPIModelName;
     }
 
+    public const RESULT_KIND_SINGLE = 'single';
+    public const RESULT_KIND_MULTI = 'multi';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getResultKindAllowableValues()
+    {
+        return [
+            self::RESULT_KIND_SINGLE,
+            self::RESULT_KIND_MULTI,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -245,7 +260,7 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('class_hint', $data ?? [], null);
+        $this->setIfExists('result_kind', $data ?? [], null);
     }
 
     /**
@@ -275,6 +290,18 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
     {
         $invalidProperties = [];
 
+        if ($this->container['result_kind'] === null) {
+            $invalidProperties[] = "'result_kind' can't be null";
+        }
+        $allowedValues = $this->getResultKindAllowableValues();
+        if (!is_null($this->container['result_kind']) && !in_array($this->container['result_kind'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'result_kind', must be one of '%s'",
+                $this->container['result_kind'],
+                implode("', '", $allowedValues)
+            );
+        }
+
         return $invalidProperties;
     }
 
@@ -291,28 +318,38 @@ class WorkflowProcessing implements ModelInterface, ArrayAccess, \JsonSerializab
 
 
     /**
-     * Gets class_hint
+     * Gets result_kind
      *
-     * @return \Gisl\Generated\OpenApi\Model\ProcessingClassHint|null
+     * @return string
      */
-    public function getClassHint()
+    public function getResultKind()
     {
-        return $this->container['class_hint'];
+        return $this->container['result_kind'];
     }
 
     /**
-     * Sets class_hint
+     * Sets result_kind
      *
-     * @param \Gisl\Generated\OpenApi\Model\ProcessingClassHint|null $class_hint class_hint
+     * @param string $result_kind Discriminator field on `SseOperationCompletionResult`. The API SSE serializer emits `\"single\"` for single-output completion payloads and `\"multi\"` for multi-output payloads; generated SDK dispatch routes on this value to pick the correct branch deserializer.
      *
      * @return self
      */
-    public function setClassHint($class_hint)
+    public function setResultKind($result_kind)
     {
-        if (is_null($class_hint)) {
-            throw new \InvalidArgumentException('non-nullable class_hint cannot be null');
+        if (is_null($result_kind)) {
+            throw new \InvalidArgumentException('non-nullable result_kind cannot be null');
         }
-        $this->container['class_hint'] = $class_hint;
+        $allowedValues = $this->getResultKindAllowableValues();
+        if (!in_array($result_kind, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'result_kind', must be one of '%s'",
+                    $result_kind,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['result_kind'] = $result_kind;
 
         return $this;
     }
