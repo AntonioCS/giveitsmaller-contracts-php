@@ -1,5 +1,182 @@
 {
-  "capabilities_version": 42,
+  "capabilities_version": 46,
+  "endpoints": {
+    "GET /api/operations/schema": {
+      "auth": "optional",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "getOperationsSchema",
+      "required_tier": null
+    },
+    "GET /api/uploads/multipart/{uploadId}/status": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "multipartStatus",
+      "required_tier": null
+    },
+    "GET /api/uploads/{id}/metadata": {
+      "auth": "optional",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "getUploadMetadata",
+      "required_tier": null
+    },
+    "GET /api/v2/credits/balance": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "getCreditsBalance",
+      "required_tier": null
+    },
+    "GET /api/v2/credits/usage": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "getCreditsUsage",
+      "required_tier": null
+    },
+    "GET /api/workflows/{id}/downloads": {
+      "auth": "optional",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "getWorkflowDownloads",
+      "required_tier": null
+    },
+    "GET /api/workflows/{id}/events": {
+      "auth": "optional",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "streamWorkflowEvents",
+      "required_tier": null
+    },
+    "GET /api/workflows/{id}/status": {
+      "auth": "optional",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "getWorkflowStatus",
+      "required_tier": null
+    },
+    "GET /healthz": {
+      "auth": "anonymous",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "liveness",
+      "required_tier": null
+    },
+    "GET /readyz": {
+      "auth": "anonymous",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "readiness",
+      "required_tier": null
+    },
+    "POST /api/audio-watermark/decode": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "decodeAudioWatermark",
+      "required_tier": null
+    },
+    "POST /api/auth/login": {
+      "auth": "anonymous",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "loginUser",
+      "required_tier": null
+    },
+    "POST /api/auth/logout": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "logoutUser",
+      "required_tier": null
+    },
+    "POST /api/contact": {
+      "auth": "anonymous",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "submitContact",
+      "required_tier": null
+    },
+    "POST /api/external-imports": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "createExternalImport",
+      "required_tier": null
+    },
+    "POST /api/operations/{id}/retry": {
+      "auth": "optional",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "retryOperation",
+      "required_tier": null
+    },
+    "POST /api/uploads": {
+      "auth": "optional",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "uploadFile",
+      "required_tier": null
+    },
+    "POST /api/uploads/multipart/complete": {
+      "auth": "optional",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "multipartComplete",
+      "required_tier": null
+    },
+    "POST /api/uploads/multipart/initiate": {
+      "auth": "optional",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "multipartInitiate",
+      "required_tier": null
+    },
+    "POST /api/uploads/multipart/{uploadId}/keepalive": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "multipartKeepalive",
+      "required_tier": null
+    },
+    "POST /api/uploads/multipart/{uploadId}/presign": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "multipartPresign",
+      "required_tier": null
+    },
+    "POST /api/uploads/{id}/probe": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "probeUpload",
+      "required_tier": null
+    },
+    "POST /api/workflows": {
+      "auth": "optional",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "createWorkflow",
+      "required_tier": null
+    },
+    "POST /api/workflows/{id}/cancel": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "cancelWorkflow",
+      "required_tier": null
+    },
+    "POST /api/workflows/{id}/resume": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "resumeWorkflow",
+      "required_tier": null
+    }
+  },
   "environment": "baseline",
   "generated_at": null,
   "operations": {
@@ -1115,7 +1292,7 @@
             },
             "pages": {
               "default": "1",
-              "description": "Page selection (e.g. '1-5,8'). Each page produces a separate output file.",
+              "description": "Page selection (e.g. '1-5,8'). Each resolved page produces a\nseparate output file. **Maximum 200 resolved entries per\nrequest** \u2014 aligns with the `OperationResult.outputs[]`\n`maxItems: 200` cap per ADR-0009 \u00a7D5\n(`docs/decisions/0009-multi-output-result-envelope.md`).\nExpressions resolving to more than 200 entries (e.g.\n`'1-201'`, `'1-100,102-205'`) are out of contract.\nDuplicate or overlapping entries (e.g. `'1,1'`,\n`'1-100,50-150'`) are counted toward the cap as parsed;\ndeduplication, if any, is a runtime concern and is NOT part\nof this contract. Enforcement at the API edge validator and\nthe Lambda runtime is tracked under WgCqnMRa follow-ups\n(cross-repo: API + Lambdas `bFlEXizR`).\n",
               "type": "string"
             }
           }
@@ -2889,7 +3066,7 @@
       }
     }
   },
-  "schema_version": "2.16.3",
+  "schema_version": "2.17.0",
   "source_commit": null,
   "user_tier": null
 }

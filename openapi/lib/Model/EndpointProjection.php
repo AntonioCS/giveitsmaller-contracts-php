@@ -1,6 +1,6 @@
 <?php
 /**
- * SseMultiOutputCompletion
+ * EndpointProjection
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * SseMultiOutputCompletion Class Doc Comment
+ * EndpointProjection Class Doc Comment
  *
  * @category Class
- * @description Multi-output completion body for the SSE &#x60;operation.completed&#x60; event. Per-output details plus an aggregate size, mirroring the AsyncAPI &#x60;MultiOutputCompletion&#x60; branch of &#x60;OperationResult&#x60; (per [ADR-0009](../docs/decisions/0009-multi-output-result-envelope.md)) in the client-facing (download-URL) projection.
+ * @description Per-endpoint projection entry per ADR-0016 §D4. Five fields; &#x60;required_tier&#x60; and &#x60;availability&#x60; at endpoint level are reserved/null today (operation-level &#x60;required_tier&#x60; continues to flow via &#x60;operations.*.required_tier&#x60;; every shipped endpoint is currently &#x60;availability: stable&#x60;).
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSerializable
+class EndpointProjection implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
      *
      * @var string
      */
-    protected static $openAPIModelName = 'SseMultiOutputCompletion';
+    protected static $openAPIModelName = 'EndpointProjection';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,9 +58,11 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $openAPITypes = [
-        'outputs' => '\Gisl\Generated\OpenApi\Model\SseMultiOutputResultEntry[]',
-        'total_output_size_bytes' => 'int',
-        'metrics' => '\Gisl\Generated\OpenApi\Model\SseMultiOutputCompletionMetrics'
+        'auth' => 'string',
+        'identity_scoped' => 'bool',
+        'required_tier' => '\Gisl\Generated\OpenApi\Model\UserTier',
+        'availability' => 'string',
+        'operation_id' => 'string'
     ];
 
     /**
@@ -71,9 +73,11 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'outputs' => null,
-        'total_output_size_bytes' => 'int64',
-        'metrics' => null
+        'auth' => null,
+        'identity_scoped' => null,
+        'required_tier' => null,
+        'availability' => null,
+        'operation_id' => null
     ];
 
     /**
@@ -82,9 +86,11 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'outputs' => false,
-        'total_output_size_bytes' => false,
-        'metrics' => false
+        'auth' => false,
+        'identity_scoped' => false,
+        'required_tier' => true,
+        'availability' => false,
+        'operation_id' => false
     ];
 
     /**
@@ -173,9 +179,11 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $attributeMap = [
-        'outputs' => 'outputs',
-        'total_output_size_bytes' => 'total_output_size_bytes',
-        'metrics' => 'metrics'
+        'auth' => 'auth',
+        'identity_scoped' => 'identity_scoped',
+        'required_tier' => 'required_tier',
+        'availability' => 'availability',
+        'operation_id' => 'operation_id'
     ];
 
     /**
@@ -184,9 +192,11 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $setters = [
-        'outputs' => 'setOutputs',
-        'total_output_size_bytes' => 'setTotalOutputSizeBytes',
-        'metrics' => 'setMetrics'
+        'auth' => 'setAuth',
+        'identity_scoped' => 'setIdentityScoped',
+        'required_tier' => 'setRequiredTier',
+        'availability' => 'setAvailability',
+        'operation_id' => 'setOperationId'
     ];
 
     /**
@@ -195,9 +205,11 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $getters = [
-        'outputs' => 'getOutputs',
-        'total_output_size_bytes' => 'getTotalOutputSizeBytes',
-        'metrics' => 'getMetrics'
+        'auth' => 'getAuth',
+        'identity_scoped' => 'getIdentityScoped',
+        'required_tier' => 'getRequiredTier',
+        'availability' => 'getAvailability',
+        'operation_id' => 'getOperationId'
     ];
 
     /**
@@ -241,6 +253,44 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
         return self::$openAPIModelName;
     }
 
+    public const AUTH_ANONYMOUS = 'anonymous';
+    public const AUTH_OPTIONAL = 'optional';
+    public const AUTH_REQUIRED = 'required';
+    public const AVAILABILITY_STABLE = 'stable';
+    public const AVAILABILITY_BETA = 'beta';
+    public const AVAILABILITY_EXPERIMENTAL = 'experimental';
+    public const AVAILABILITY_PLANNED = 'planned';
+    public const AVAILABILITY_DEPRECATED = 'deprecated';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getAuthAllowableValues()
+    {
+        return [
+            self::AUTH_ANONYMOUS,
+            self::AUTH_OPTIONAL,
+            self::AUTH_REQUIRED,
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getAvailabilityAllowableValues()
+    {
+        return [
+            self::AVAILABILITY_STABLE,
+            self::AVAILABILITY_BETA,
+            self::AVAILABILITY_EXPERIMENTAL,
+            self::AVAILABILITY_PLANNED,
+            self::AVAILABILITY_DEPRECATED,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -257,9 +307,11 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('outputs', $data ?? [], null);
-        $this->setIfExists('total_output_size_bytes', $data ?? [], null);
-        $this->setIfExists('metrics', $data ?? [], null);
+        $this->setIfExists('auth', $data ?? [], null);
+        $this->setIfExists('identity_scoped', $data ?? [], null);
+        $this->setIfExists('required_tier', $data ?? [], null);
+        $this->setIfExists('availability', $data ?? [], null);
+        $this->setIfExists('operation_id', $data ?? [], null);
     }
 
     /**
@@ -289,24 +341,39 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
     {
         $invalidProperties = [];
 
-        if ($this->container['outputs'] === null) {
-            $invalidProperties[] = "'outputs' can't be null";
+        if ($this->container['auth'] === null) {
+            $invalidProperties[] = "'auth' can't be null";
         }
-        if ((count($this->container['outputs']) > 200)) {
-            $invalidProperties[] = "invalid value for 'outputs', number of items must be less than or equal to 200.";
-        }
-
-        if ((count($this->container['outputs']) < 1)) {
-            $invalidProperties[] = "invalid value for 'outputs', number of items must be greater than or equal to 1.";
-        }
-
-        if ($this->container['total_output_size_bytes'] === null) {
-            $invalidProperties[] = "'total_output_size_bytes' can't be null";
-        }
-        if (($this->container['total_output_size_bytes'] < 0)) {
-            $invalidProperties[] = "invalid value for 'total_output_size_bytes', must be bigger than or equal to 0.";
+        $allowedValues = $this->getAuthAllowableValues();
+        if (!is_null($this->container['auth']) && !in_array($this->container['auth'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'auth', must be one of '%s'",
+                $this->container['auth'],
+                implode("', '", $allowedValues)
+            );
         }
 
+        if ($this->container['identity_scoped'] === null) {
+            $invalidProperties[] = "'identity_scoped' can't be null";
+        }
+        if ($this->container['required_tier'] === null && !$this->isNullableSetToNull('required_tier')) {
+            $invalidProperties[] = "'required_tier' can't be null";
+        }
+        if ($this->container['availability'] === null) {
+            $invalidProperties[] = "'availability' can't be null";
+        }
+        $allowedValues = $this->getAvailabilityAllowableValues();
+        if (!is_null($this->container['availability']) && !in_array($this->container['availability'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'availability', must be one of '%s'",
+                $this->container['availability'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['operation_id'] === null) {
+            $invalidProperties[] = "'operation_id' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -323,94 +390,163 @@ class SseMultiOutputCompletion implements ModelInterface, ArrayAccess, \JsonSeri
 
 
     /**
-     * Gets outputs
+     * Gets auth
      *
-     * @return \Gisl\Generated\OpenApi\Model\SseMultiOutputResultEntry[]
+     * @return string
      */
-    public function getOutputs()
+    public function getAuth()
     {
-        return $this->container['outputs'];
+        return $this->container['auth'];
     }
 
     /**
-     * Sets outputs
+     * Sets auth
      *
-     * @param \Gisl\Generated\OpenApi\Model\SseMultiOutputResultEntry[] $outputs Per-output deliverables for a multi-output operation (e.g. convert PDF->image emits one entry per page). Consumers use `outputs.length` for the count — per ADR-0009 §D4 a denormalised `output_count` was deliberately rejected. `maxItems: 200` mirrors the AsyncAPI `OperationResult.outputs` transport bound.
+     * @param string $auth 3-value projection of the operation's `security:` block: `anonymous` (`security: []`), `optional` (`security` contains the empty requirement `{}`), `required` (otherwise).
      *
      * @return self
      */
-    public function setOutputs($outputs)
+    public function setAuth($auth)
     {
-        if (is_null($outputs)) {
-            throw new \InvalidArgumentException('non-nullable outputs cannot be null');
+        if (is_null($auth)) {
+            throw new \InvalidArgumentException('non-nullable auth cannot be null');
         }
-
-        if ((count($outputs) > 200)) {
-            throw new \InvalidArgumentException('invalid value for $outputs when calling SseMultiOutputCompletion., number of items must be less than or equal to 200.');
+        $allowedValues = $this->getAuthAllowableValues();
+        if (!in_array($auth, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'auth', must be one of '%s'",
+                    $auth,
+                    implode("', '", $allowedValues)
+                )
+            );
         }
-        if ((count($outputs) < 1)) {
-            throw new \InvalidArgumentException('invalid length for $outputs when calling SseMultiOutputCompletion., number of items must be greater than or equal to 1.');
-        }
-        $this->container['outputs'] = $outputs;
+        $this->container['auth'] = $auth;
 
         return $this;
     }
 
     /**
-     * Gets total_output_size_bytes
+     * Gets identity_scoped
      *
-     * @return int
+     * @return bool
      */
-    public function getTotalOutputSizeBytes()
+    public function getIdentityScoped()
     {
-        return $this->container['total_output_size_bytes'];
+        return $this->container['identity_scoped'];
     }
 
     /**
-     * Sets total_output_size_bytes
+     * Sets identity_scoped
      *
-     * @param int $total_output_size_bytes Aggregate size of all `outputs[]` in bytes. Equals `sum(outputs[].size_bytes)`. Per ADR-0009 §D4 this is denormalised against the per-entry sum; consumers SHOULD trust the per-entry sum if the two disagree (and log a warning).
+     * @param bool $identity_scoped Value of the `x-identity-scoped` vendor extension on the operation (default `false`). True iff the operation targets an identity-bound resource and cross-identity access returns 403 — OR acts on the caller's implicit identity-scoped data (credits balance, own session).
      *
      * @return self
      */
-    public function setTotalOutputSizeBytes($total_output_size_bytes)
+    public function setIdentityScoped($identity_scoped)
     {
-        if (is_null($total_output_size_bytes)) {
-            throw new \InvalidArgumentException('non-nullable total_output_size_bytes cannot be null');
+        if (is_null($identity_scoped)) {
+            throw new \InvalidArgumentException('non-nullable identity_scoped cannot be null');
         }
-
-        if (($total_output_size_bytes < 0)) {
-            throw new \InvalidArgumentException('invalid value for $total_output_size_bytes when calling SseMultiOutputCompletion., must be bigger than or equal to 0.');
-        }
-
-        $this->container['total_output_size_bytes'] = $total_output_size_bytes;
+        $this->container['identity_scoped'] = $identity_scoped;
 
         return $this;
     }
 
     /**
-     * Gets metrics
+     * Gets required_tier
      *
-     * @return \Gisl\Generated\OpenApi\Model\SseMultiOutputCompletionMetrics|null
+     * @return \Gisl\Generated\OpenApi\Model\UserTier|null
      */
-    public function getMetrics()
+    public function getRequiredTier()
     {
-        return $this->container['metrics'];
+        return $this->container['required_tier'];
     }
 
     /**
-     * Sets metrics
+     * Sets required_tier
      *
-     * @param \Gisl\Generated\OpenApi\Model\SseMultiOutputCompletionMetrics|null $metrics metrics
+     * @param \Gisl\Generated\OpenApi\Model\UserTier|null $required_tier required_tier
      *
      * @return self
      */
-    public function setMetrics($metrics)
+    public function setRequiredTier($required_tier)
     {
-        if (is_null($metrics)) {
-            throw new \InvalidArgumentException('non-nullable metrics cannot be null');
+        if (is_null($required_tier)) {
+            array_push($this->openAPINullablesSetToNull, 'required_tier');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('required_tier', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
         }
-        $this->container['metrics'] = $metrics;
+        $this->container['required_tier'] = $required_tier;
+
+        return $this;
+    }
+
+    /**
+     * Gets availability
+     *
+     * @return string
+     */
+    public function getAvailability()
+    {
+        return $this->container['availability'];
+    }
+
+    /**
+     * Sets availability
+     *
+     * @param string $availability Endpoint-level availability tag. Currently always `\"stable\"` for shipped endpoints. Reserved for future `planned` / `deprecated` endpoint-level annotation.
+     *
+     * @return self
+     */
+    public function setAvailability($availability)
+    {
+        if (is_null($availability)) {
+            throw new \InvalidArgumentException('non-nullable availability cannot be null');
+        }
+        $allowedValues = $this->getAvailabilityAllowableValues();
+        if (!in_array($availability, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'availability', must be one of '%s'",
+                    $availability,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['availability'] = $availability;
+
+        return $this;
+    }
+
+    /**
+     * Gets operation_id
+     *
+     * @return string
+     */
+    public function getOperationId()
+    {
+        return $this->container['operation_id'];
+    }
+
+    /**
+     * Sets operation_id
+     *
+     * @param string $operation_id OpenAPI `operationId` for the operation. SDK code generators anchor on this for method naming; including it in the sidecar saves a round-trip to `openapi/api.yaml`. Per the SDK ask at ADR-0016 B1 sign-off.
+     *
+     * @return self
+     */
+    public function setOperationId($operation_id)
+    {
+        if (is_null($operation_id)) {
+            throw new \InvalidArgumentException('non-nullable operation_id cannot be null');
+        }
+        $this->container['operation_id'] = $operation_id;
 
         return $this;
     }
