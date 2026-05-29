@@ -13,9 +13,9 @@
 /**
  * GISL Compression API
  *
- * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag/Last-Modified revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
+ * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag/Last-Modified revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.17.0
+ * The version of the OpenAPI document: 2.21.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -67,6 +67,7 @@ class OptionSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'availability' => '\Gisl\Generated\OpenApi\Model\AvailabilityValue',
         'required_tier' => '\Gisl\Generated\OpenApi\Model\UserTier',
         'per_value_availability' => 'array<string,\Gisl\Generated\OpenApi\Model\PerValueAvailabilityEntry>',
+        'per_value_depends_on' => 'array<string,mixed>',
         'min' => 'float',
         'max' => 'float',
         'depends_on' => 'array<string,mixed>'
@@ -89,6 +90,7 @@ class OptionSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'availability' => null,
         'required_tier' => null,
         'per_value_availability' => null,
+        'per_value_depends_on' => null,
         'min' => null,
         'max' => null,
         'depends_on' => null
@@ -109,6 +111,7 @@ class OptionSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'availability' => false,
         'required_tier' => false,
         'per_value_availability' => false,
+        'per_value_depends_on' => false,
         'min' => false,
         'max' => false,
         'depends_on' => false
@@ -209,6 +212,7 @@ class OptionSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'availability' => 'availability',
         'required_tier' => 'required_tier',
         'per_value_availability' => 'per_value_availability',
+        'per_value_depends_on' => 'per_value_depends_on',
         'min' => 'min',
         'max' => 'max',
         'depends_on' => 'depends_on'
@@ -229,6 +233,7 @@ class OptionSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'availability' => 'setAvailability',
         'required_tier' => 'setRequiredTier',
         'per_value_availability' => 'setPerValueAvailability',
+        'per_value_depends_on' => 'setPerValueDependsOn',
         'min' => 'setMin',
         'max' => 'setMax',
         'depends_on' => 'setDependsOn'
@@ -249,6 +254,7 @@ class OptionSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         'availability' => 'getAvailability',
         'required_tier' => 'getRequiredTier',
         'per_value_availability' => 'getPerValueAvailability',
+        'per_value_depends_on' => 'getPerValueDependsOn',
         'min' => 'getMin',
         'max' => 'getMax',
         'depends_on' => 'getDependsOn'
@@ -358,6 +364,7 @@ class OptionSchema implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('availability', $data ?? [], null);
         $this->setIfExists('required_tier', $data ?? [], null);
         $this->setIfExists('per_value_availability', $data ?? [], null);
+        $this->setIfExists('per_value_depends_on', $data ?? [], null);
         $this->setIfExists('min', $data ?? [], null);
         $this->setIfExists('max', $data ?? [], null);
         $this->setIfExists('depends_on', $data ?? [], null);
@@ -692,6 +699,33 @@ class OptionSchema implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable per_value_availability cannot be null');
         }
         $this->container['per_value_availability'] = $per_value_availability;
+
+        return $this;
+    }
+
+    /**
+     * Gets per_value_depends_on
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getPerValueDependsOn()
+    {
+        return $this->container['per_value_depends_on'];
+    }
+
+    /**
+     * Sets per_value_depends_on
+     *
+     * @param array<string,mixed>|null $per_value_depends_on Per-enum-value cross-field constraint map, only meaningful when `type: enum`. Keys MUST be a subset of `values[]`; each entry value is a `depends_on`-shaped condition mapping that the named enum value REQUIRES. Distinct from option-level `depends_on` (which gates applicability with silent-ignore semantics); `per_value_depends_on` rejects the request with `invalid_options` when the named value is chosen and the condition is not met. Verified by `make check-per-value-depends-on` (CI guard, ticket [`bsV3FWM5`](https://trello.com/c/bsV3FWM5)). Runtime emission ships verbatim alongside other availability metadata. See `schemas/FORMAT.md` §per_value_depends_on.
+     *
+     * @return self
+     */
+    public function setPerValueDependsOn($per_value_depends_on)
+    {
+        if (is_null($per_value_depends_on)) {
+            throw new \InvalidArgumentException('non-nullable per_value_depends_on cannot be null');
+        }
+        $this->container['per_value_depends_on'] = $per_value_depends_on;
 
         return $this;
     }

@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 46,
+  "capabilities_version": 53,
   "endpoints": {
     "GET /api/operations/schema": {
       "auth": "optional",
@@ -1954,7 +1954,14 @@
                   "always"
                 ]
               },
-              "description": "CRF (quality-targeted) vs target_size (two-pass to fixed file size).\n`target_size` is currently `codec=h264` only \u2014 libx265 / libvpx-vp9 / libsvtav1 each\nrequire a different two-pass invocation and are tracked as separate per-codec\nLambda follow-ups. The contract narrows `target_size_bytes.depends_on` with\n`codec: [h264]`, which rejects `encoding_mode=target_size + codec \u2208 {h265, vp9, av1}`\nas `invalid_options` **when `target_size_bytes` is present in the request**. Fully\ngating `encoding_mode=target_size` itself on codec (so that omitting\n`target_size_bytes` is also rejected) awaits a `per_value_depends_on` schema\nvocab extension (ticket bsV3FWM5); Lambda continues to catch the residual\n`target_size + non-h264 + no target_size_bytes` case in the meantime.\n",
+              "description": "CRF (quality-targeted) vs target_size (two-pass to fixed file size).\n`target_size` is currently `codec=h264` only \u2014 libx265 / libvpx-vp9 / libsvtav1 each\nrequire a different two-pass invocation and are tracked as separate per-codec\nLambda follow-ups. The `per_value_depends_on` block above gates\n`encoding_mode=target_size` itself on `codec \u2208 [h264]`, so a request with\n`encoding_mode=target_size + codec \u2208 {h265, vp9, av1}` is rejected as\n`invalid_options` regardless of whether `target_size_bytes` is supplied \u2014\nclosing the gap left by the previous option-level `depends_on` (which only\ntriggered when `target_size_bytes` was present in the payload). Per ticket\n[`bsV3FWM5`](https://trello.com/c/bsV3FWM5).\n",
+              "per_value_depends_on": {
+                "target_size": {
+                  "codec": [
+                    "h264"
+                  ]
+                }
+              },
               "type": "enum",
               "values": [
                 "crf",
@@ -2019,16 +2026,13 @@
             },
             "target_size_bytes": {
               "depends_on": {
-                "codec": [
-                  "h264"
-                ],
                 "encoding_mode": "target_size",
                 "re_encode_mode": [
                   "auto",
                   "always"
                 ]
               },
-              "description": "Two-pass target file size in bytes (minimum 1 MiB). Required when\n`encoding_mode=target_size`. h264-only today; see `encoding_mode` description\nfor per-codec rollout status.\n\nPractical floor: a ~100 kbps post-AAC video bitrate (i.e. `target_size_bytes`\ncorresponding to less than ~100 kbps of video after subtracting the 160 kbps\nAAC audio track over the merged duration) is silently floored by libx264 and\nthe resulting file will not honour the requested `target_size_bytes`.\nPublishers targeting very small outputs should size accordingly.\n",
+              "description": "Two-pass target file size in bytes (minimum 1 MiB). Required when\n`encoding_mode=target_size`. h264-only \u2014 the codec gate now lives on\n`encoding_mode.per_value_depends_on.target_size.codec` (per ticket\n[`bsV3FWM5`](https://trello.com/c/bsV3FWM5)); this option's own\n`depends_on` no longer duplicates it.\n\nPractical floor: a ~100 kbps post-AAC video bitrate (i.e. `target_size_bytes`\ncorresponding to less than ~100 kbps of video after subtracting the 160 kbps\nAAC audio track over the merged duration) is silently floored by libx264 and\nthe resulting file will not honour the requested `target_size_bytes`.\nPublishers targeting very small outputs should size accordingly.\n",
               "min": 1048576,
               "type": "integer"
             },
@@ -3066,7 +3070,7 @@
       }
     }
   },
-  "schema_version": "2.17.0",
+  "schema_version": "2.21.0",
   "source_commit": null,
   "user_tier": null
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * ProcessingClassHint
+ * ReEncodeDecision
  *
  * PHP version 8.1
  *
@@ -30,26 +30,22 @@ namespace Gisl\Generated\OpenApi\Model;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * ProcessingClassHint Class Doc Comment
+ * ReEncodeDecision Class Doc Comment
  *
  * @category Class
- * @description Caller-supplied logical-policy hint on &#x60;WorkflowCreateRequest&#x60;. NOT a backend selector — server is final authority on routing. - &#x60;auto&#x60; (default): server routes safely. - &#x60;short_form_only&#x60;: fail fast (422 with &#x60;reason:   tier_policy&#x60;) if any job would require &#x60;long_form&#x60;. - &#x60;long_form_allowed&#x60;: caller accepts slower queue/runtime   semantics. - &#x60;long_form_preferred&#x60;: prefer &#x60;long_form&#x60; pool when   eligible (test/isolation use cases).
+ * @description Path chosen for &#x60;merge.video&#x60; when &#x60;re_encode_mode&#x3D;auto&#x60;. Server reports the actual path so callers can see why &#x60;auto&#x60; took the slow path. Absent for non-&#x60;merge.video&#x60; operations and for &#x60;merge.video&#x60; when &#x60;re_encode_mode&#x60; is &#x60;always&#x60; or &#x60;never&#x60; (path was caller-fixed). Per ticket I16-CONS (Trello 7nCZXEru).  Mirrors the AsyncAPI &#x60;ReEncodeDecision&#x60; (and &#x60;OperationMetrics.re_encode_decision&#x60;); exposed on the REST &#x60;OperationResult.metrics&#x60; per ticket zS4e9CI2 so the SDK customer path carries the same signal as the SSE/message surface. Cross-spec enum parity is verified by &#x60;tests/test_asyncapi_named_schemas.py&#x60;.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class ProcessingClassHint
+class ReEncodeDecision
 {
     /**
      * Possible values of this enum
      */
-    public const AUTO = 'auto';
+    public const STREAM_COPY = 'stream_copy';
 
-    public const SHORT_FORM_ONLY = 'short_form_only';
-
-    public const LONG_FORM_ALLOWED = 'long_form_allowed';
-
-    public const LONG_FORM_PREFERRED = 'long_form_preferred';
+    public const RE_ENCODE = 're_encode';
 
     /**
      * Gets allowable values of the enum
@@ -58,10 +54,8 @@ class ProcessingClassHint
     public static function getAllowableEnumValues()
     {
         return [
-            self::AUTO,
-            self::SHORT_FORM_ONLY,
-            self::LONG_FORM_ALLOWED,
-            self::LONG_FORM_PREFERRED
+            self::STREAM_COPY,
+            self::RE_ENCODE
         ];
     }
 }
