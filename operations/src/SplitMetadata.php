@@ -11,7 +11,7 @@ final class SplitMetadata
     public static function instance(): OperationMetadata
     {
         return new OperationMetadata(
-            availability: 'planned',
+            availability: 'beta',
             features: [
                 'silence_mode_audio' => new FeatureEntry(
                     availability: 'planned',
@@ -20,6 +20,7 @@ final class SplitMetadata
             ],
             mime_groups: [
                 'image_gif' => new MimeGroupMetadata(
+                    availability: 'planned',
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
@@ -33,6 +34,7 @@ final class SplitMetadata
                     per_input_options: [],
                 ),
                 'document_pdf' => new MimeGroupMetadata(
+                    availability: 'planned',
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
@@ -49,6 +51,7 @@ final class SplitMetadata
                     per_input_options: [],
                 ),
                 'audio' => new MimeGroupMetadata(
+                    availability: 'beta',
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
@@ -71,6 +74,7 @@ final class SplitMetadata
                     per_input_options: [],
                 ),
                 'video' => new MimeGroupMetadata(
+                    availability: 'planned',
                     processing_class: [
                         'short_form' => new AvailabilityEntry(
                             availability: 'planned',

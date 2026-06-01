@@ -99,7 +99,6 @@ final class MergeMetadata
                                 ),
                                 'custom' => new AvailabilityEntry(
                                     availability: 'planned',
-                                    documentation_url: 'https://trello.com/c/EPUE5Vs1',
                                 ),
                                 'wipetl' => new AvailabilityEntry(
                                     availability: 'planned',
@@ -220,7 +219,6 @@ final class MergeMetadata
                                 ),
                                 'custom' => new AvailabilityEntry(
                                     availability: 'planned',
-                                    documentation_url: 'https://trello.com/c/EPUE5Vs1',
                                 ),
                                 'wipetl' => new AvailabilityEntry(
                                     availability: 'planned',
@@ -339,7 +337,6 @@ final class MergeMetadata
                                 ),
                                 'custom' => new AvailabilityEntry(
                                     availability: 'planned',
-                                    documentation_url: 'https://trello.com/c/EPUE5Vs1',
                                 ),
                                 'wipetl' => new AvailabilityEntry(
                                     availability: 'planned',

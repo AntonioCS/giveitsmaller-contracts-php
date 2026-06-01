@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginUserRequest
+ * OperationsSchemaResponseWorkflowFeaturesDelivery
  *
  * PHP version 8.1
  *
@@ -32,7 +32,7 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * LoginUserRequest Class Doc Comment
+ * OperationsSchemaResponseWorkflowFeaturesDelivery Class Doc Comment
  *
  * @category Class
  * @package  Gisl\Generated\OpenApi
@@ -40,7 +40,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
+class OperationsSchemaResponseWorkflowFeaturesDelivery implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      *
      * @var string
      */
-    protected static $openAPIModelName = 'loginUser_request';
+    protected static $openAPIModelName = 'OperationsSchemaResponse_workflow_features_delivery';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +57,8 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $openAPITypes = [
-        'email' => 'string',
-        'password' => 'string'
+        'mode' => '\Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDeliveryMode',
+        'selection' => '\Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDeliverySelection'
     ];
 
     /**
@@ -69,8 +69,8 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'email' => 'email',
-        'password' => null
+        'mode' => null,
+        'selection' => null
     ];
 
     /**
@@ -79,8 +79,8 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'email' => false,
-        'password' => false
+        'mode' => false,
+        'selection' => false
     ];
 
     /**
@@ -169,8 +169,8 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'email' => 'email',
-        'password' => 'password'
+        'mode' => 'mode',
+        'selection' => 'selection'
     ];
 
     /**
@@ -179,8 +179,8 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'email' => 'setEmail',
-        'password' => 'setPassword'
+        'mode' => 'setMode',
+        'selection' => 'setSelection'
     ];
 
     /**
@@ -189,8 +189,8 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'email' => 'getEmail',
-        'password' => 'getPassword'
+        'mode' => 'getMode',
+        'selection' => 'getSelection'
     ];
 
     /**
@@ -250,8 +250,8 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('email', $data ?? [], null);
-        $this->setIfExists('password', $data ?? [], null);
+        $this->setIfExists('mode', $data ?? [], null);
+        $this->setIfExists('selection', $data ?? [], null);
     }
 
     /**
@@ -281,20 +281,6 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['email'] === null) {
-            $invalidProperties[] = "'email' can't be null";
-        }
-        if ((mb_strlen($this->container['email']) > 254)) {
-            $invalidProperties[] = "invalid value for 'email', the character length must be smaller than or equal to 254.";
-        }
-
-        if ($this->container['password'] === null) {
-            $invalidProperties[] = "'password' can't be null";
-        }
-        if ((mb_strlen($this->container['password']) < 1)) {
-            $invalidProperties[] = "invalid value for 'password', the character length must be bigger than or equal to 1.";
-        }
-
         return $invalidProperties;
     }
 
@@ -311,64 +297,55 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
 
 
     /**
-     * Gets email
+     * Gets mode
      *
-     * @return string
+     * @return \Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDeliveryMode|null
      */
-    public function getEmail()
+    public function getMode()
     {
-        return $this->container['email'];
+        return $this->container['mode'];
     }
 
     /**
-     * Sets email
+     * Sets mode
      *
-     * @param string $email email
+     * @param \Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDeliveryMode|null $mode mode
      *
      * @return self
      */
-    public function setEmail($email)
+    public function setMode($mode)
     {
-        if (is_null($email)) {
-            throw new \InvalidArgumentException('non-nullable email cannot be null');
+        if (is_null($mode)) {
+            throw new \InvalidArgumentException('non-nullable mode cannot be null');
         }
-        if ((mb_strlen($email) > 254)) {
-            throw new \InvalidArgumentException('invalid length for $email when calling LoginUserRequest., must be smaller than or equal to 254.');
-        }
-
-        $this->container['email'] = $email;
+        $this->container['mode'] = $mode;
 
         return $this;
     }
 
     /**
-     * Gets password
+     * Gets selection
      *
-     * @return string
+     * @return \Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDeliverySelection|null
      */
-    public function getPassword()
+    public function getSelection()
     {
-        return $this->container['password'];
+        return $this->container['selection'];
     }
 
     /**
-     * Sets password
+     * Sets selection
      *
-     * @param string $password password
+     * @param \Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDeliverySelection|null $selection selection
      *
      * @return self
      */
-    public function setPassword($password)
+    public function setSelection($selection)
     {
-        if (is_null($password)) {
-            throw new \InvalidArgumentException('non-nullable password cannot be null');
+        if (is_null($selection)) {
+            throw new \InvalidArgumentException('non-nullable selection cannot be null');
         }
-
-        if ((mb_strlen($password) < 1)) {
-            throw new \InvalidArgumentException('invalid length for $password when calling LoginUserRequest., must be bigger than or equal to 1.');
-        }
-
-        $this->container['password'] = $password;
+        $this->container['selection'] = $selection;
 
         return $this;
     }

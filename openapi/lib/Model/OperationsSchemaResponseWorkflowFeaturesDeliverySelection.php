@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginUserRequest
+ * OperationsSchemaResponseWorkflowFeaturesDeliverySelection
  *
  * PHP version 8.1
  *
@@ -32,7 +32,7 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * LoginUserRequest Class Doc Comment
+ * OperationsSchemaResponseWorkflowFeaturesDeliverySelection Class Doc Comment
  *
  * @category Class
  * @package  Gisl\Generated\OpenApi
@@ -40,7 +40,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
+class OperationsSchemaResponseWorkflowFeaturesDeliverySelection implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      *
      * @var string
      */
-    protected static $openAPIModelName = 'loginUser_request';
+    protected static $openAPIModelName = 'OperationsSchemaResponse_workflow_features_delivery_selection';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +57,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $openAPITypes = [
-        'email' => 'string',
-        'password' => 'string'
+        'type' => '\Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDeliveryMode'
     ];
 
     /**
@@ -69,8 +68,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'email' => 'email',
-        'password' => null
+        'type' => null
     ];
 
     /**
@@ -79,8 +77,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'email' => false,
-        'password' => false
+        'type' => false
     ];
 
     /**
@@ -169,8 +166,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'email' => 'email',
-        'password' => 'password'
+        'type' => 'type'
     ];
 
     /**
@@ -179,8 +175,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'email' => 'setEmail',
-        'password' => 'setPassword'
+        'type' => 'setType'
     ];
 
     /**
@@ -189,8 +184,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'email' => 'getEmail',
-        'password' => 'getPassword'
+        'type' => 'getType'
     ];
 
     /**
@@ -250,8 +244,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('email', $data ?? [], null);
-        $this->setIfExists('password', $data ?? [], null);
+        $this->setIfExists('type', $data ?? [], null);
     }
 
     /**
@@ -281,20 +274,6 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['email'] === null) {
-            $invalidProperties[] = "'email' can't be null";
-        }
-        if ((mb_strlen($this->container['email']) > 254)) {
-            $invalidProperties[] = "invalid value for 'email', the character length must be smaller than or equal to 254.";
-        }
-
-        if ($this->container['password'] === null) {
-            $invalidProperties[] = "'password' can't be null";
-        }
-        if ((mb_strlen($this->container['password']) < 1)) {
-            $invalidProperties[] = "invalid value for 'password', the character length must be bigger than or equal to 1.";
-        }
-
         return $invalidProperties;
     }
 
@@ -311,64 +290,28 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
 
 
     /**
-     * Gets email
+     * Gets type
      *
-     * @return string
+     * @return \Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDeliveryMode|null
      */
-    public function getEmail()
+    public function getType()
     {
-        return $this->container['email'];
+        return $this->container['type'];
     }
 
     /**
-     * Sets email
+     * Sets type
      *
-     * @param string $email email
+     * @param \Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDeliveryMode|null $type type
      *
      * @return self
      */
-    public function setEmail($email)
+    public function setType($type)
     {
-        if (is_null($email)) {
-            throw new \InvalidArgumentException('non-nullable email cannot be null');
+        if (is_null($type)) {
+            throw new \InvalidArgumentException('non-nullable type cannot be null');
         }
-        if ((mb_strlen($email) > 254)) {
-            throw new \InvalidArgumentException('invalid length for $email when calling LoginUserRequest., must be smaller than or equal to 254.');
-        }
-
-        $this->container['email'] = $email;
-
-        return $this;
-    }
-
-    /**
-     * Gets password
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->container['password'];
-    }
-
-    /**
-     * Sets password
-     *
-     * @param string $password password
-     *
-     * @return self
-     */
-    public function setPassword($password)
-    {
-        if (is_null($password)) {
-            throw new \InvalidArgumentException('non-nullable password cannot be null');
-        }
-
-        if ((mb_strlen($password) < 1)) {
-            throw new \InvalidArgumentException('invalid length for $password when calling LoginUserRequest., must be bigger than or equal to 1.');
-        }
-
-        $this->container['password'] = $password;
+        $this->container['type'] = $type;
 
         return $this;
     }

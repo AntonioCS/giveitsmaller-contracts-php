@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginUserRequest
+ * OperationsSchemaResponseWorkflowFeatures
  *
  * PHP version 8.1
  *
@@ -32,15 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * LoginUserRequest Class Doc Comment
+ * OperationsSchemaResponseWorkflowFeatures Class Doc Comment
  *
  * @category Class
+ * @description Workflow-level option availability projection (ticket [&#x60;1ZQjSm0j&#x60;](https://trello.com/c/1ZQjSm0j)). Surfaces &#x60;per_value_availability&#x60; for workflow-level options that live in OpenAPI **component** schemas (not the per-operation &#x60;schemas/operations/_*.yaml&#x60; that drive the &#x60;operations&#x60; map), keyed by REQUEST-shape path: - &#x60;delivery.mode.per_value_availability&#x60; (from the &#x60;Delivery.mode&#x60;   schema) - &#x60;delivery.selection.type.per_value_availability&#x60; (from the   &#x60;DeliverySelection.type&#x60; schema)  Closes the co0CERtJ (v2.19.0) authority-hierarchy gap: those &#x60;planned&#x60; downgrades lived only in the (decorative per ADR-0001 §1.5) openapi component tags; this surfaces them in the authoritative sidecar.  **Optional in the wire envelope** (same incremental-mirroring stance as &#x60;endpoints&#x60;): the committed sidecar emits this block authoritatively; the runtime &#x60;GET /api/operations/schema&#x60; MAY mirror it once the API generator catches up. Consumers MUST tolerate its absence from the runtime endpoint (read the sidecar) and its presence from either source.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
+class OperationsSchemaResponseWorkflowFeatures implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -49,7 +50,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      *
      * @var string
      */
-    protected static $openAPIModelName = 'loginUser_request';
+    protected static $openAPIModelName = 'OperationsSchemaResponse_workflow_features';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +58,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $openAPITypes = [
-        'email' => 'string',
-        'password' => 'string'
+        'delivery' => '\Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDelivery'
     ];
 
     /**
@@ -69,8 +69,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'email' => 'email',
-        'password' => null
+        'delivery' => null
     ];
 
     /**
@@ -79,8 +78,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'email' => false,
-        'password' => false
+        'delivery' => false
     ];
 
     /**
@@ -169,8 +167,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'email' => 'email',
-        'password' => 'password'
+        'delivery' => 'delivery'
     ];
 
     /**
@@ -179,8 +176,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'email' => 'setEmail',
-        'password' => 'setPassword'
+        'delivery' => 'setDelivery'
     ];
 
     /**
@@ -189,8 +185,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'email' => 'getEmail',
-        'password' => 'getPassword'
+        'delivery' => 'getDelivery'
     ];
 
     /**
@@ -250,8 +245,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('email', $data ?? [], null);
-        $this->setIfExists('password', $data ?? [], null);
+        $this->setIfExists('delivery', $data ?? [], null);
     }
 
     /**
@@ -281,20 +275,6 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['email'] === null) {
-            $invalidProperties[] = "'email' can't be null";
-        }
-        if ((mb_strlen($this->container['email']) > 254)) {
-            $invalidProperties[] = "invalid value for 'email', the character length must be smaller than or equal to 254.";
-        }
-
-        if ($this->container['password'] === null) {
-            $invalidProperties[] = "'password' can't be null";
-        }
-        if ((mb_strlen($this->container['password']) < 1)) {
-            $invalidProperties[] = "invalid value for 'password', the character length must be bigger than or equal to 1.";
-        }
-
         return $invalidProperties;
     }
 
@@ -311,64 +291,28 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
 
 
     /**
-     * Gets email
+     * Gets delivery
      *
-     * @return string
+     * @return \Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDelivery|null
      */
-    public function getEmail()
+    public function getDelivery()
     {
-        return $this->container['email'];
+        return $this->container['delivery'];
     }
 
     /**
-     * Sets email
+     * Sets delivery
      *
-     * @param string $email email
+     * @param \Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeaturesDelivery|null $delivery delivery
      *
      * @return self
      */
-    public function setEmail($email)
+    public function setDelivery($delivery)
     {
-        if (is_null($email)) {
-            throw new \InvalidArgumentException('non-nullable email cannot be null');
+        if (is_null($delivery)) {
+            throw new \InvalidArgumentException('non-nullable delivery cannot be null');
         }
-        if ((mb_strlen($email) > 254)) {
-            throw new \InvalidArgumentException('invalid length for $email when calling LoginUserRequest., must be smaller than or equal to 254.');
-        }
-
-        $this->container['email'] = $email;
-
-        return $this;
-    }
-
-    /**
-     * Gets password
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->container['password'];
-    }
-
-    /**
-     * Sets password
-     *
-     * @param string $password password
-     *
-     * @return self
-     */
-    public function setPassword($password)
-    {
-        if (is_null($password)) {
-            throw new \InvalidArgumentException('non-nullable password cannot be null');
-        }
-
-        if ((mb_strlen($password) < 1)) {
-            throw new \InvalidArgumentException('invalid length for $password when calling LoginUserRequest., must be bigger than or equal to 1.');
-        }
-
-        $this->container['password'] = $password;
+        $this->container['delivery'] = $delivery;
 
         return $this;
     }

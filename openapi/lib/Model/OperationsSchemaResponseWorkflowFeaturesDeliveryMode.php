@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginUserRequest
+ * OperationsSchemaResponseWorkflowFeaturesDeliveryMode
  *
  * PHP version 8.1
  *
@@ -32,7 +32,7 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * LoginUserRequest Class Doc Comment
+ * OperationsSchemaResponseWorkflowFeaturesDeliveryMode Class Doc Comment
  *
  * @category Class
  * @package  Gisl\Generated\OpenApi
@@ -40,7 +40,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
+class OperationsSchemaResponseWorkflowFeaturesDeliveryMode implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      *
      * @var string
      */
-    protected static $openAPIModelName = 'loginUser_request';
+    protected static $openAPIModelName = 'OperationsSchemaResponse_workflow_features_delivery_mode';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +57,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $openAPITypes = [
-        'email' => 'string',
-        'password' => 'string'
+        'per_value_availability' => 'array<string,\Gisl\Generated\OpenApi\Model\PerValueAvailabilityEntry>'
     ];
 
     /**
@@ -69,8 +68,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'email' => 'email',
-        'password' => null
+        'per_value_availability' => null
     ];
 
     /**
@@ -79,8 +77,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'email' => false,
-        'password' => false
+        'per_value_availability' => false
     ];
 
     /**
@@ -169,8 +166,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'email' => 'email',
-        'password' => 'password'
+        'per_value_availability' => 'per_value_availability'
     ];
 
     /**
@@ -179,8 +175,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'email' => 'setEmail',
-        'password' => 'setPassword'
+        'per_value_availability' => 'setPerValueAvailability'
     ];
 
     /**
@@ -189,8 +184,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'email' => 'getEmail',
-        'password' => 'getPassword'
+        'per_value_availability' => 'getPerValueAvailability'
     ];
 
     /**
@@ -250,8 +244,7 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('email', $data ?? [], null);
-        $this->setIfExists('password', $data ?? [], null);
+        $this->setIfExists('per_value_availability', $data ?? [], null);
     }
 
     /**
@@ -281,20 +274,6 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['email'] === null) {
-            $invalidProperties[] = "'email' can't be null";
-        }
-        if ((mb_strlen($this->container['email']) > 254)) {
-            $invalidProperties[] = "invalid value for 'email', the character length must be smaller than or equal to 254.";
-        }
-
-        if ($this->container['password'] === null) {
-            $invalidProperties[] = "'password' can't be null";
-        }
-        if ((mb_strlen($this->container['password']) < 1)) {
-            $invalidProperties[] = "invalid value for 'password', the character length must be bigger than or equal to 1.";
-        }
-
         return $invalidProperties;
     }
 
@@ -311,64 +290,28 @@ class LoginUserRequest implements ModelInterface, ArrayAccess, \JsonSerializable
 
 
     /**
-     * Gets email
+     * Gets per_value_availability
      *
-     * @return string
+     * @return array<string,\Gisl\Generated\OpenApi\Model\PerValueAvailabilityEntry>|null
      */
-    public function getEmail()
+    public function getPerValueAvailability()
     {
-        return $this->container['email'];
+        return $this->container['per_value_availability'];
     }
 
     /**
-     * Sets email
+     * Sets per_value_availability
      *
-     * @param string $email email
+     * @param array<string,\Gisl\Generated\OpenApi\Model\PerValueAvailabilityEntry>|null $per_value_availability Map of enum-value → `PerValueAvailabilityEntry`. Attached to an option's `per_value_availability` field when individual enum values need different availability tags.  Keys MUST be a subset of the option's `values[]` array. Used by the runtime capability endpoint ([I3 `eCWIpug8`](https://trello.com/c/eCWIpug8)) and sidecar `availability.json` ([I3b `GbQU8FaS`](https://trello.com/c/GbQU8FaS)) to surface per-value granularity. Consumed by SDK generators (TypeScript / PHP / Python / Rust) when emitting typed enum bindings with availability metadata.
      *
      * @return self
      */
-    public function setEmail($email)
+    public function setPerValueAvailability($per_value_availability)
     {
-        if (is_null($email)) {
-            throw new \InvalidArgumentException('non-nullable email cannot be null');
+        if (is_null($per_value_availability)) {
+            throw new \InvalidArgumentException('non-nullable per_value_availability cannot be null');
         }
-        if ((mb_strlen($email) > 254)) {
-            throw new \InvalidArgumentException('invalid length for $email when calling LoginUserRequest., must be smaller than or equal to 254.');
-        }
-
-        $this->container['email'] = $email;
-
-        return $this;
-    }
-
-    /**
-     * Gets password
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->container['password'];
-    }
-
-    /**
-     * Sets password
-     *
-     * @param string $password password
-     *
-     * @return self
-     */
-    public function setPassword($password)
-    {
-        if (is_null($password)) {
-            throw new \InvalidArgumentException('non-nullable password cannot be null');
-        }
-
-        if ((mb_strlen($password) < 1)) {
-            throw new \InvalidArgumentException('invalid length for $password when calling LoginUserRequest., must be bigger than or equal to 1.');
-        }
-
-        $this->container['password'] = $password;
+        $this->container['per_value_availability'] = $per_value_availability;
 
         return $this;
     }
