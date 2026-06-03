@@ -1,6 +1,6 @@
 <?php
 /**
- * LogoutUser200Response
+ * ResetPasswordRequest
  *
  * PHP version 8.1
  *
@@ -15,7 +15,7 @@
  *
  * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag/Last-Modified revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.31.0
+ * The version of the OpenAPI document: 2.35.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -32,7 +32,7 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * LogoutUser200Response Class Doc Comment
+ * ResetPasswordRequest Class Doc Comment
  *
  * @category Class
  * @package  Gisl\Generated\OpenApi
@@ -40,7 +40,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSerializable
+class ResetPasswordRequest implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -49,7 +49,7 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
      *
      * @var string
      */
-    protected static $openAPIModelName = 'logoutUser_200_response';
+    protected static $openAPIModelName = 'resetPassword_request';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -57,8 +57,8 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $openAPITypes = [
-        'success' => 'bool',
-        'data' => 'object'
+        'token' => 'string',
+        'password' => 'string'
     ];
 
     /**
@@ -69,8 +69,8 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'success' => null,
-        'data' => null
+        'token' => null,
+        'password' => null
     ];
 
     /**
@@ -79,8 +79,8 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'success' => false,
-        'data' => false
+        'token' => false,
+        'password' => false
     ];
 
     /**
@@ -169,8 +169,8 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $attributeMap = [
-        'success' => 'success',
-        'data' => 'data'
+        'token' => 'token',
+        'password' => 'password'
     ];
 
     /**
@@ -179,8 +179,8 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $setters = [
-        'success' => 'setSuccess',
-        'data' => 'setData'
+        'token' => 'setToken',
+        'password' => 'setPassword'
     ];
 
     /**
@@ -189,8 +189,8 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $getters = [
-        'success' => 'getSuccess',
-        'data' => 'getData'
+        'token' => 'getToken',
+        'password' => 'getPassword'
     ];
 
     /**
@@ -234,19 +234,6 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
         return self::$openAPIModelName;
     }
 
-    public const SUCCESS_TRUE = 'true';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getSuccessAllowableValues()
-    {
-        return [
-            self::SUCCESS_TRUE,
-        ];
-    }
 
     /**
      * Associative array for storing property values
@@ -263,8 +250,8 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('success', $data ?? [], null);
-        $this->setIfExists('data', $data ?? [], null);
+        $this->setIfExists('token', $data ?? [], null);
+        $this->setIfExists('password', $data ?? [], null);
     }
 
     /**
@@ -294,21 +281,20 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         $invalidProperties = [];
 
-        if ($this->container['success'] === null) {
-            $invalidProperties[] = "'success' can't be null";
+        if ($this->container['token'] === null) {
+            $invalidProperties[] = "'token' can't be null";
         }
-        $allowedValues = $this->getSuccessAllowableValues();
-        if (!is_null($this->container['success']) && !in_array($this->container['success'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'success', must be one of '%s'",
-                $this->container['success'],
-                implode("', '", $allowedValues)
-            );
+        if ((mb_strlen($this->container['token']) < 1)) {
+            $invalidProperties[] = "invalid value for 'token', the character length must be bigger than or equal to 1.";
         }
 
-        if ($this->container['data'] === null) {
-            $invalidProperties[] = "'data' can't be null";
+        if ($this->container['password'] === null) {
+            $invalidProperties[] = "'password' can't be null";
         }
+        if ((mb_strlen($this->container['password']) < 8)) {
+            $invalidProperties[] = "invalid value for 'password', the character length must be bigger than or equal to 8.";
+        }
+
         return $invalidProperties;
     }
 
@@ -325,65 +311,65 @@ class LogoutUser200Response implements ModelInterface, ArrayAccess, \JsonSeriali
 
 
     /**
-     * Gets success
+     * Gets token
      *
-     * @return bool
+     * @return string
      */
-    public function getSuccess()
+    public function getToken()
     {
-        return $this->container['success'];
+        return $this->container['token'];
     }
 
     /**
-     * Sets success
+     * Sets token
      *
-     * @param bool $success success
+     * @param string $token token
      *
      * @return self
      */
-    public function setSuccess($success)
+    public function setToken($token)
     {
-        if (is_null($success)) {
-            throw new \InvalidArgumentException('non-nullable success cannot be null');
+        if (is_null($token)) {
+            throw new \InvalidArgumentException('non-nullable token cannot be null');
         }
-        $allowedValues = $this->getSuccessAllowableValues();
-        if (!in_array($success, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'success', must be one of '%s'",
-                    $success,
-                    implode("', '", $allowedValues)
-                )
-            );
+
+        if ((mb_strlen($token) < 1)) {
+            throw new \InvalidArgumentException('invalid length for $token when calling ResetPasswordRequest., must be bigger than or equal to 1.');
         }
-        $this->container['success'] = $success;
+
+        $this->container['token'] = $token;
 
         return $this;
     }
 
     /**
-     * Gets data
+     * Gets password
      *
-     * @return object
+     * @return string
      */
-    public function getData()
+    public function getPassword()
     {
-        return $this->container['data'];
+        return $this->container['password'];
     }
 
     /**
-     * Sets data
+     * Sets password
      *
-     * @param object $data Empty object on logout success — preserves the `{ success: true, data: {...} }` envelope invariant from `info.description`. Logout has no return payload; the data slot is always `{}`.
+     * @param string $password password
      *
      * @return self
      */
-    public function setData($data)
+    public function setPassword($password)
     {
-        if (is_null($data)) {
-            throw new \InvalidArgumentException('non-nullable data cannot be null');
+        if (is_null($password)) {
+            throw new \InvalidArgumentException('non-nullable password cannot be null');
         }
-        $this->container['data'] = $data;
+
+        if ((mb_strlen($password) < 8)) {
+            throw new \InvalidArgumentException('invalid length for $password when calling ResetPasswordRequest., must be bigger than or equal to 8.');
+        }
+
+        $this->container['password'] = $password;
 
         return $this;
     }

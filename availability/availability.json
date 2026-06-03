@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 60,
+  "capabilities_version": 63,
   "endpoints": {
     "GET /api/operations/schema": {
       "auth": "optional",
@@ -71,11 +71,46 @@
       "operation_id": "readiness",
       "required_tier": null
     },
+    "PATCH /api/auth/profile": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "updateProfile",
+      "required_tier": null
+    },
     "POST /api/audio-watermark/decode": {
       "auth": "required",
       "availability": "stable",
       "identity_scoped": false,
       "operation_id": "decodeAudioWatermark",
+      "required_tier": null
+    },
+    "POST /api/auth/api-keys": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "createApiKey",
+      "required_tier": null
+    },
+    "POST /api/auth/change-password": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "changePassword",
+      "required_tier": null
+    },
+    "POST /api/auth/confirm-email-change": {
+      "auth": "anonymous",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "confirmEmailChange",
+      "required_tier": null
+    },
+    "POST /api/auth/forgot-password": {
+      "auth": "anonymous",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "forgotPassword",
       "required_tier": null
     },
     "POST /api/auth/login": {
@@ -90,6 +125,27 @@
       "availability": "stable",
       "identity_scoped": true,
       "operation_id": "logoutUser",
+      "required_tier": null
+    },
+    "POST /api/auth/register": {
+      "auth": "anonymous",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "registerUser",
+      "required_tier": null
+    },
+    "POST /api/auth/reset-password": {
+      "auth": "anonymous",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "resetPassword",
+      "required_tier": null
+    },
+    "POST /api/auth/verify-email": {
+      "auth": "anonymous",
+      "availability": "stable",
+      "identity_scoped": false,
+      "operation_id": "verifyEmail",
       "required_tier": null
     },
     "POST /api/contact": {
@@ -211,7 +267,7 @@
     "audio_overlay": {
       "availability": "planned",
       "default": false,
-      "description": "Mix a secondary audio asset (overlay) over a primary audio or\nvideo base. Use cases: DJ tags, podcast intros/outros, station\nIDs, jingles, branded mid-rolls.\n\n**Industry naming.** This is \"audio overlay\" or \"audio branding\"\n\u2014 NOT \"audio watermark\". Audio watermarking is steganographic\n(imperceptible identifier embedded in audio for ownership /\nforensic tracking) and is owned by the separate `audio_watermark`\noperation (planned per ticket I20).\n\nMulti-input (Path B with `role: base` + `role: overlay` per\n`JobInputV2.role`). `min_inputs: 2 = max_inputs: 2` for V2.0;\nmulti-overlay support is advertised as a planned feature\n(`features.multi_overlay_stack`) but Lambda-side implementation\ndeferred.\n\nThe overlay can be uploaded directly, imported externally, or\nreferenced from a vault connection per `WorkflowSource` (from\nI10). The base is whatever single-asset source the workflow\nupstream has \u2014 for `mime_groups.audio`, the base is the primary\naudio track; for `mime_groups.video`, the overlay is mixed into\nthe video's audio track and the visual track passes through\nuntouched.\n\nPer ADR-0001 \u00a71.3 (Tension 1 \u2014 `planned` operations return\n`feature_not_available` 422 until Lambda support ships). Per\nADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1 round 6.\n",
+      "description": "Mix a secondary audio asset (overlay) over a primary audio or\nvideo base. Use cases: DJ tags, podcast intros/outros, station\nIDs, jingles, branded mid-rolls.\n\n**Industry naming.** This is \"audio overlay\" or \"audio branding\"\n\u2014 NOT \"audio watermark\". Audio watermarking is steganographic\n(imperceptible identifier embedded in audio for ownership /\nforensic tracking) and is owned by the separate `audio_watermark`\noperation (planned per ticket I20).\n\nMulti-input (Path B with `role: base` + `role: overlay` per\n`JobInputV2.role`). `min_inputs: 2 = max_inputs: 2` for V2.0;\nmulti-overlay support is advertised as a planned feature\n(`features.multi_overlay_stack`) but Lambda-side implementation\ndeferred.\n\nEach input is a `MultiInputSource` \u2014 imported externally,\nreferenced from a vault connection, or an upstream `job_output`\n(uploads are NOT referenced directly inside inputs[]). An uploaded\noverlay or base enters via a `passthrough` source job referenced by\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh). The base\nis whatever single-asset source the workflow\nupstream has \u2014 for `mime_groups.audio`, the base is the primary\naudio track; for `mime_groups.video`, the overlay is mixed into\nthe video's audio track and the visual track passes through\nuntouched.\n\nPer ADR-0001 \u00a71.3 (Tension 1 \u2014 `planned` operations return\n`feature_not_available` 422 until Lambda support ships). Per\nADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1 round 6.\n",
       "features": {
         "multi_overlay_stack": {
           "availability": "planned",
@@ -1414,7 +1470,7 @@
     "custom_luma": {
       "availability": "planned",
       "default": false,
-      "description": "Apply a caller-uploaded luma matte (transition-mask) over a base\nvideo to produce a custom luma-matte transition effect. Inspired\nby Cloudinary's deprecated luma-matte custom transitions and\nintended as a paid-tier (`pro`+) creative feature.\n\n**NOT** related to FFmpeg's `xfade=custom` filter (which is an\nexpression-mode parameter on the same `xfade` filter). The\n`merge.transition.custom` value is tagged `planned` as an advisory\nthat points callers at this dedicated operation for caller-uploaded\nluma-matte transitions.\n\nMulti-input: exactly one input with `role: base` (the source\nvideo being transitioned) + exactly one input with\n`role: transition_mask` (the luma matte \u2014 a video whose pixel\nluminance drives the transition reveal \u2014 bright = revealed,\ndark = held). The mask can be uploaded directly, imported\nexternally, or referenced from a vault connection per\n`WorkflowSource` (from I10).\n\nPer ADR-0001 \u00a71.3 (Tension 1 \u2014 `planned` operations return\n`feature_not_available` HTTP 422 until Lambda support ships).\nPer ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F4 round 6\n(codex-corrected \u2014 `xfade=custom` is an expression, not a\ntransition; this operation is the deliberate alternative).\n",
+      "description": "Apply a caller-uploaded luma matte (transition-mask) over a base\nvideo to produce a custom luma-matte transition effect. Inspired\nby Cloudinary's deprecated luma-matte custom transitions and\nintended as a paid-tier (`pro`+) creative feature.\n\n**NOT** related to FFmpeg's `xfade=custom` filter (which is an\nexpression-mode parameter on the same `xfade` filter). The\n`merge.transition.custom` value is tagged `planned` as an advisory\nthat points callers at this dedicated operation for caller-uploaded\nluma-matte transitions.\n\nMulti-input: exactly one input with `role: base` (the source\nvideo being transitioned) + exactly one input with\n`role: transition_mask` (the luma matte \u2014 a video whose pixel\nluminance drives the transition reveal \u2014 bright = revealed,\ndark = held). Each input is a `MultiInputSource` \u2014 imported\nexternally, referenced from a vault connection, or an upstream\n`job_output` (uploads are NOT referenced directly inside inputs[]).\nAn uploaded base or mask enters via a `passthrough` source job\nreferenced by `{ type: job_output, from: <id> }` (per ticket\n4som89Uh).\n\nPer ADR-0001 \u00a71.3 (Tension 1 \u2014 `planned` operations return\n`feature_not_available` HTTP 422 until Lambda support ships).\nPer ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F4 round 6\n(codex-corrected \u2014 `xfade=custom` is an expression, not a\ntransition; this operation is the deliberate alternative).\n",
       "input_model": "multi",
       "max_inputs": 2,
       "mime_groups": {
@@ -1490,7 +1546,7 @@
     },
     "image_watermark": {
       "default": false,
-      "description": "Apply an image overlay (file or external source) onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). The overlay\ncan be an upload, an external_import handle, or a vault connection\nper WorkflowSource (ticket I10).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until Lambda\nsupport ships. Per Tension 1 (ADR-0001) + plan v5 \u00a7F4 round 6.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`) which routes through\nFFmpeg overlay + re-encode. Per ADR-0013.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 25 megapixels for image bases (V1 watermark\nprecedent retained); per-frame caps for animated GIF bases will be\ndefined when the corresponding Lambda support ships.\nPer ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n",
+      "description": "Apply an image overlay onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). Each input\nis a `MultiInputSource` \u2014 an external_import handle, a vault\nconnection, or an upstream `job_output` (uploads are NOT referenced\ndirectly inside inputs[]). To use an uploaded base or overlay, feed\nit through a `passthrough` source job and reference that job via\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until Lambda\nsupport ships. Per Tension 1 (ADR-0001) + plan v5 \u00a7F4 round 6.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`) which routes through\nFFmpeg overlay + re-encode. Per ADR-0013.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 25 megapixels for image bases (V1 watermark\nprecedent retained); per-frame caps for animated GIF bases will be\ndefined when the corresponding Lambda support ships.\nPer ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n",
       "features": {
         "multi_overlay_stack": {
           "availability": "planned",
@@ -2324,6 +2380,12 @@
       },
       "min_inputs": 2
     },
+    "passthrough": {
+      "availability": "planned",
+      "default": false,
+      "description": "Inert lossless source operation. A single-input source job whose\nSOLE operation is `passthrough` emits its source bytes UNCHANGED \u2014\nno compression, no transformation, no Lambda dispatch. The API\nself-completes the job at workflow-create/publish time: the job's\nterminal output IS the upload's `{bucket, key}` unchanged.\n\n**Purpose.** Lets an uploaded file enter a multi-input operation\n(`merge` / `archive` / `image_watermark` / etc.) LOSSLESSLY. Since\nV2 narrows `JobInputV2.source` to exclude upload-direct (`MultiInputSource`\n\u2014 job_output / external_import / connection only), an upload that\nmust feed a multi-input op enters via a `passthrough` source job\nreferenced downstream by `{ type: job_output, from: <id> }`. This\npreserves billing / DAG / lineage that direct upload-in-inputs[]\nwould bypass.\n\n**Distinct from `operations: []`.** An empty `operations[]` on a\nsingle-input upload job KEEPS its implicit-compress meaning (see\n`POST /api/workflows` description). `passthrough` is the EXPLICIT\nlossless opt-out chosen via the existing rule \"non-empty\n`operations[]` without `compress` = compression opt-out\" \u2014 it is a\nsole, named operation, not an empty chain.\n\n**Never published to SNS.** Because the API self-completes the job\nat publish, `passthrough` is INTENTIONALLY absent from the AsyncAPI\nrouting enums (`OperationType`, `OperationRequestAttributes.operation_type`)\nand has no `ops-passthrough` queue. It never appears on the wire as\na request message.\n\nMedia-agnostic (no `mime_groups`): it accepts any uploaded MIME and\ncopies it verbatim, so there are no per-MIME options or constraints.\n`availability: planned` \u2014 the API self-completion path is gated\nuntil the inputs[]-narrowing + passthrough mechanism ships\n(returns `feature_not_available` 422 until then). Per ticket\n[`4som89Uh`](https://trello.com/c/4som89Uh) + ADR-0004.\n",
+      "input_model": "single"
+    },
     "split": {
       "availability": "beta",
       "default": false,
@@ -2974,7 +3036,7 @@
     "video_watermark": {
       "availability": "beta",
       "default": false,
-      "description": "Apply an image overlay (file or external source) onto a base video\nasset using FFmpeg's `overlay` filter. Multi-input role-based:\nexactly one input with `role: base` (the source video) + exactly\none with `role: overlay` (the watermark image). The overlay can be\nan upload, an external_import handle, or a vault connection per\n`WorkflowSource`.\n\n**Dedicated operation, not an extension of `image_watermark`.**\n`image_watermark` is pure-Rust/no-FFmpeg and handles\nimage-on-image overlay only. `video_watermark` requires FFmpeg's\noverlay filter + re-encode + a different deploy unit (no\nstream-copy escape \u2014 overlay = pixel modification). Per ADR-0013.\n\n**Audio passthrough.** The base video's audio stream is preserved\nunchanged via FFmpeg stream-copy \u2014 the watermark applies to the\nvisual track only.\n\nActivated to `availability: beta` (Wave A, ticket\n[`c3uthIP4`](https://trello.com/c/c3uthIP4)): the cross-repo Lambda\nbackend is live (API accepts + publishes via the operations SNS\ntopic), so the operation and its `short_form` processing class are\nshape-stable + opt-in and MUST NOT return `feature_not_available`.\n`long_form` stays `planned` (no live Fargate worker yet \u2014 its\nlong-form path is not provisioned) and the `multi_overlay_stack`\nfeature stays `planned` (Lambda support unconfirmed); requesting\nthose planned sub-features DOES still return `feature_not_available`\nuntil they are separately activated. Per ADR-0013 + lambdas\npre-launch epic Wave A (ticket\n[`SlluxMBN`'s sibling `4NrRPCgh`](https://trello.com/c/4NrRPCgh)).\n",
+      "description": "Apply an image overlay onto a base video\nasset using FFmpeg's `overlay` filter. Multi-input role-based:\nexactly one input with `role: base` (the source video) + exactly\none with `role: overlay` (the watermark image). Each input is a\n`MultiInputSource` \u2014 an external_import handle, a vault connection,\nor an upstream `job_output` (uploads are NOT referenced directly\ninside inputs[]). To use an uploaded base or overlay, feed it through\na `passthrough` source job and reference it via `{ type: job_output,\nfrom: <id> }` (per ticket 4som89Uh).\n\n**Dedicated operation, not an extension of `image_watermark`.**\n`image_watermark` is pure-Rust/no-FFmpeg and handles\nimage-on-image overlay only. `video_watermark` requires FFmpeg's\noverlay filter + re-encode + a different deploy unit (no\nstream-copy escape \u2014 overlay = pixel modification). Per ADR-0013.\n\n**Audio passthrough.** The base video's audio stream is preserved\nunchanged via FFmpeg stream-copy \u2014 the watermark applies to the\nvisual track only.\n\nActivated to `availability: beta` (Wave A, ticket\n[`c3uthIP4`](https://trello.com/c/c3uthIP4)): the cross-repo Lambda\nbackend is live (API accepts + publishes via the operations SNS\ntopic), so the operation and its `short_form` processing class are\nshape-stable + opt-in and MUST NOT return `feature_not_available`.\n`long_form` stays `planned` (no live Fargate worker yet \u2014 its\nlong-form path is not provisioned) and the `multi_overlay_stack`\nfeature stays `planned` (Lambda support unconfirmed); requesting\nthose planned sub-features DOES still return `feature_not_available`\nuntil they are separately activated. Per ADR-0013 + lambdas\npre-launch epic Wave A (ticket\n[`SlluxMBN`'s sibling `4NrRPCgh`](https://trello.com/c/4NrRPCgh)).\n",
       "features": {
         "multi_overlay_stack": {
           "availability": "planned",
@@ -3071,7 +3133,7 @@
       }
     }
   },
-  "schema_version": "2.31.0",
+  "schema_version": "2.35.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
