@@ -1,6 +1,6 @@
 <?php
 /**
- * LoginUser200ResponseData
+ * RegisterUser422Response
  *
  * PHP version 8.1
  *
@@ -32,7 +32,7 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * LoginUser200ResponseData Class Doc Comment
+ * RegisterUser422Response Class Doc Comment
  *
  * @category Class
  * @package  Gisl\Generated\OpenApi
@@ -40,16 +40,16 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSerializable
+class RegisterUser422Response implements ModelInterface, ArrayAccess, \JsonSerializable
 {
-    public const DISCRIMINATOR = null;
+    public const DISCRIMINATOR = 'error_type';
 
     /**
      * The original name of the model.
      *
      * @var string
      */
-    protected static $openAPIModelName = 'loginUser_200_response_data';
+    protected static $openAPIModelName = 'registerUser_422_response';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -57,7 +57,14 @@ class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $openAPITypes = [
-        'user' => '\Gisl\Generated\OpenApi\Model\LoginUser200ResponseDataUser'
+        'success' => 'bool',
+        'error_type' => 'string',
+        'error' => 'string',
+        'message' => 'string',
+        'message_key' => 'string',
+        'locale' => 'string',
+        'message_params' => 'array<string,mixed>',
+        'details' => '\Gisl\Generated\OpenApi\Model\ValidationErrorEnvelopeDetailsInner[]'
     ];
 
     /**
@@ -68,7 +75,14 @@ class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSeri
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'user' => null
+        'success' => null,
+        'error_type' => null,
+        'error' => null,
+        'message' => null,
+        'message_key' => null,
+        'locale' => null,
+        'message_params' => null,
+        'details' => null
     ];
 
     /**
@@ -77,7 +91,14 @@ class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSeri
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'user' => false
+        'success' => false,
+        'error_type' => false,
+        'error' => false,
+        'message' => false,
+        'message_key' => false,
+        'locale' => false,
+        'message_params' => false,
+        'details' => false
     ];
 
     /**
@@ -166,7 +187,14 @@ class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $attributeMap = [
-        'user' => 'user'
+        'success' => 'success',
+        'error_type' => 'error_type',
+        'error' => 'error',
+        'message' => 'message',
+        'message_key' => 'message_key',
+        'locale' => 'locale',
+        'message_params' => 'message_params',
+        'details' => 'details'
     ];
 
     /**
@@ -175,7 +203,14 @@ class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $setters = [
-        'user' => 'setUser'
+        'success' => 'setSuccess',
+        'error_type' => 'setErrorType',
+        'error' => 'setError',
+        'message' => 'setMessage',
+        'message_key' => 'setMessageKey',
+        'locale' => 'setLocale',
+        'message_params' => 'setMessageParams',
+        'details' => 'setDetails'
     ];
 
     /**
@@ -184,7 +219,14 @@ class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSeri
      * @var string[]
      */
     protected static $getters = [
-        'user' => 'getUser'
+        'success' => 'getSuccess',
+        'error_type' => 'getErrorType',
+        'error' => 'getError',
+        'message' => 'getMessage',
+        'message_key' => 'getMessageKey',
+        'locale' => 'getLocale',
+        'message_params' => 'getMessageParams',
+        'details' => 'getDetails'
     ];
 
     /**
@@ -228,6 +270,34 @@ class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSeri
         return self::$openAPIModelName;
     }
 
+    public const SUCCESS_FALSE = 'false';
+    public const ERROR_TYPE_UNPROCESSABLE_ENTITY = 'unprocessable_entity';
+    public const ERROR_TYPE_EMAIL_SAME = 'email_same';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getSuccessAllowableValues()
+    {
+        return [
+            self::SUCCESS_FALSE,
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getErrorTypeAllowableValues()
+    {
+        return [
+            self::ERROR_TYPE_UNPROCESSABLE_ENTITY,
+            self::ERROR_TYPE_EMAIL_SAME,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -244,7 +314,17 @@ class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSeri
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('user', $data ?? [], null);
+        $this->setIfExists('success', $data ?? [], null);
+        $this->setIfExists('error_type', $data ?? [], null);
+        $this->setIfExists('error', $data ?? [], null);
+        $this->setIfExists('message', $data ?? [], null);
+        $this->setIfExists('message_key', $data ?? [], null);
+        $this->setIfExists('locale', $data ?? [], null);
+        $this->setIfExists('message_params', $data ?? [], null);
+        $this->setIfExists('details', $data ?? [], null);
+
+        // Initialize discriminator property with the model name.
+        $this->container['error_type'] = static::$openAPIModelName;
     }
 
     /**
@@ -274,8 +354,35 @@ class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSeri
     {
         $invalidProperties = [];
 
-        if ($this->container['user'] === null) {
-            $invalidProperties[] = "'user' can't be null";
+        if ($this->container['success'] === null) {
+            $invalidProperties[] = "'success' can't be null";
+        }
+        $allowedValues = $this->getSuccessAllowableValues();
+        if (!is_null($this->container['success']) && !in_array($this->container['success'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'success', must be one of '%s'",
+                $this->container['success'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['error_type'] === null) {
+            $invalidProperties[] = "'error_type' can't be null";
+        }
+        $allowedValues = $this->getErrorTypeAllowableValues();
+        if (!is_null($this->container['error_type']) && !in_array($this->container['error_type'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'error_type', must be one of '%s'",
+                $this->container['error_type'],
+                implode("', '", $allowedValues)
+            );
+        }
+
+        if ($this->container['error'] === null) {
+            $invalidProperties[] = "'error' can't be null";
+        }
+        if ($this->container['details'] === null) {
+            $invalidProperties[] = "'details' can't be null";
         }
         return $invalidProperties;
     }
@@ -293,28 +400,237 @@ class LoginUser200ResponseData implements ModelInterface, ArrayAccess, \JsonSeri
 
 
     /**
-     * Gets user
+     * Gets success
      *
-     * @return \Gisl\Generated\OpenApi\Model\LoginUser200ResponseDataUser
+     * @return bool
      */
-    public function getUser()
+    public function getSuccess()
     {
-        return $this->container['user'];
+        return $this->container['success'];
     }
 
     /**
-     * Sets user
+     * Sets success
      *
-     * @param \Gisl\Generated\OpenApi\Model\LoginUser200ResponseDataUser $user user
+     * @param bool $success success
      *
      * @return self
      */
-    public function setUser($user)
+    public function setSuccess($success)
     {
-        if (is_null($user)) {
-            throw new \InvalidArgumentException('non-nullable user cannot be null');
+        if (is_null($success)) {
+            throw new \InvalidArgumentException('non-nullable success cannot be null');
         }
-        $this->container['user'] = $user;
+        $allowedValues = $this->getSuccessAllowableValues();
+        if (!in_array($success, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'success', must be one of '%s'",
+                    $success,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['success'] = $success;
+
+        return $this;
+    }
+
+    /**
+     * Gets error_type
+     *
+     * @return string
+     */
+    public function getErrorType()
+    {
+        return $this->container['error_type'];
+    }
+
+    /**
+     * Sets error_type
+     *
+     * @param string $error_type Discriminator for the auth-422 `oneOf` (per ADR-0019). Names the envelope **shape**, not the failure — the failure is in `error`. `unprocessable_entity` for the generic flat auth rejections; `email_same` preserved as the profile-specific pre-existing wire value. Both resolve to this `AuthRejectionEnvelope`. Distinct from `ValidationErrorEnvelope.error_type` (`validation_error`), the other branch of the auth-422 `oneOf`.
+     *
+     * @return self
+     */
+    public function setErrorType($error_type)
+    {
+        if (is_null($error_type)) {
+            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
+        }
+        $allowedValues = $this->getErrorTypeAllowableValues();
+        if (!in_array($error_type, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'error_type', must be one of '%s'",
+                    $error_type,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+        $this->container['error_type'] = $error_type;
+
+        return $this;
+    }
+
+    /**
+     * Gets error
+     *
+     * @return string
+     */
+    public function getError()
+    {
+        return $this->container['error'];
+    }
+
+    /**
+     * Sets error
+     *
+     * @param string $error Stable machine-readable failure code. `UNPROCESSABLE_ENTITY` for the generic auth domain rejections (register / verify-email / api-keys); `EMAIL_SAME` for the profile new-email-equals-current rejection. Canonical English; never localised. See `ErrorEnvelope.error`.
+     *
+     * @return self
+     */
+    public function setError($error)
+    {
+        if (is_null($error)) {
+            throw new \InvalidArgumentException('non-nullable error cannot be null');
+        }
+        $this->container['error'] = $error;
+
+        return $this;
+    }
+
+    /**
+     * Gets message
+     *
+     * @return string|null
+     */
+    public function getMessage()
+    {
+        return $this->container['message'];
+    }
+
+    /**
+     * Sets message
+     *
+     * @param string|null $message Human-readable message, localised per `Accept-Language` (fallback `en-GB`). Never parse for control flow. See `ErrorEnvelope.message`.
+     *
+     * @return self
+     */
+    public function setMessage($message)
+    {
+        if (is_null($message)) {
+            throw new \InvalidArgumentException('non-nullable message cannot be null');
+        }
+        $this->container['message'] = $message;
+
+        return $this;
+    }
+
+    /**
+     * Gets message_key
+     *
+     * @return string|null
+     */
+    public function getMessageKey()
+    {
+        return $this->container['message_key'];
+    }
+
+    /**
+     * Sets message_key
+     *
+     * @param string|null $message_key Stable canonical lookup key for the message. Never localised. See `ErrorEnvelope.message_key`.
+     *
+     * @return self
+     */
+    public function setMessageKey($message_key)
+    {
+        if (is_null($message_key)) {
+            throw new \InvalidArgumentException('non-nullable message_key cannot be null');
+        }
+        $this->container['message_key'] = $message_key;
+
+        return $this;
+    }
+
+    /**
+     * Gets locale
+     *
+     * @return string|null
+     */
+    public function getLocale()
+    {
+        return $this->container['locale'];
+    }
+
+    /**
+     * Sets locale
+     *
+     * @param string|null $locale BCP 47 locale tag echoing `Content-Language`. See `ErrorEnvelope.locale`.
+     *
+     * @return self
+     */
+    public function setLocale($locale)
+    {
+        if (is_null($locale)) {
+            throw new \InvalidArgumentException('non-nullable locale cannot be null');
+        }
+        $this->container['locale'] = $locale;
+
+        return $this;
+    }
+
+    /**
+     * Gets message_params
+     *
+     * @return array<string,mixed>|null
+     */
+    public function getMessageParams()
+    {
+        return $this->container['message_params'];
+    }
+
+    /**
+     * Sets message_params
+     *
+     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. See `ErrorEnvelope.message_params`.
+     *
+     * @return self
+     */
+    public function setMessageParams($message_params)
+    {
+        if (is_null($message_params)) {
+            throw new \InvalidArgumentException('non-nullable message_params cannot be null');
+        }
+        $this->container['message_params'] = $message_params;
+
+        return $this;
+    }
+
+    /**
+     * Gets details
+     *
+     * @return \Gisl\Generated\OpenApi\Model\ValidationErrorEnvelopeDetailsInner[]
+     */
+    public function getDetails()
+    {
+        return $this->container['details'];
+    }
+
+    /**
+     * Sets details
+     *
+     * @param \Gisl\Generated\OpenApi\Model\ValidationErrorEnvelopeDetailsInner[] $details List of individual validation errors
+     *
+     * @return self
+     */
+    public function setDetails($details)
+    {
+        if (is_null($details)) {
+            throw new \InvalidArgumentException('non-nullable details cannot be null');
+        }
+        $this->container['details'] = $details;
 
         return $this;
     }

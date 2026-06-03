@@ -11,7 +11,7 @@ final class PassthroughMetadata
     public static function instance(): OperationMetadata
     {
         return new OperationMetadata(
-            availability: 'planned',
+            availability: 'beta',
             features: [],
             mime_groups: [],
         );

@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 63,
+  "capabilities_version": 64,
   "endpoints": {
     "GET /api/operations/schema": {
       "auth": "optional",
@@ -2381,9 +2381,9 @@
       "min_inputs": 2
     },
     "passthrough": {
-      "availability": "planned",
+      "availability": "beta",
       "default": false,
-      "description": "Inert lossless source operation. A single-input source job whose\nSOLE operation is `passthrough` emits its source bytes UNCHANGED \u2014\nno compression, no transformation, no Lambda dispatch. The API\nself-completes the job at workflow-create/publish time: the job's\nterminal output IS the upload's `{bucket, key}` unchanged.\n\n**Purpose.** Lets an uploaded file enter a multi-input operation\n(`merge` / `archive` / `image_watermark` / etc.) LOSSLESSLY. Since\nV2 narrows `JobInputV2.source` to exclude upload-direct (`MultiInputSource`\n\u2014 job_output / external_import / connection only), an upload that\nmust feed a multi-input op enters via a `passthrough` source job\nreferenced downstream by `{ type: job_output, from: <id> }`. This\npreserves billing / DAG / lineage that direct upload-in-inputs[]\nwould bypass.\n\n**Distinct from `operations: []`.** An empty `operations[]` on a\nsingle-input upload job KEEPS its implicit-compress meaning (see\n`POST /api/workflows` description). `passthrough` is the EXPLICIT\nlossless opt-out chosen via the existing rule \"non-empty\n`operations[]` without `compress` = compression opt-out\" \u2014 it is a\nsole, named operation, not an empty chain.\n\n**Never published to SNS.** Because the API self-completes the job\nat publish, `passthrough` is INTENTIONALLY absent from the AsyncAPI\nrouting enums (`OperationType`, `OperationRequestAttributes.operation_type`)\nand has no `ops-passthrough` queue. It never appears on the wire as\na request message.\n\nMedia-agnostic (no `mime_groups`): it accepts any uploaded MIME and\ncopies it verbatim, so there are no per-MIME options or constraints.\n`availability: planned` \u2014 the API self-completion path is gated\nuntil the inputs[]-narrowing + passthrough mechanism ships\n(returns `feature_not_available` 422 until then). Per ticket\n[`4som89Uh`](https://trello.com/c/4som89Uh) + ADR-0004.\n",
+      "description": "Inert lossless source operation. A single-input source job whose\nSOLE operation is `passthrough` emits its source bytes UNCHANGED \u2014\nno compression, no transformation, no Lambda dispatch. The API\nself-completes the job at workflow-create/publish time: the job's\nterminal output IS the upload's `{bucket, key}` unchanged.\n\n**Purpose.** Lets an uploaded file enter a multi-input operation\n(`merge` / `archive` / `image_watermark` / etc.) LOSSLESSLY. Since\nV2 narrows `JobInputV2.source` to exclude upload-direct (`MultiInputSource`\n\u2014 job_output / external_import / connection only), an upload that\nmust feed a multi-input op enters via a `passthrough` source job\nreferenced downstream by `{ type: job_output, from: <id> }`. This\npreserves billing / DAG / lineage that direct upload-in-inputs[]\nwould bypass.\n\n**Distinct from `operations: []`.** An empty `operations[]` on a\nsingle-input upload job KEEPS its implicit-compress meaning (see\n`POST /api/workflows` description). `passthrough` is the EXPLICIT\nlossless opt-out chosen via the existing rule \"non-empty\n`operations[]` without `compress` = compression opt-out\" \u2014 it is a\nsole, named operation, not an empty chain.\n\n**Never published to SNS.** Because the API self-completes the job\nat publish, `passthrough` is INTENTIONALLY absent from the AsyncAPI\nrouting enums (`OperationType`, `OperationRequestAttributes.operation_type`)\nand has no `ops-passthrough` queue. It never appears on the wire as\na request message.\n\nMedia-agnostic (no `mime_groups`): it accepts any uploaded MIME and\ncopies it verbatim, so there are no per-MIME options or constraints.\n`availability: beta` \u2014 the API self-completion path is LIVE (the\ninputs[]-narrowing + passthrough self-complete mechanism is deployed),\nso workflow-create accepts `passthrough` source jobs and MUST NOT\nreturn `feature_not_available`. Activated per ticket\n[`4som89Uh`](https://trello.com/c/4som89Uh) + ADR-0004 (planned\u2192beta\nflip; self-complete code deployed API-side).\n",
       "input_model": "single"
     },
     "split": {
@@ -3133,7 +3133,7 @@
       }
     }
   },
-  "schema_version": "2.35.0",
+  "schema_version": "2.37.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
