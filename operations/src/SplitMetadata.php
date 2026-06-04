@@ -74,10 +74,10 @@ final class SplitMetadata
                     per_input_options: [],
                 ),
                 'video' => new MimeGroupMetadata(
-                    availability: 'planned',
+                    availability: 'beta',
                     processing_class: [
                         'short_form' => new AvailabilityEntry(
-                            availability: 'planned',
+                            availability: 'beta',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT5M',
                                 max_input_size_bytes: 524288000,

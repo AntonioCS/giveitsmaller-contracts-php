@@ -1,6 +1,13 @@
 {
-  "capabilities_version": 64,
+  "capabilities_version": 67,
   "endpoints": {
+    "DELETE /api/auth/api-keys/{apiKeyId}": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "revokeApiKey",
+      "required_tier": null
+    },
     "GET /api/operations/schema": {
       "auth": "optional",
       "availability": "stable",
@@ -2389,7 +2396,7 @@
     "split": {
       "availability": "beta",
       "default": false,
-      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three modes** (audio + video; the mode discriminator gates which\nof the three options applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches FFmpeg /\nCloudinary / Shotstack / AWS MediaConvert conventions.\n\n**200-output hard cap** per ADR-0009 \u00a7D5\n(`OperationResult.outputs[].maxItems: 200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming**: 3-digit zero-padded \u2014 `output-001` ..\n`output-200`. Matches the convert PDF\u2192N precedent.\n\n**Output envelope binding** (per ADR-0014 + ADR-0009 \u00a7D2):\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based gapless page index)\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts. Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate `split-video-fargate`\nLambda (same `split` OperationType, different worker; routing\nvia `processing_class`). No schema-side discriminator beyond MIME\ndetection + `processing_class`.\n\n`availability: beta` for the `audio` mime_group (worker live on\nstaging per lambdas #161 \u2014 shape-stable + opt-in, MUST NOT 422).\nThe `image_gif`, `document_pdf`, and `video` mime_groups stay\n`availability: planned` until their cross-repo Lambda workers ship\n([`vKI0CFDu`](https://trello.com/c/vKI0CFDu) + lambdas L1); dispatch\nreturns `feature_not_available` (422) for those groups until then.\n\nPer ADR-0014.\n",
+      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three modes** (audio + video; the mode discriminator gates which\nof the three options applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches FFmpeg /\nCloudinary / Shotstack / AWS MediaConvert conventions.\n\n**200-output hard cap** per ADR-0009 \u00a7D5\n(`OperationResult.outputs[].maxItems: 200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming**: 3-digit zero-padded \u2014 `output-001` ..\n`output-200`. Matches the convert PDF\u2192N precedent.\n\n**Output envelope binding** (per ADR-0014 + ADR-0009 \u00a7D2):\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based gapless page index)\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts. Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate `split-video-fargate`\nLambda (same `split` OperationType, different worker; routing\nvia `processing_class`). No schema-side discriminator beyond MIME\ndetection + `processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(workers live on staging \u2014 shape-stable + opt-in, MUST NOT 422).\nVideo activates **short-form only**: `video.processing_class.short_form`\nis `beta`; `long_form` (the `split-video-fargate` worker) stays\n`availability: planned` until that worker ships. The `image_gif` and\n`document_pdf` mime_groups also stay `availability: planned` until their\ncross-repo Lambda workers ship ([`vKI0CFDu`](https://trello.com/c/vKI0CFDu)\n+ lambdas L1); dispatch returns `feature_not_available` (422) for the\nstill-planned groups/classes until then.\n\nPer ADR-0014.\n",
       "features": {
         "silence_mode_audio": {
           "availability": "planned",
@@ -2525,7 +2532,7 @@
           }
         },
         "video": {
-          "availability": "planned",
+          "availability": "beta",
           "mimes": [
             "video/mp4",
             "video/webm"
@@ -2602,7 +2609,7 @@
               "required_tier": "pro"
             },
             "short_form": {
-              "availability": "planned",
+              "availability": "beta",
               "constraints": {
                 "max_input_duration": "PT5M",
                 "max_input_size_bytes": 524288000,
@@ -3133,7 +3140,7 @@
       }
     }
   },
-  "schema_version": "2.37.0",
+  "schema_version": "2.41.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
