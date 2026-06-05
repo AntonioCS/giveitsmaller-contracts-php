@@ -282,20 +282,7 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         return self::$openAPIModelName;
     }
 
-    public const SUCCESS_FALSE = 'false';
     public const ERROR_TYPE_PROBE_PENDING = 'probe_pending';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getSuccessAllowableValues()
-    {
-        return [
-            self::SUCCESS_FALSE,
-        ];
-    }
 
     /**
      * Gets allowable values of the enum
@@ -369,14 +356,6 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
         if ($this->container['success'] === null) {
             $invalidProperties[] = "'success' can't be null";
         }
-        $allowedValues = $this->getSuccessAllowableValues();
-        if (!is_null($this->container['success']) && !in_array($this->container['success'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'success', must be one of '%s'",
-                $this->container['success'],
-                implode("', '", $allowedValues)
-            );
-        }
 
         if ($this->container['error_type'] === null) {
             $invalidProperties[] = "'error_type' can't be null";
@@ -442,16 +421,6 @@ class CreateWorkflow422Response implements ModelInterface, ArrayAccess, \JsonSer
     {
         if (is_null($success)) {
             throw new \InvalidArgumentException('non-nullable success cannot be null');
-        }
-        $allowedValues = $this->getSuccessAllowableValues();
-        if (!in_array($success, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'success', must be one of '%s'",
-                    $success,
-                    implode("', '", $allowedValues)
-                )
-            );
         }
         $this->container['success'] = $success;
 

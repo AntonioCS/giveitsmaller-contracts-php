@@ -283,20 +283,7 @@ class TierRestrictionResponse implements ModelInterface, ArrayAccess, \JsonSeria
         return self::$openAPIModelName;
     }
 
-    public const SUCCESS_FALSE = 'false';
     public const ERROR_TYPE_TIER_RESTRICTION = 'tier_restriction';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getSuccessAllowableValues()
-    {
-        return [
-            self::SUCCESS_FALSE,
-        ];
-    }
 
     /**
      * Gets allowable values of the enum
@@ -367,14 +354,6 @@ class TierRestrictionResponse implements ModelInterface, ArrayAccess, \JsonSeria
         if ($this->container['success'] === null) {
             $invalidProperties[] = "'success' can't be null";
         }
-        $allowedValues = $this->getSuccessAllowableValues();
-        if (!is_null($this->container['success']) && !in_array($this->container['success'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'success', must be one of '%s'",
-                $this->container['success'],
-                implode("', '", $allowedValues)
-            );
-        }
 
         if ($this->container['error'] === null) {
             $invalidProperties[] = "'error' can't be null";
@@ -433,16 +412,6 @@ class TierRestrictionResponse implements ModelInterface, ArrayAccess, \JsonSeria
     {
         if (is_null($success)) {
             throw new \InvalidArgumentException('non-nullable success cannot be null');
-        }
-        $allowedValues = $this->getSuccessAllowableValues();
-        if (!in_array($success, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'success', must be one of '%s'",
-                    $success,
-                    implode("', '", $allowedValues)
-                )
-            );
         }
         $this->container['success'] = $success;
 

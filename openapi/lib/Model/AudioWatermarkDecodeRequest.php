@@ -269,7 +269,7 @@ class AudioWatermarkDecodeRequest implements ModelInterface, ArrayAccess, \JsonS
     public function __construct(?array $data = null)
     {
         $this->setIfExists('file_id', $data ?? [], null);
-        $this->setIfExists('method_hint', $data ?? [], 'auto');
+        $this->setIfExists('method_hint', $data ?? [], null);
     }
 
     /**

@@ -234,20 +234,6 @@ class WorkflowCreateSuccessEnvelope implements ModelInterface, ArrayAccess, \Jso
         return self::$openAPIModelName;
     }
 
-    public const SUCCESS_TRUE = 'true';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getSuccessAllowableValues()
-    {
-        return [
-            self::SUCCESS_TRUE,
-        ];
-    }
-
     /**
      * Associative array for storing property values
      *
@@ -297,14 +283,6 @@ class WorkflowCreateSuccessEnvelope implements ModelInterface, ArrayAccess, \Jso
         if ($this->container['success'] === null) {
             $invalidProperties[] = "'success' can't be null";
         }
-        $allowedValues = $this->getSuccessAllowableValues();
-        if (!is_null($this->container['success']) && !in_array($this->container['success'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'success', must be one of '%s'",
-                $this->container['success'],
-                implode("', '", $allowedValues)
-            );
-        }
 
         if ($this->container['data'] === null) {
             $invalidProperties[] = "'data' can't be null";
@@ -345,16 +323,6 @@ class WorkflowCreateSuccessEnvelope implements ModelInterface, ArrayAccess, \Jso
     {
         if (is_null($success)) {
             throw new \InvalidArgumentException('non-nullable success cannot be null');
-        }
-        $allowedValues = $this->getSuccessAllowableValues();
-        if (!in_array($success, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'success', must be one of '%s'",
-                    $success,
-                    implode("', '", $allowedValues)
-                )
-            );
         }
         $this->container['success'] = $success;
 
