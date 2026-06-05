@@ -17,5 +17,8 @@ final class SplitAudioOptions
         public readonly ?float $interval = null,
         public readonly ?int $count = null,
         public readonly ?array $cut_points = null,
+        public readonly ?float $silence_threshold_db = null,
+        public readonly ?float $silence_min_duration = null,
+        public readonly ?SplitAudioSilenceHandling $silence_handling = null,
     ) {}
 }

@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Gisl\Generated\Operations\SplitAudioMode;
 use Gisl\Generated\Operations\SplitAudioOptions;
 use Gisl\Generated\Operations\SplitAudioPrecision;
+use Gisl\Generated\Operations\SplitAudioSilenceHandling;
 use Gisl\Generated\Operations\SplitDocumentPdfMode;
 use Gisl\Generated\Operations\SplitDocumentPdfOptions;
 use Gisl\Generated\Operations\SplitImageGifOptions;
@@ -123,9 +124,28 @@ final class SplitTest extends TestCase
         $this->assertSame('cut_points', $enum->value);
     }
 
+    public function testSplitAudioModeSilenceBackingValue(): void
+    {
+        $enum = SplitAudioMode::from('silence');
+        $this->assertSame(SplitAudioMode::Silence, $enum);
+        $this->assertSame('silence', $enum->value);
+    }
+
     public function testSplitAudioModeCaseCount(): void
     {
-        $this->assertCount(3, SplitAudioMode::cases());
+        $this->assertCount(4, SplitAudioMode::cases());
+    }
+
+    public function testSplitAudioSilenceHandlingKeepAtEndBackingValue(): void
+    {
+        $enum = SplitAudioSilenceHandling::from('keep_at_end');
+        $this->assertSame(SplitAudioSilenceHandling::KeepAtEnd, $enum);
+        $this->assertSame('keep_at_end', $enum->value);
+    }
+
+    public function testSplitAudioSilenceHandlingCaseCount(): void
+    {
+        $this->assertCount(1, SplitAudioSilenceHandling::cases());
     }
 
     public function testSplitAudioPrecisionFastBackingValue(): void
@@ -156,6 +176,9 @@ final class SplitTest extends TestCase
         $this->assertNull($obj->interval);
         $this->assertNull($obj->count);
         $this->assertNull($obj->cut_points);
+        $this->assertNull($obj->silence_threshold_db);
+        $this->assertNull($obj->silence_min_duration);
+        $this->assertNull($obj->silence_handling);
     }
 
     public function testSplitAudioOptionsFullConstruction(): void
@@ -165,6 +188,9 @@ final class SplitTest extends TestCase
             interval: 0.001,
             count: 2,
             cut_points: [1.0],
+            silence_threshold_db: 1.0,
+            silence_min_duration: 0.001,
+            silence_handling: SplitAudioSilenceHandling::KeepAtEnd,
             precision: SplitAudioPrecision::Fast,
         );
         $this->assertInstanceOf(SplitAudioOptions::class, $obj);

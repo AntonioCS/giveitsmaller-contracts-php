@@ -11,4 +11,5 @@ enum SplitAudioMode: string
     case Interval = 'interval';
     case Count = 'count';
     case CutPoints = 'cut_points';
+    case Silence = 'silence';
 }

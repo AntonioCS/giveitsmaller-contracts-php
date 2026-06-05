@@ -355,6 +355,12 @@ final class MergeMetadata
                         'crossfade_duration' => new OptionMetadata(
                             per_value_availability: [],
                         ),
+                        'trim_start' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'trim_end' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
                     ],
                 ),
                 'audio' => new MimeGroupMetadata(
@@ -385,6 +391,12 @@ final class MergeMetadata
                             per_value_availability: [],
                         ),
                         'gap_duration' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'trim_start' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'trim_end' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                     ],

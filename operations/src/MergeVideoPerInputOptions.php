@@ -11,5 +11,7 @@ final class MergeVideoPerInputOptions
     public function __construct(
         public readonly ?MergeVideoTransition $transition = null,
         public readonly ?float $crossfade_duration = null,
+        public readonly ?float $trim_start = null,
+        public readonly ?float $trim_end = null,
     ) {}
 }

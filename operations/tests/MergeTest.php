@@ -807,6 +807,8 @@ final class MergeTest extends TestCase
         $this->assertInstanceOf(MergeVideoPerInputOptions::class, $obj);
         $this->assertNull($obj->transition);
         $this->assertNull($obj->crossfade_duration);
+        $this->assertNull($obj->trim_start);
+        $this->assertNull($obj->trim_end);
     }
 
     public function testMergeVideoPerInputOptionsFullConstruction(): void
@@ -814,6 +816,8 @@ final class MergeTest extends TestCase
         $obj = new MergeVideoPerInputOptions(
             transition: MergeVideoTransition::None,
             crossfade_duration: 0.1,
+            trim_start: 0.0,
+            trim_end: 0.0,
         );
         $this->assertInstanceOf(MergeVideoPerInputOptions::class, $obj);
     }
@@ -879,6 +883,8 @@ final class MergeTest extends TestCase
         $this->assertNull($obj->transition);
         $this->assertNull($obj->crossfade_duration);
         $this->assertNull($obj->gap_duration);
+        $this->assertNull($obj->trim_start);
+        $this->assertNull($obj->trim_end);
     }
 
     public function testMergeAudioPerInputOptionsFullConstruction(): void
@@ -887,6 +893,8 @@ final class MergeTest extends TestCase
             transition: MergeAudioTransition::None,
             crossfade_duration: 0.0,
             gap_duration: 0.0,
+            trim_start: 0.0,
+            trim_end: 0.0,
         );
         $this->assertInstanceOf(MergeAudioPerInputOptions::class, $obj);
     }

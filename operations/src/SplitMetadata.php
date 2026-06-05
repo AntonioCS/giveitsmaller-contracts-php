@@ -14,8 +14,8 @@ final class SplitMetadata
             availability: 'beta',
             features: [
                 'silence_mode_audio' => new FeatureEntry(
-                    availability: 'planned',
-                    description: 'Silence-detect cut mode for audio (`mode: silence` — Cinavia/Resemble territory, server-side silence detection). OUT of V1 (Lambda support not yet shipped); declared as a future-work feature here so SDK consumers see the gate. Picked up as a separate post-launch ticket. ',
+                    availability: 'beta',
+                    description: 'Silence-detect cut mode for audio (`mode: silence` — server-side silence detection via the audio split worker\'s ffmpeg `silencedetect` filter). `beta`: shape-stable + opt-in. The worker is built; the mode ships dark until the API regenerates enum validation to accept `mode: silence`. The `silence` enum value carries a matching `per_value_availability: beta` on `audio.mode`. ',
                 ),
             ],
             mime_groups: [
@@ -56,7 +56,11 @@ final class SplitMetadata
                     per_mime_availability: [],
                     options: [
                         'mode' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'silence' => new AvailabilityEntry(
+                                    availability: 'beta',
+                                ),
+                            ],
                         ),
                         'interval' => new OptionMetadata(
                             per_value_availability: [],
@@ -65,6 +69,15 @@ final class SplitMetadata
                             per_value_availability: [],
                         ),
                         'cut_points' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'silence_threshold_db' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'silence_min_duration' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'silence_handling' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'precision' => new OptionMetadata(

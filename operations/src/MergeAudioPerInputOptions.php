@@ -12,5 +12,7 @@ final class MergeAudioPerInputOptions
         public readonly ?MergeAudioTransition $transition = null,
         public readonly ?float $crossfade_duration = null,
         public readonly ?float $gap_duration = null,
+        public readonly ?float $trim_start = null,
+        public readonly ?float $trim_end = null,
     ) {}
 }
