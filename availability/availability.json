@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 76,
+  "capabilities_version": 78,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -2419,6 +2419,94 @@
       "description": "Inert lossless source operation. A single-input source job whose\nSOLE operation is `passthrough` emits its source bytes UNCHANGED \u2014\nno compression, no transformation, no Lambda dispatch. The API\nself-completes the job at workflow-create/publish time: the job's\nterminal output IS the upload's `{bucket, key}` unchanged.\n\n**Purpose.** Lets an uploaded file enter a multi-input operation\n(`merge` / `archive` / `image_watermark` / etc.) LOSSLESSLY. Since\nV2 narrows `JobInputV2.source` to exclude upload-direct (`MultiInputSource`\n\u2014 job_output / external_import / connection only), an upload that\nmust feed a multi-input op enters via a `passthrough` source job\nreferenced downstream by `{ type: job_output, from: <id> }`. This\npreserves billing / DAG / lineage that direct upload-in-inputs[]\nwould bypass.\n\n**Distinct from `operations: []`.** An empty `operations[]` on a\nsingle-input upload job KEEPS its implicit-compress meaning (see\n`POST /api/workflows` description). `passthrough` is the EXPLICIT\nlossless opt-out chosen via the existing rule \"non-empty\n`operations[]` without `compress` = compression opt-out\" \u2014 it is a\nsole, named operation, not an empty chain.\n\n**Never published to SNS.** Because the API self-completes the job\nat publish, `passthrough` is INTENTIONALLY absent from the AsyncAPI\nrouting enums (`OperationType`, `OperationRequestAttributes.operation_type`)\nand has no `ops-passthrough` queue. It never appears on the wire as\na request message.\n\nMedia-agnostic (no `mime_groups`): it accepts any uploaded MIME and\ncopies it verbatim, so there are no per-MIME options or constraints.\n`availability: beta` \u2014 the API self-completion path is LIVE (the\ninputs[]-narrowing + passthrough self-complete mechanism is deployed),\nso workflow-create accepts `passthrough` source jobs and MUST NOT\nreturn `feature_not_available`. Activated per ticket\n[`4som89Uh`](https://trello.com/c/4som89Uh) + ADR-0004 (planned\u2192beta\nflip; self-complete code deployed API-side).\n",
       "input_model": "single"
     },
+    "render_variants": {
+      "availability": "planned",
+      "description": "Generate multiple resized / re-encoded image variants from a single source image in one operation (image fan-out).",
+      "input_model": "single",
+      "mime_groups": {
+        "image": {
+          "availability": "planned",
+          "mimes": [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+          ],
+          "options": {
+            "targets": {
+              "description": "One output variant per entry (max 20). Each variant is resized /\nre-encoded independently from the single decoded source; the\noperation succeeds or fails **atomically** \u2014 there are no partial\noutputs. Each result output echoes its target's `id` back as\n`target_id` so callers can map outputs to the variants they asked\nfor.\n\nDimensions: `fit: max` needs at least one of `width` / `height`\n(aspect preserved, output may be smaller than the box). `fit: crop`\nand `fit: scale` require BOTH `width` and `height` (they produce an\nexact-size output). A target whose dimensions exceed the source is\nrejected (`invalid_options`) unless `allow_upscale: true`.\n",
+              "items": {
+                "properties": {
+                  "allow_upscale": {
+                    "default": false,
+                    "description": "When false (default), a target whose dimensions exceed the source is rejected (`invalid_options`). Set true to permit upscaling. fit max never upscales.",
+                    "type": "boolean"
+                  },
+                  "background": {
+                    "default": "#FFFFFF",
+                    "description": "Background colour (hex #RRGGBB), applied only when flattening a transparent source into an opaque format (e.g. a PNG with alpha rendered to JPEG). Ignored otherwise.",
+                    "pattern": "^#[0-9A-Fa-f]{6}$",
+                    "type": "string"
+                  },
+                  "fit": {
+                    "default": "max",
+                    "description": "Resize mode. max = fit within the box, aspect preserved\n(output may be smaller); needs at least one dimension.\ncrop = fill and trim to exact width x height. scale = force\nexact width x height. crop and scale require both dimensions.\n",
+                    "enum": [
+                      "max",
+                      "crop",
+                      "scale"
+                    ],
+                    "type": "string"
+                  },
+                  "height": {
+                    "description": "Target height in pixels. Required together with width for fit crop/scale; for fit max, at least one of width/height is required.",
+                    "maximum": 16384,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "id": {
+                    "description": "Caller-assigned identifier, unique within the array\n(duplicate ids are rejected as `invalid_options`). Echoed\nverbatim as `target_id` on the matching result output \u2014 the\naddressing contract.\n",
+                    "maxLength": 64,
+                    "pattern": "^[A-Za-z0-9._-]+$",
+                    "type": "string"
+                  },
+                  "output_format": {
+                    "description": "Output format for this variant. When omitted, the source format is preserved.",
+                    "enum": [
+                      "jpeg",
+                      "png",
+                      "webp",
+                      "avif"
+                    ],
+                    "type": "string"
+                  },
+                  "quality": {
+                    "default": 85,
+                    "description": "Encode quality (lossy formats only \u2014 jpeg / webp / avif). Accepted but ignored for png (lossless).",
+                    "maximum": 100,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "width": {
+                    "description": "Target width in pixels. Required together with height for fit crop/scale; for fit max, at least one of width/height is required.",
+                    "maximum": 16384,
+                    "minimum": 1,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "type": "object"
+              },
+              "maxItems": 20,
+              "minItems": 1,
+              "required": true,
+              "type": "array"
+            }
+          }
+        }
+      }
+    },
     "split": {
       "availability": "beta",
       "default": false,
@@ -3202,7 +3290,7 @@
       }
     }
   },
-  "schema_version": "2.51.1",
+  "schema_version": "2.53.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
