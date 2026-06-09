@@ -1,6 +1,6 @@
 <?php
 /**
- * PerRoleCardinalityEntry
+ * ImageEncodeCapabilities
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * PerRoleCardinalityEntry Class Doc Comment
+ * ImageEncodeCapabilities Class Doc Comment
  *
  * @category Class
- * @description Per-role cardinality entry. &#x60;min: 0&#x60; makes the role optional. &#x60;max: 1&#x60; is the most common upper bound (one base, one overlay); future role-based ops may declare higher maxima (e.g. multi-overlay video composites). Both fields default to &#x60;1&#x60; when absent on a role key — but consumers SHOULD treat absence of either field as a contract bug surfaced by &#x60;scripts/check-per-role-cardinality.py&#x60; rather than silently defaulting.
+ * @description Image-encode-stage capability flags that gate format/quality choices for the canonical &#x60;encode&#x60; node. **Image-encode-scoped** — these caveats apply to the image encode pass only, not to video / audio / document encoding. Surfaced so FE/SDK do not promise capabilities the worker cannot honour (e.g. a WebP quality slider the convert path silently ignores).
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSerializable
+class ImageEncodeCapabilities implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      *
      * @var string
      */
-    protected static $openAPIModelName = 'PerRoleCardinalityEntry';
+    protected static $openAPIModelName = 'ImageEncodeCapabilities';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,8 +58,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $openAPITypes = [
-        'min' => 'int',
-        'max' => 'int'
+        'webp_quality_supported' => 'bool',
+        'background_flatten' => 'string'
     ];
 
     /**
@@ -70,8 +70,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'min' => null,
-        'max' => null
+        'webp_quality_supported' => null,
+        'background_flatten' => null
     ];
 
     /**
@@ -80,8 +80,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'min' => false,
-        'max' => false
+        'webp_quality_supported' => false,
+        'background_flatten' => false
     ];
 
     /**
@@ -170,8 +170,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $attributeMap = [
-        'min' => 'min',
-        'max' => 'max'
+        'webp_quality_supported' => 'webp_quality_supported',
+        'background_flatten' => 'background_flatten'
     ];
 
     /**
@@ -180,8 +180,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $setters = [
-        'min' => 'setMin',
-        'max' => 'setMax'
+        'webp_quality_supported' => 'setWebpQualitySupported',
+        'background_flatten' => 'setBackgroundFlatten'
     ];
 
     /**
@@ -190,8 +190,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $getters = [
-        'min' => 'getMin',
-        'max' => 'getMax'
+        'webp_quality_supported' => 'getWebpQualitySupported',
+        'background_flatten' => 'getBackgroundFlatten'
     ];
 
     /**
@@ -235,6 +235,23 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
         return self::$openAPIModelName;
     }
 
+    public const BACKGROUND_FLATTEN_UNSUPPORTED = 'unsupported';
+    public const BACKGROUND_FLATTEN_CONDITIONAL = 'conditional';
+    public const BACKGROUND_FLATTEN_SUPPORTED = 'supported';
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getBackgroundFlattenAllowableValues()
+    {
+        return [
+            self::BACKGROUND_FLATTEN_UNSUPPORTED,
+            self::BACKGROUND_FLATTEN_CONDITIONAL,
+            self::BACKGROUND_FLATTEN_SUPPORTED,
+        ];
+    }
 
     /**
      * Associative array for storing property values
@@ -251,8 +268,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('min', $data ?? [], null);
-        $this->setIfExists('max', $data ?? [], null);
+        $this->setIfExists('webp_quality_supported', $data ?? [], null);
+        $this->setIfExists('background_flatten', $data ?? [], null);
     }
 
     /**
@@ -282,18 +299,19 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
     {
         $invalidProperties = [];
 
-        if ($this->container['min'] === null) {
-            $invalidProperties[] = "'min' can't be null";
+        if ($this->container['webp_quality_supported'] === null) {
+            $invalidProperties[] = "'webp_quality_supported' can't be null";
         }
-        if (($this->container['min'] < 0)) {
-            $invalidProperties[] = "invalid value for 'min', must be bigger than or equal to 0.";
+        if ($this->container['background_flatten'] === null) {
+            $invalidProperties[] = "'background_flatten' can't be null";
         }
-
-        if ($this->container['max'] === null) {
-            $invalidProperties[] = "'max' can't be null";
-        }
-        if (($this->container['max'] < 1)) {
-            $invalidProperties[] = "invalid value for 'max', must be bigger than or equal to 1.";
+        $allowedValues = $this->getBackgroundFlattenAllowableValues();
+        if (!is_null($this->container['background_flatten']) && !in_array($this->container['background_flatten'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'background_flatten', must be one of '%s'",
+                $this->container['background_flatten'],
+                implode("', '", $allowedValues)
+            );
         }
 
         return $invalidProperties;
@@ -312,65 +330,65 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
 
 
     /**
-     * Gets min
+     * Gets webp_quality_supported
      *
-     * @return int
+     * @return bool
      */
-    public function getMin()
+    public function getWebpQualitySupported()
     {
-        return $this->container['min'];
+        return $this->container['webp_quality_supported'];
     }
 
     /**
-     * Sets min
+     * Sets webp_quality_supported
      *
-     * @param int $min Minimum input count for this role (0 = optional).
+     * @param bool $webp_quality_supported Whether quality-controlled (lossy) WebP encode is available. `false` today: WebP via the convert/encode path is lossless-only and the `quality` option is silently ignored (quality-controlled WebP is only reachable via `compress`). Consumers MUST NOT offer a WebP quality control when this is `false`.
      *
      * @return self
      */
-    public function setMin($min)
+    public function setWebpQualitySupported($webp_quality_supported)
     {
-        if (is_null($min)) {
-            throw new \InvalidArgumentException('non-nullable min cannot be null');
+        if (is_null($webp_quality_supported)) {
+            throw new \InvalidArgumentException('non-nullable webp_quality_supported cannot be null');
         }
-
-        if (($min < 0)) {
-            throw new \InvalidArgumentException('invalid value for $min when calling PerRoleCardinalityEntry., must be bigger than or equal to 0.');
-        }
-
-        $this->container['min'] = $min;
+        $this->container['webp_quality_supported'] = $webp_quality_supported;
 
         return $this;
     }
 
     /**
-     * Gets max
+     * Gets background_flatten
      *
-     * @return int
+     * @return string
      */
-    public function getMax()
+    public function getBackgroundFlatten()
     {
-        return $this->container['max'];
+        return $this->container['background_flatten'];
     }
 
     /**
-     * Sets max
+     * Sets background_flatten
      *
-     * @param int $max Maximum input count for this role. MUST be >= `min`.
+     * @param string $background_flatten Whether alpha→non-alpha background flattening is available at encode time. `conditional` today: flatten fires only when an alpha source is encoded to a non-alpha output (e.g. PNG→JPEG). - `unsupported`: never applied. - `conditional`: applied only on alpha→non-alpha transitions. - `supported`: always available.
      *
      * @return self
      */
-    public function setMax($max)
+    public function setBackgroundFlatten($background_flatten)
     {
-        if (is_null($max)) {
-            throw new \InvalidArgumentException('non-nullable max cannot be null');
+        if (is_null($background_flatten)) {
+            throw new \InvalidArgumentException('non-nullable background_flatten cannot be null');
         }
-
-        if (($max < 1)) {
-            throw new \InvalidArgumentException('invalid value for $max when calling PerRoleCardinalityEntry., must be bigger than or equal to 1.');
+        $allowedValues = $this->getBackgroundFlattenAllowableValues();
+        if (!in_array($background_flatten, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'background_flatten', must be one of '%s'",
+                    $background_flatten,
+                    implode("', '", $allowedValues)
+                )
+            );
         }
-
-        $this->container['max'] = $max;
+        $this->container['background_flatten'] = $background_flatten;
 
         return $this;
     }

@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 72,
+  "capabilities_version": 76,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -313,7 +313,7 @@
               "depends_on": {
                 "mode": "duck"
               },
-              "description": "Side-chain compression ratio. Higher values produce more\naggressive ducking. Only applies when `mode: duck`.\n",
+              "description": "How strongly the base ducks \u2014 higher values dip it more\naggressively. Only applies when `mode: duck`.\n",
               "max": 20.0,
               "min": 1.0,
               "type": "float"
@@ -333,7 +333,7 @@
               "depends_on": {
                 "mode": "duck"
               },
-              "description": "Side-chain threshold (dB). Base audio is ducked when the\noverlay exceeds this level. Only applies when `mode: duck`.\n",
+              "description": "Level (dB) the overlay must reach before the base audio\nducks. Only applies when `mode: duck`.\n",
               "max": 0.0,
               "min": -60.0,
               "type": "float"
@@ -382,7 +382,7 @@
             },
             "mode": {
               "default": "mix",
-              "description": "How the overlay combines with the base audio:\n- `mix`: simple sum (overlay + base; both audible).\n- `duck`: side-chain compress the base under the overlay\n  (base attenuates while overlay plays \u2014 broadcast pattern).\n- `replace`: mute the base for the overlay's duration\n  (overlay only; useful for hard-cut station IDs).\n",
+              "description": "How the overlay combines with the base audio:\n- `mix`: both play together (overlay added on top; both audible).\n- `duck`: the base audio dips while the overlay plays, then\n  returns \u2014 the broadcast voice-over pattern.\n- `replace`: mute the base for the overlay's duration\n  (overlay only; useful for hard-cut station IDs).\n",
               "per_value_availability": {
                 "duck": {
                   "availability": "planned"
@@ -465,7 +465,7 @@
               "depends_on": {
                 "mode": "duck"
               },
-              "description": "Side-chain compression ratio. Only applies when `mode: duck`.",
+              "description": "How strongly the base ducks \u2014 higher values dip it more aggressively. Only applies when `mode: duck`.",
               "max": 20.0,
               "min": 1.0,
               "type": "float"
@@ -485,7 +485,7 @@
               "depends_on": {
                 "mode": "duck"
               },
-              "description": "Side-chain threshold (dB). Only applies when `mode: duck`.",
+              "description": "Level (dB) the overlay must reach before the base audio ducks. Only applies when `mode: duck`.",
               "max": 0.0,
               "min": -60.0,
               "type": "float"
@@ -534,7 +534,7 @@
             },
             "mode": {
               "default": "mix",
-              "description": "Same modes as the audio mime_group. `replace` mutes the\nbase video's audio for the overlay's duration.\n",
+              "description": "Same modes as for audio overlays. `replace` mutes the\nbase video's audio for the overlay's duration.\n",
               "per_value_availability": {
                 "duck": {
                   "availability": "planned"
@@ -711,7 +711,7 @@
             },
             "method": {
               "default": "auto",
-              "description": "Watermarking algorithm:\n- `auto`: server selects the best available method for the\n  input (currently maps to `psychoacoustic`; will widen as\n  `neural` ships).\n- `psychoacoustic`: classical masking-curve embedding.\n  Resemble's open-source PerTh library provides the path-\n  to-prod reference implementation. Survives MP3/AAC at\n  moderate bitrates and broadcast chains.\n- `neural`: ML-based embedding (deep generative). Higher\n  survival under aggressive transcoding + analog-hole\n  capture; longer encoding time + non-deterministic.\n",
+              "description": "Watermarking algorithm:\n- `auto`: server selects the best available method for the\n  input (currently maps to `psychoacoustic`; will widen as\n  `neural` ships).\n- `psychoacoustic`: hides the mark below what the ear can\n  hear, so it stays inaudible. Survives MP3/AAC at moderate\n  bitrates and broadcast chains.\n- `neural`: machine-learning embedding. Higher survival\n  under aggressive re-encoding and microphone re-recording;\n  longer encoding time and non-deterministic.\n",
               "per_value_availability": {
                 "neural": {
                   "availability": "planned"
@@ -725,13 +725,13 @@
               ]
             },
             "payload": {
-              "description": "Optional caller-supplied payload to embed (max 256\ncharacters). Use cases: ownership marker, distribution\nchannel ID, license key. When omitted, the server\ngenerates a UUID-v7 `watermark_id` and embeds that\ninstead; the generated ID is returned on\n`OperationResult` so the caller can subsequently call\nthe decode endpoint to verify.\n",
+              "description": "Optional caller-supplied payload to embed (max 256\ncharacters). Use cases: ownership marker, distribution\nchannel ID, license key. When omitted, the server\ngenerates an identifier automatically and embeds that\ninstead; the generated ID is returned on\n`OperationResult` so the caller can subsequently call\nthe decode endpoint to verify.\n",
               "required": false,
               "type": "string"
             },
             "robustness": {
               "default": "compression_resistant",
-              "description": "Survival profile:\n- `light`: minimal payload-strength; smallest perceptual\n  footprint. Survives a single re-encode pass at moderate\n  bitrate.\n- `compression_resistant` (default): survives multiple\n  MP3/AAC re-encodes at typical streaming bitrates.\n- `broadcast_grade`: survives broadcast compression\n  chains, EQ, dynamic-range compression, and analog-hole\n  capture (microphone re-recording). Higher embedding\n  time + slightly larger perceptual footprint.\n",
+              "description": "Survival profile:\n- `light`: minimal payload-strength; smallest perceptual\n  footprint. Survives a single re-encode pass at moderate\n  bitrate.\n- `compression_resistant` (default): survives multiple\n  MP3/AAC re-encodes at typical streaming bitrates.\n- `broadcast_grade`: survives broadcast compression\n  chains, EQ, dynamic-range compression, and microphone\n  re-recording. Higher embedding time + slightly larger\n  perceptual footprint.\n",
               "type": "enum",
               "values": [
                 "light",
@@ -780,7 +780,7 @@
             },
             "method": {
               "default": "auto",
-              "description": "Watermarking algorithm. Same semantics as the `audio`\nmime_group; embedded into the video's audio track only.\n",
+              "description": "Watermarking algorithm. Same as for an audio input;\nembedded into the video's audio track only.\n",
               "per_value_availability": {
                 "neural": {
                   "availability": "planned"
@@ -794,13 +794,13 @@
               ]
             },
             "payload": {
-              "description": "Optional caller-supplied payload to embed (max 256\ncharacters). When omitted, the server generates a UUID-v7\n`watermark_id` and embeds that instead.\n",
+              "description": "Optional caller-supplied payload to embed (max 256\ncharacters). When omitted, the server generates an\nidentifier automatically and embeds that instead.\n",
               "required": false,
               "type": "string"
             },
             "robustness": {
               "default": "compression_resistant",
-              "description": "Survival profile. Same semantics as audio mime_group.",
+              "description": "Survival profile. Same as for an audio input.",
               "type": "enum",
               "values": [
                 "light",
@@ -884,12 +884,14 @@
               ]
             },
             "trim_end": {
-              "description": "Trim from end in seconds",
+              "availability": "planned",
+              "description": "Trim from end in seconds. Gated `planned` (qZI5EK9j) \u2014 see `trim_start`.",
               "min": 0,
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds",
+              "availability": "planned",
+              "description": "Trim from beginning in seconds. Gated `planned` (qZI5EK9j): no compression worker implements per-clip trim yet, so the server returns `feature_not_available` rather than accepting and silently ignoring it. Flips to `stable` when a worker lands; to trim today, chain a `split` op.\n",
               "min": 0,
               "type": "float"
             }
@@ -1174,7 +1176,7 @@
             },
             "encoding_mode": {
               "default": "crf",
-              "description": "crf = constant quality (variable file size), target_size = constrained file size (two-pass)",
+              "description": "crf = constant quality (variable file size), target_size = constrained file size",
               "type": "enum",
               "values": [
                 "crf",
@@ -1234,17 +1236,19 @@
               "depends_on": {
                 "encoding_mode": "target_size"
               },
-              "description": "Target output file size in bytes (min 1MB). Two-pass encoding to meet this target.",
+              "description": "Target output file size in bytes (min 1MB).",
               "min": 1048576,
               "type": "integer"
             },
             "trim_end": {
-              "description": "Trim from end in seconds",
+              "availability": "planned",
+              "description": "Trim from end in seconds. Gated `planned` (qZI5EK9j) \u2014 see `trim_start`.",
               "min": 0,
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds",
+              "availability": "planned",
+              "description": "Trim from beginning in seconds. Gated `planned` (qZI5EK9j): no compression worker implements per-clip trim yet, so the server returns `feature_not_available` rather than accepting and silently ignoring it. Flips to `stable` when a worker lands; to trim today, chain a `split` op.\n",
               "min": 0,
               "type": "float"
             },
@@ -1711,7 +1715,7 @@
             },
             "transition": {
               "default": "none",
-              "description": "Default transition between clips. Audio-only catalog\n(acrossfade-backed); see FORMAT.md \u00a7\"Audio vs visual\ntransition catalogs (merge)\" for additions policy. Future\nvalues (e.g. `fade_curve` variants) will be added with\n`per_value_availability` per ADR-0001 \u00a71.4.\n",
+              "description": "Transition between audio clips. `none` joins them with a\nhard cut; `crossfade` blends one into the next.\n",
               "type": "enum",
               "values": [
                 "none",
@@ -1819,7 +1823,7 @@
               "depends_on": {
                 "output_type": "video"
               },
-              "description": "Transition effect between images in the slideshow output.\nCatalog from FFmpeg 7.1.1 xfade filter (per ADR-0007). See\nper_value_availability for per-value rollout state. The\n`none` value is a sentinel (\"no transition / hard cut\"),\nnot an FFmpeg preset.\n",
+              "description": "Transition effect between images in the slideshow output.\n`none` means a hard cut with no transition. Some effects\nare still rolling out \u2014 check their availability.\n",
               "per_value_availability": {
                 "circleclose": {
                   "availability": "beta"
@@ -2028,7 +2032,7 @@
                   "always"
                 ]
               },
-              "description": "CRF (quality-targeted) vs target_size (two-pass to fixed file size).\n`target_size` is currently `codec=h264` only \u2014 libx265 / libvpx-vp9 / libsvtav1 each\nrequire a different two-pass invocation and are tracked as separate per-codec\nLambda follow-ups. The `per_value_depends_on` block above gates\n`encoding_mode=target_size` itself on `codec \u2208 [h264]`, so a request with\n`encoding_mode=target_size + codec \u2208 {h265, vp9, av1}` is rejected as\n`invalid_options` regardless of whether `target_size_bytes` is supplied \u2014\nclosing the gap left by the previous option-level `depends_on` (which only\ntriggered when `target_size_bytes` was present in the payload). Per ticket\n[`bsV3FWM5`](https://trello.com/c/bsV3FWM5).\n",
+              "description": "CRF aims for a quality level and lets the file size vary;\ntarget_size aims for a fixed output file size. `target_size`\ncurrently works with `codec=h264` only \u2014 a request pairing it\nwith another codec is rejected as `invalid_options`.\n",
               "per_value_depends_on": {
                 "target_size": {
                   "codec": [
@@ -2106,13 +2110,13 @@
                   "always"
                 ]
               },
-              "description": "Two-pass target file size in bytes (minimum 1 MiB). Required when\n`encoding_mode=target_size`. h264-only \u2014 the codec gate now lives on\n`encoding_mode.per_value_depends_on.target_size.codec` (per ticket\n[`bsV3FWM5`](https://trello.com/c/bsV3FWM5)); this option's own\n`depends_on` no longer duplicates it.\n\nPractical floor: a ~100 kbps post-AAC video bitrate (i.e. `target_size_bytes`\ncorresponding to less than ~100 kbps of video after subtracting the 160 kbps\nAAC audio track over the merged duration) is silently floored by libx264 and\nthe resulting file will not honour the requested `target_size_bytes`.\nPublishers targeting very small outputs should size accordingly.\n",
+              "description": "Target file size in bytes (minimum 1 MiB). Required when\n`encoding_mode=target_size`, which is h264-only.\n\nPractical floor: if the target works out to less than\n~100 kbps of video (after subtracting the ~160 kbps AAC audio\ntrack over the merged duration), the encoder floors it and the\nresulting file will not honour the requested `target_size_bytes`.\nPublishers targeting very small outputs should size accordingly.\n",
               "min": 1048576,
               "type": "integer"
             },
             "transition": {
               "default": "none",
-              "description": "Default transition between clips. Catalog from FFmpeg 7.1.1\nxfade filter (per ADR-0007). See per_value_availability for\nper-value rollout state.\n",
+              "description": "Default transition between clips. Some effects are still\nrolling out \u2014 check their availability.\n",
               "per_value_availability": {
                 "circleclose": {
                   "availability": "beta"
@@ -2422,7 +2426,7 @@
       "features": {
         "silence_mode_audio": {
           "availability": "beta",
-          "description": "Silence-detect cut mode for audio (`mode: silence` \u2014\nserver-side silence detection via the audio split worker's\nffmpeg `silencedetect` filter). `beta`: shape-stable + opt-in.\nThe worker is built; the mode ships dark until the API\nregenerates enum validation to accept `mode: silence`. The\n`silence` enum value carries a matching\n`per_value_availability: beta` on `audio.mode`.\n"
+          "description": "Silence-detect cut mode for audio (`mode: silence` \u2014\nserver-side silence detection in the audio split worker).\n`beta`: shape-stable + opt-in. The worker is built; the mode\nships dark until the API regenerates enum validation to accept\n`mode: silence`. The `silence` enum value carries a matching\n`per_value_availability: beta` on `audio.mode`.\n"
         }
       },
       "input_model": "single",
@@ -2490,7 +2494,7 @@
             },
             "precision": {
               "default": "fast",
-              "description": "Cut precision. Under `fast`, audio cuts are\npacket-boundary approximate (drift bounded by codec\npacket size \u2014 typically <= 23ms for AAC, <= 26ms for\nMP3). Under `exact`, the Lambda re-encodes to align cuts\nprecisely at the requested timestamps (slower, larger\noutput, but sample-accurate). Avoid \"keyframe\" language\n\u2014 that's video-only; audio drift is packet-boundary.\n",
+              "description": "Cut precision. Under `fast`, audio cuts are\npacket-boundary approximate (drift bounded by codec\npacket size \u2014 typically <= 23ms for AAC, <= 26ms for\nMP3). Under `exact`, the Lambda re-encodes to align cuts\nprecisely at the requested timestamps (slower, larger\noutput, but sample-accurate).\n",
               "type": "enum",
               "values": [
                 "fast",
@@ -2513,7 +2517,7 @@
               "depends_on": {
                 "mode": "silence"
               },
-              "description": "Minimum duration of a silence gap, in numeric seconds\n(sub-second allowed), before it is treated as a cut point.\nMaps to the ffmpeg `silencedetect` `duration` parameter.\n`min: 0.001` is the strict-positive sub-second idiom\n(cf. `interval`). Only valid when `mode: silence`.\n",
+              "description": "Minimum duration of a silence gap, in numeric seconds\n(sub-second allowed), before it is treated as a cut point.\n`min: 0.001` is the strict-positive sub-second idiom\n(cf. `interval`). Only valid when `mode: silence`.\n",
               "min": 0.001,
               "type": "float"
             },
@@ -2522,7 +2526,7 @@
               "depends_on": {
                 "mode": "silence"
               },
-              "description": "Noise floor below which audio counts as silence, in dBFS\n(negative; 0.0 = full scale). Maps to the ffmpeg\n`silencedetect` `noise` parameter. Strictly negative in\npractice; `max: 0.0` is the declarative ceiling (a 0 dB\n\"silence\" floor is degenerate, like the strict bounds\ndocumented in prose for `cut_points`). Only valid when\n`mode: silence`.\n",
+              "description": "Noise floor below which audio counts as silence, in dBFS\n(negative; 0.0 = full scale). Strictly negative in\npractice; `max: 0.0` is the declarative ceiling (a 0 dB\n\"silence\" floor is degenerate, like the strict bounds\ndocumented in prose for `cut_points`). Only valid when\n`mode: silence`.\n",
               "max": 0.0,
               "type": "float"
             }
@@ -2748,13 +2752,13 @@
             },
             "rotation": {
               "default": -45.0,
-              "description": "Rotation angle in degrees. Default -45\u00b0 suits tiled mode\n(angled diagonal pattern). Clamped to range. Tiled canvas is\ncapped at 25 megapixels pre-rotation with 5000 px maximum\nside length.\n",
+              "description": "Rotation angle in degrees. Default -45\u00b0 suits tiled mode\n(angled diagonal pattern). Clamped to range.\n",
               "max": 360.0,
               "min": -360.0,
               "type": "float"
             },
             "text": {
-              "description": "Watermark text. Must be non-empty. Rendered with bundled\nLiberation Sans (SIL OFL). A single text overlay is capped\nat 4 megapixels before rendering fails.\n",
+              "description": "Watermark text. Must be non-empty.\n",
               "required": true,
               "type": "string"
             },
@@ -3047,7 +3051,7 @@
               "type": "float"
             },
             "text": {
-              "description": "Watermark text. Must be non-empty. Rendered with bundled\nLiberation Sans (SIL OFL).\n",
+              "description": "Watermark text. Must be non-empty.\n",
               "required": true,
               "type": "string"
             },
@@ -3198,7 +3202,7 @@
       }
     }
   },
-  "schema_version": "2.46.0",
+  "schema_version": "2.51.1",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

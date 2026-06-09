@@ -67,9 +67,11 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'trim_start' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'trim_end' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
@@ -134,9 +136,11 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'trim_start' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'trim_end' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],

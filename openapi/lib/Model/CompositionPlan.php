@@ -1,6 +1,6 @@
 <?php
 /**
- * PerRoleCardinalityEntry
+ * CompositionPlan
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * PerRoleCardinalityEntry Class Doc Comment
+ * CompositionPlan Class Doc Comment
  *
  * @category Class
- * @description Per-role cardinality entry. &#x60;min: 0&#x60; makes the role optional. &#x60;max: 1&#x60; is the most common upper bound (one base, one overlay); future role-based ops may declare higher maxima (e.g. multi-overlay video composites). Both fields default to &#x60;1&#x60; when absent on a role key — but consumers SHOULD treat absence of either field as a contract bug surfaced by &#x60;scripts/check-per-role-cardinality.py&#x60; rather than silently defaulting.
+ * @description Canonical composition plan for a workflow — emitted on &#x60;WorkflowCreateResponse.composition_plan&#x60;. Tells callers the deterministic order the submitted operation set resolved to, the per-operation chain group/position, derived-artifact lineage, and the image-encode capabilities that gate format/quality choices.  &#x60;canonical_order&#x60; is the informational pipeline spine; per-op detail lives on each &#x60;CompositionPlanOperation&#x60;.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSerializable
+class CompositionPlan implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      *
      * @var string
      */
-    protected static $openAPIModelName = 'PerRoleCardinalityEntry';
+    protected static $openAPIModelName = 'CompositionPlan';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,8 +58,9 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $openAPITypes = [
-        'min' => 'int',
-        'max' => 'int'
+        'canonical_order' => 'string[]',
+        'jobs' => '\Gisl\Generated\OpenApi\Model\CompositionPlanJob[]',
+        'capabilities' => '\Gisl\Generated\OpenApi\Model\ImageEncodeCapabilities'
     ];
 
     /**
@@ -70,8 +71,9 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'min' => null,
-        'max' => null
+        'canonical_order' => null,
+        'jobs' => null,
+        'capabilities' => null
     ];
 
     /**
@@ -80,8 +82,9 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'min' => false,
-        'max' => false
+        'canonical_order' => false,
+        'jobs' => false,
+        'capabilities' => false
     ];
 
     /**
@@ -170,8 +173,9 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $attributeMap = [
-        'min' => 'min',
-        'max' => 'max'
+        'canonical_order' => 'canonical_order',
+        'jobs' => 'jobs',
+        'capabilities' => 'capabilities'
     ];
 
     /**
@@ -180,8 +184,9 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $setters = [
-        'min' => 'setMin',
-        'max' => 'setMax'
+        'canonical_order' => 'setCanonicalOrder',
+        'jobs' => 'setJobs',
+        'capabilities' => 'setCapabilities'
     ];
 
     /**
@@ -190,8 +195,9 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $getters = [
-        'min' => 'getMin',
-        'max' => 'getMax'
+        'canonical_order' => 'getCanonicalOrder',
+        'jobs' => 'getJobs',
+        'capabilities' => 'getCapabilities'
     ];
 
     /**
@@ -251,8 +257,9 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('min', $data ?? [], null);
-        $this->setIfExists('max', $data ?? [], null);
+        $this->setIfExists('canonical_order', $data ?? [], null);
+        $this->setIfExists('jobs', $data ?? [], null);
+        $this->setIfExists('capabilities', $data ?? [], null);
     }
 
     /**
@@ -282,20 +289,15 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
     {
         $invalidProperties = [];
 
-        if ($this->container['min'] === null) {
-            $invalidProperties[] = "'min' can't be null";
+        if ($this->container['canonical_order'] === null) {
+            $invalidProperties[] = "'canonical_order' can't be null";
         }
-        if (($this->container['min'] < 0)) {
-            $invalidProperties[] = "invalid value for 'min', must be bigger than or equal to 0.";
+        if ($this->container['jobs'] === null) {
+            $invalidProperties[] = "'jobs' can't be null";
         }
-
-        if ($this->container['max'] === null) {
-            $invalidProperties[] = "'max' can't be null";
+        if ($this->container['capabilities'] === null) {
+            $invalidProperties[] = "'capabilities' can't be null";
         }
-        if (($this->container['max'] < 1)) {
-            $invalidProperties[] = "invalid value for 'max', must be bigger than or equal to 1.";
-        }
-
         return $invalidProperties;
     }
 
@@ -312,65 +314,82 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
 
 
     /**
-     * Gets min
+     * Gets canonical_order
      *
-     * @return int
+     * @return string[]
      */
-    public function getMin()
+    public function getCanonicalOrder()
     {
-        return $this->container['min'];
+        return $this->container['canonical_order'];
     }
 
     /**
-     * Sets min
+     * Sets canonical_order
      *
-     * @param int $min Minimum input count for this role (0 = optional).
+     * @param string[] $canonical_order The canonical pipeline spine (single mutated stream), as an ordered list of `chain_group` stage names. The known image/AV spine is `merge` (fan-in) → `image_watermark` → `text_watermark` → `audio` → `encode` (terminal: convert+compress folded) → `derived` (fan-out: thumbnail/split). Informational — read per-op `chain_group` / `chain_position` for placement. The geometry stage is intentionally not exposed as a node for v1 (image resize/fit live inside the thumbnail node).  **Open string, NOT a fixed enum** (mirrors `ProcessingPlanJob.execution_pool`): the canonical model still covers operation classes not in the image-pipeline spine (`archive`, `passthrough`, `audio_to_video`, …) and the engine's final stage taxonomy is pinned alongside the canonicalization engine (later epic phases). The values are tightened to an enum in the same gated cut that adds `additionalProperties: false`, once the engine emits the complete set. Consumers MUST treat unknown stage names as forward-compatible.
      *
      * @return self
      */
-    public function setMin($min)
+    public function setCanonicalOrder($canonical_order)
     {
-        if (is_null($min)) {
-            throw new \InvalidArgumentException('non-nullable min cannot be null');
+        if (is_null($canonical_order)) {
+            throw new \InvalidArgumentException('non-nullable canonical_order cannot be null');
         }
-
-        if (($min < 0)) {
-            throw new \InvalidArgumentException('invalid value for $min when calling PerRoleCardinalityEntry., must be bigger than or equal to 0.');
-        }
-
-        $this->container['min'] = $min;
+        $this->container['canonical_order'] = $canonical_order;
 
         return $this;
     }
 
     /**
-     * Gets max
+     * Gets jobs
      *
-     * @return int
+     * @return \Gisl\Generated\OpenApi\Model\CompositionPlanJob[]
      */
-    public function getMax()
+    public function getJobs()
     {
-        return $this->container['max'];
+        return $this->container['jobs'];
     }
 
     /**
-     * Sets max
+     * Sets jobs
      *
-     * @param int $max Maximum input count for this role. MUST be >= `min`.
+     * @param \Gisl\Generated\OpenApi\Model\CompositionPlanJob[] $jobs Per-job canonical composition. Empty `[]` is permitted.
      *
      * @return self
      */
-    public function setMax($max)
+    public function setJobs($jobs)
     {
-        if (is_null($max)) {
-            throw new \InvalidArgumentException('non-nullable max cannot be null');
+        if (is_null($jobs)) {
+            throw new \InvalidArgumentException('non-nullable jobs cannot be null');
         }
+        $this->container['jobs'] = $jobs;
 
-        if (($max < 1)) {
-            throw new \InvalidArgumentException('invalid value for $max when calling PerRoleCardinalityEntry., must be bigger than or equal to 1.');
+        return $this;
+    }
+
+    /**
+     * Gets capabilities
+     *
+     * @return \Gisl\Generated\OpenApi\Model\ImageEncodeCapabilities
+     */
+    public function getCapabilities()
+    {
+        return $this->container['capabilities'];
+    }
+
+    /**
+     * Sets capabilities
+     *
+     * @param \Gisl\Generated\OpenApi\Model\ImageEncodeCapabilities $capabilities capabilities
+     *
+     * @return self
+     */
+    public function setCapabilities($capabilities)
+    {
+        if (is_null($capabilities)) {
+            throw new \InvalidArgumentException('non-nullable capabilities cannot be null');
         }
-
-        $this->container['max'] = $max;
+        $this->container['capabilities'] = $capabilities;
 
         return $this;
     }

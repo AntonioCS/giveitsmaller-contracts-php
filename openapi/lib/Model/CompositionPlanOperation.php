@@ -1,6 +1,6 @@
 <?php
 /**
- * PerRoleCardinalityEntry
+ * CompositionPlanOperation
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * PerRoleCardinalityEntry Class Doc Comment
+ * CompositionPlanOperation Class Doc Comment
  *
  * @category Class
- * @description Per-role cardinality entry. &#x60;min: 0&#x60; makes the role optional. &#x60;max: 1&#x60; is the most common upper bound (one base, one overlay); future role-based ops may declare higher maxima (e.g. multi-overlay video composites). Both fields default to &#x60;1&#x60; when absent on a role key — but consumers SHOULD treat absence of either field as a contract bug surfaced by &#x60;scripts/check-per-role-cardinality.py&#x60; rather than silently defaulting.
+ * @description The canonical view of one operation within a job — its symbolic composition node, resolved chain placement, and (for derived artifacts) the node it branches from.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSerializable
+class CompositionPlanOperation implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      *
      * @var string
      */
-    protected static $openAPIModelName = 'PerRoleCardinalityEntry';
+    protected static $openAPIModelName = 'CompositionPlanOperation';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,8 +58,13 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $openAPITypes = [
-        'min' => 'int',
-        'max' => 'int'
+        'node_id' => 'string',
+        'operation_id' => 'string',
+        'type' => '\Gisl\Generated\OpenApi\Model\OperationType',
+        'chain_group' => 'string',
+        'chain_position' => 'int',
+        'derived_from' => 'string',
+        'requested_operations' => '\Gisl\Generated\OpenApi\Model\OperationType[]'
     ];
 
     /**
@@ -70,8 +75,13 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'min' => null,
-        'max' => null
+        'node_id' => null,
+        'operation_id' => 'uuid',
+        'type' => null,
+        'chain_group' => null,
+        'chain_position' => null,
+        'derived_from' => null,
+        'requested_operations' => null
     ];
 
     /**
@@ -80,8 +90,13 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'min' => false,
-        'max' => false
+        'node_id' => false,
+        'operation_id' => false,
+        'type' => false,
+        'chain_group' => false,
+        'chain_position' => false,
+        'derived_from' => false,
+        'requested_operations' => false
     ];
 
     /**
@@ -170,8 +185,13 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $attributeMap = [
-        'min' => 'min',
-        'max' => 'max'
+        'node_id' => 'node_id',
+        'operation_id' => 'operation_id',
+        'type' => 'type',
+        'chain_group' => 'chain_group',
+        'chain_position' => 'chain_position',
+        'derived_from' => 'derived_from',
+        'requested_operations' => 'requested_operations'
     ];
 
     /**
@@ -180,8 +200,13 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $setters = [
-        'min' => 'setMin',
-        'max' => 'setMax'
+        'node_id' => 'setNodeId',
+        'operation_id' => 'setOperationId',
+        'type' => 'setType',
+        'chain_group' => 'setChainGroup',
+        'chain_position' => 'setChainPosition',
+        'derived_from' => 'setDerivedFrom',
+        'requested_operations' => 'setRequestedOperations'
     ];
 
     /**
@@ -190,8 +215,13 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $getters = [
-        'min' => 'getMin',
-        'max' => 'getMax'
+        'node_id' => 'getNodeId',
+        'operation_id' => 'getOperationId',
+        'type' => 'getType',
+        'chain_group' => 'getChainGroup',
+        'chain_position' => 'getChainPosition',
+        'derived_from' => 'getDerivedFrom',
+        'requested_operations' => 'getRequestedOperations'
     ];
 
     /**
@@ -251,8 +281,13 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('min', $data ?? [], null);
-        $this->setIfExists('max', $data ?? [], null);
+        $this->setIfExists('node_id', $data ?? [], null);
+        $this->setIfExists('operation_id', $data ?? [], null);
+        $this->setIfExists('type', $data ?? [], null);
+        $this->setIfExists('chain_group', $data ?? [], null);
+        $this->setIfExists('chain_position', $data ?? [], null);
+        $this->setIfExists('derived_from', $data ?? [], null);
+        $this->setIfExists('requested_operations', $data ?? [], null);
     }
 
     /**
@@ -282,18 +317,24 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
     {
         $invalidProperties = [];
 
-        if ($this->container['min'] === null) {
-            $invalidProperties[] = "'min' can't be null";
+        if ($this->container['node_id'] === null) {
+            $invalidProperties[] = "'node_id' can't be null";
         }
-        if (($this->container['min'] < 0)) {
-            $invalidProperties[] = "invalid value for 'min', must be bigger than or equal to 0.";
+        if (!is_null($this->container['operation_id']) && !preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['operation_id'])) {
+            $invalidProperties[] = "invalid value for 'operation_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
         }
 
-        if ($this->container['max'] === null) {
-            $invalidProperties[] = "'max' can't be null";
+        if ($this->container['type'] === null) {
+            $invalidProperties[] = "'type' can't be null";
         }
-        if (($this->container['max'] < 1)) {
-            $invalidProperties[] = "invalid value for 'max', must be bigger than or equal to 1.";
+        if ($this->container['chain_group'] === null) {
+            $invalidProperties[] = "'chain_group' can't be null";
+        }
+        if ($this->container['chain_position'] === null) {
+            $invalidProperties[] = "'chain_position' can't be null";
+        }
+        if (($this->container['chain_position'] < 0)) {
+            $invalidProperties[] = "invalid value for 'chain_position', must be bigger than or equal to 0.";
         }
 
         return $invalidProperties;
@@ -312,65 +353,200 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
 
 
     /**
-     * Gets min
+     * Gets node_id
      *
-     * @return int
+     * @return string
      */
-    public function getMin()
+    public function getNodeId()
     {
-        return $this->container['min'];
+        return $this->container['node_id'];
     }
 
     /**
-     * Sets min
+     * Sets node_id
      *
-     * @param int $min Minimum input count for this role (0 = optional).
+     * @param string $node_id Stable **symbolic** canonical node id (e.g. `original`, `processed_base`, `encode`, `thumbnail`). The correlation key used by `derived_from`, `DeliveryPlanOutput.node_id`, and `OperationDownload.node_id` to tie delivered files back to a canonical node. **NOT** the operation UUID. (SSE stays per-operation by design — it is not a delivery-plan projection and does not carry `node_id`.)
      *
      * @return self
      */
-    public function setMin($min)
+    public function setNodeId($node_id)
     {
-        if (is_null($min)) {
-            throw new \InvalidArgumentException('non-nullable min cannot be null');
+        if (is_null($node_id)) {
+            throw new \InvalidArgumentException('non-nullable node_id cannot be null');
         }
-
-        if (($min < 0)) {
-            throw new \InvalidArgumentException('invalid value for $min when calling PerRoleCardinalityEntry., must be bigger than or equal to 0.');
-        }
-
-        $this->container['min'] = $min;
+        $this->container['node_id'] = $node_id;
 
         return $this;
     }
 
     /**
-     * Gets max
+     * Gets operation_id
      *
-     * @return int
+     * @return string|null
      */
-    public function getMax()
+    public function getOperationId()
     {
-        return $this->container['max'];
+        return $this->container['operation_id'];
     }
 
     /**
-     * Sets max
+     * Sets operation_id
      *
-     * @param int $max Maximum input count for this role. MUST be >= `min`.
+     * @param string|null $operation_id UUID v7 format identifier (time-ordered)
      *
      * @return self
      */
-    public function setMax($max)
+    public function setOperationId($operation_id)
     {
-        if (is_null($max)) {
-            throw new \InvalidArgumentException('non-nullable max cannot be null');
+        if (is_null($operation_id)) {
+            throw new \InvalidArgumentException('non-nullable operation_id cannot be null');
         }
 
-        if (($max < 1)) {
-            throw new \InvalidArgumentException('invalid value for $max when calling PerRoleCardinalityEntry., must be bigger than or equal to 1.');
+        if ((!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", ObjectSerializer::toString($operation_id)))) {
+            throw new \InvalidArgumentException("invalid value for \$operation_id when calling CompositionPlanOperation., must conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.");
         }
 
-        $this->container['max'] = $max;
+        $this->container['operation_id'] = $operation_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets type
+     *
+     * @return \Gisl\Generated\OpenApi\Model\OperationType
+     */
+    public function getType()
+    {
+        return $this->container['type'];
+    }
+
+    /**
+     * Sets type
+     *
+     * @param \Gisl\Generated\OpenApi\Model\OperationType $type The canonical operation type of this node. For the folded terminal `encode` node (`chain_group: encode`) this is the encode operation `compress` — `convert` folds INTO it (a single terminal encode, never a double-encode), and the folded source operations are listed in `requested_operations`. For all other nodes `type` is the operation as submitted.
+     *
+     * @return self
+     */
+    public function setType($type)
+    {
+        if (is_null($type)) {
+            throw new \InvalidArgumentException('non-nullable type cannot be null');
+        }
+        $this->container['type'] = $type;
+
+        return $this;
+    }
+
+    /**
+     * Gets chain_group
+     *
+     * @return string
+     */
+    public function getChainGroup()
+    {
+        return $this->container['chain_group'];
+    }
+
+    /**
+     * Sets chain_group
+     *
+     * @param string $chain_group Which canonical stage this operation belongs to. **Open string, NOT a fixed enum** (mirrors `ProcessingPlanJob.execution_pool`) — the stage taxonomy is pinned alongside the canonicalization engine and tightened to an enum in the same gated cut that adds `additionalProperties: false`; consumers MUST treat unknown stage names as forward-compatible. The watermark stages are **media-agnostic overlay stages**, not image-only. Known stages: - `merge`: fan-in. - `image_watermark`: raster/image-overlay watermark stage —   covers the `image_watermark` AND `video_watermark` operation   types. - `text_watermark`: text-overlay watermark stage — covers the   `text_watermark` AND `video_text_watermark` operation types. - `audio`: audio operations (e.g. `audio_overlay`,   `audio_to_video`). - `encode`: the folded convert+compress terminal encode stage. - `derived`: fan-out artifact (`thumbnail` / `split`). Operation classes outside the image/AV spine (e.g. `archive` bundling, `passthrough` bridge jobs) carry their own stage names once the engine pins them. (The geometry/resize stage is not exposed as a node for v1 — image resize lives inside the `thumbnail` worker.)
+     *
+     * @return self
+     */
+    public function setChainGroup($chain_group)
+    {
+        if (is_null($chain_group)) {
+            throw new \InvalidArgumentException('non-nullable chain_group cannot be null');
+        }
+        $this->container['chain_group'] = $chain_group;
+
+        return $this;
+    }
+
+    /**
+     * Gets chain_position
+     *
+     * @return int
+     */
+    public function getChainPosition()
+    {
+        return $this->container['chain_position'];
+    }
+
+    /**
+     * Sets chain_position
+     *
+     * @param int $chain_position Deterministic resolved position within the canonical chain.
+     *
+     * @return self
+     */
+    public function setChainPosition($chain_position)
+    {
+        if (is_null($chain_position)) {
+            throw new \InvalidArgumentException('non-nullable chain_position cannot be null');
+        }
+
+        if (($chain_position < 0)) {
+            throw new \InvalidArgumentException('invalid value for $chain_position when calling CompositionPlanOperation., must be bigger than or equal to 0.');
+        }
+
+        $this->container['chain_position'] = $chain_position;
+
+        return $this;
+    }
+
+    /**
+     * Gets derived_from
+     *
+     * @return string|null
+     */
+    public function getDerivedFrom()
+    {
+        return $this->container['derived_from'];
+    }
+
+    /**
+     * Sets derived_from
+     *
+     * @param string|null $derived_from Set only for derived operations (`thumbnail`, `split`): the `node_id` this artifact branches from (symbolic; resolved from the request-side `OperationDefinition.base`). Absent for chain operations.
+     *
+     * @return self
+     */
+    public function setDerivedFrom($derived_from)
+    {
+        if (is_null($derived_from)) {
+            throw new \InvalidArgumentException('non-nullable derived_from cannot be null');
+        }
+        $this->container['derived_from'] = $derived_from;
+
+        return $this;
+    }
+
+    /**
+     * Gets requested_operations
+     *
+     * @return \Gisl\Generated\OpenApi\Model\OperationType[]|null
+     */
+    public function getRequestedOperations()
+    {
+        return $this->container['requested_operations'];
+    }
+
+    /**
+     * Sets requested_operations
+     *
+     * @param \Gisl\Generated\OpenApi\Model\OperationType[]|null $requested_operations Image-fold audit trail: the request operation types that were absorbed into this single canonical node. For the folded `encode` node this is e.g. `[convert, compress]` — the caller still submits both, but composition exposes ONE `encode` node (no false double-encode). Absent when no fold occurred.
+     *
+     * @return self
+     */
+    public function setRequestedOperations($requested_operations)
+    {
+        if (is_null($requested_operations)) {
+            throw new \InvalidArgumentException('non-nullable requested_operations cannot be null');
+        }
+        $this->container['requested_operations'] = $requested_operations;
 
         return $this;
     }

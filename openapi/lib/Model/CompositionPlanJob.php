@@ -1,6 +1,6 @@
 <?php
 /**
- * PerRoleCardinalityEntry
+ * CompositionPlanJob
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * PerRoleCardinalityEntry Class Doc Comment
+ * CompositionPlanJob Class Doc Comment
  *
  * @category Class
- * @description Per-role cardinality entry. &#x60;min: 0&#x60; makes the role optional. &#x60;max: 1&#x60; is the most common upper bound (one base, one overlay); future role-based ops may declare higher maxima (e.g. multi-overlay video composites). Both fields default to &#x60;1&#x60; when absent on a role key — but consumers SHOULD treat absence of either field as a contract bug surfaced by &#x60;scripts/check-per-role-cardinality.py&#x60; rather than silently defaulting.
+ * @description Per-job entry in a &#x60;CompositionPlan&#x60; — the canonical operations for one job.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSerializable
+class CompositionPlanJob implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      *
      * @var string
      */
-    protected static $openAPIModelName = 'PerRoleCardinalityEntry';
+    protected static $openAPIModelName = 'CompositionPlanJob';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,8 +58,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $openAPITypes = [
-        'min' => 'int',
-        'max' => 'int'
+        'job_id' => 'string',
+        'operations' => '\Gisl\Generated\OpenApi\Model\CompositionPlanOperation[]'
     ];
 
     /**
@@ -70,8 +70,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'min' => null,
-        'max' => null
+        'job_id' => 'uuid',
+        'operations' => null
     ];
 
     /**
@@ -80,8 +80,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'min' => false,
-        'max' => false
+        'job_id' => false,
+        'operations' => false
     ];
 
     /**
@@ -170,8 +170,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $attributeMap = [
-        'min' => 'min',
-        'max' => 'max'
+        'job_id' => 'job_id',
+        'operations' => 'operations'
     ];
 
     /**
@@ -180,8 +180,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $setters = [
-        'min' => 'setMin',
-        'max' => 'setMax'
+        'job_id' => 'setJobId',
+        'operations' => 'setOperations'
     ];
 
     /**
@@ -190,8 +190,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      * @var string[]
      */
     protected static $getters = [
-        'min' => 'getMin',
-        'max' => 'getMax'
+        'job_id' => 'getJobId',
+        'operations' => 'getOperations'
     ];
 
     /**
@@ -251,8 +251,8 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('min', $data ?? [], null);
-        $this->setIfExists('max', $data ?? [], null);
+        $this->setIfExists('job_id', $data ?? [], null);
+        $this->setIfExists('operations', $data ?? [], null);
     }
 
     /**
@@ -282,20 +282,16 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
     {
         $invalidProperties = [];
 
-        if ($this->container['min'] === null) {
-            $invalidProperties[] = "'min' can't be null";
+        if ($this->container['job_id'] === null) {
+            $invalidProperties[] = "'job_id' can't be null";
         }
-        if (($this->container['min'] < 0)) {
-            $invalidProperties[] = "invalid value for 'min', must be bigger than or equal to 0.";
-        }
-
-        if ($this->container['max'] === null) {
-            $invalidProperties[] = "'max' can't be null";
-        }
-        if (($this->container['max'] < 1)) {
-            $invalidProperties[] = "invalid value for 'max', must be bigger than or equal to 1.";
+        if (!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", $this->container['job_id'])) {
+            $invalidProperties[] = "invalid value for 'job_id', must be conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.";
         }
 
+        if ($this->container['operations'] === null) {
+            $invalidProperties[] = "'operations' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -312,65 +308,60 @@ class PerRoleCardinalityEntry implements ModelInterface, ArrayAccess, \JsonSeria
 
 
     /**
-     * Gets min
+     * Gets job_id
      *
-     * @return int
+     * @return string
      */
-    public function getMin()
+    public function getJobId()
     {
-        return $this->container['min'];
+        return $this->container['job_id'];
     }
 
     /**
-     * Sets min
+     * Sets job_id
      *
-     * @param int $min Minimum input count for this role (0 = optional).
+     * @param string $job_id UUID v7 format identifier (time-ordered)
      *
      * @return self
      */
-    public function setMin($min)
+    public function setJobId($job_id)
     {
-        if (is_null($min)) {
-            throw new \InvalidArgumentException('non-nullable min cannot be null');
+        if (is_null($job_id)) {
+            throw new \InvalidArgumentException('non-nullable job_id cannot be null');
         }
 
-        if (($min < 0)) {
-            throw new \InvalidArgumentException('invalid value for $min when calling PerRoleCardinalityEntry., must be bigger than or equal to 0.');
+        if ((!preg_match("/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/", ObjectSerializer::toString($job_id)))) {
+            throw new \InvalidArgumentException("invalid value for \$job_id when calling CompositionPlanJob., must conform to the pattern /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.");
         }
 
-        $this->container['min'] = $min;
+        $this->container['job_id'] = $job_id;
 
         return $this;
     }
 
     /**
-     * Gets max
+     * Gets operations
      *
-     * @return int
+     * @return \Gisl\Generated\OpenApi\Model\CompositionPlanOperation[]
      */
-    public function getMax()
+    public function getOperations()
     {
-        return $this->container['max'];
+        return $this->container['operations'];
     }
 
     /**
-     * Sets max
+     * Sets operations
      *
-     * @param int $max Maximum input count for this role. MUST be >= `min`.
+     * @param \Gisl\Generated\OpenApi\Model\CompositionPlanOperation[] $operations The job's operations in canonical (resolved) order.
      *
      * @return self
      */
-    public function setMax($max)
+    public function setOperations($operations)
     {
-        if (is_null($max)) {
-            throw new \InvalidArgumentException('non-nullable max cannot be null');
+        if (is_null($operations)) {
+            throw new \InvalidArgumentException('non-nullable operations cannot be null');
         }
-
-        if (($max < 1)) {
-            throw new \InvalidArgumentException('invalid value for $max when calling PerRoleCardinalityEntry., must be bigger than or equal to 1.');
-        }
-
-        $this->container['max'] = $max;
+        $this->container['operations'] = $operations;
 
         return $this;
     }
