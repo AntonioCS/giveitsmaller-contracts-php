@@ -16,7 +16,6 @@ use Gisl\Generated\Operations\CompressDocumentOfficeOptions;
 use Gisl\Generated\Operations\CompressDocumentPdfColorspace;
 use Gisl\Generated\Operations\CompressDocumentPdfOptions;
 use Gisl\Generated\Operations\CompressDocumentPdfProfile;
-use Gisl\Generated\Operations\CompressImageFit;
 use Gisl\Generated\Operations\CompressImageIccProfile;
 use Gisl\Generated\Operations\CompressImageMetadata;
 use Gisl\Generated\Operations\CompressImageMode;
@@ -56,32 +55,6 @@ final class CompressTest extends TestCase
     public function testCompressImageModeCaseCount(): void
     {
         $this->assertCount(3, CompressImageMode::cases());
-    }
-
-    public function testCompressImageFitMaxBackingValue(): void
-    {
-        $enum = CompressImageFit::from('max');
-        $this->assertSame(CompressImageFit::Max, $enum);
-        $this->assertSame('max', $enum->value);
-    }
-
-    public function testCompressImageFitCropBackingValue(): void
-    {
-        $enum = CompressImageFit::from('crop');
-        $this->assertSame(CompressImageFit::Crop, $enum);
-        $this->assertSame('crop', $enum->value);
-    }
-
-    public function testCompressImageFitScaleBackingValue(): void
-    {
-        $enum = CompressImageFit::from('scale');
-        $this->assertSame(CompressImageFit::Scale, $enum);
-        $this->assertSame('scale', $enum->value);
-    }
-
-    public function testCompressImageFitCaseCount(): void
-    {
-        $this->assertCount(3, CompressImageFit::cases());
     }
 
     public function testCompressImageMetadataAllBackingValue(): void
@@ -204,13 +177,9 @@ final class CompressTest extends TestCase
         $this->assertSame(CompressImageMode::Lossy, $obj->mode);
         $this->assertSame(CompressImageMetadata::All, $obj->metadata);
         $this->assertSame(CompressImageIccProfile::Preserve, $obj->icc_profile);
-        $this->assertSame(true, $obj->auto_orient);
         $this->assertSame(true, $obj->progressive);
         $this->assertSame(CompressImageOutputFormat::Original, $obj->output_format);
         $this->assertNull($obj->quality);
-        $this->assertNull($obj->width);
-        $this->assertNull($obj->height);
-        $this->assertNull($obj->fit);
     }
 
     public function testCompressImageOptionsFullConstruction(): void
@@ -218,12 +187,8 @@ final class CompressTest extends TestCase
         $obj = new CompressImageOptions(
             mode: CompressImageMode::Lossy,
             quality: 1,
-            width: 1,
-            height: 1,
-            fit: CompressImageFit::Max,
             metadata: CompressImageMetadata::All,
             icc_profile: CompressImageIccProfile::Preserve,
-            auto_orient: true,
             progressive: true,
             output_format: CompressImageOutputFormat::Original,
         );

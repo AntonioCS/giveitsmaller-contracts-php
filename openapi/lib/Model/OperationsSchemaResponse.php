@@ -13,9 +13,9 @@
 /**
  * GISL Compression API
  *
- * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag/Last-Modified revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
+ * REST API for the GISL (Give It Smaller) file compression and processing service.  **Architecture:** - Upload files to get a `file_id` - Create workflows referencing uploaded files with operations (compress, thumbnail, image_watermark, text_watermark, merge, archive, convert, custom_luma, audio_overlay, audio_watermark) - Poll status, stream SSE events, or receive webhook callbacks - Download results per operation output  **Response envelope:** All mutation and query endpoints return `{ success: true, data: {...} }` on success and `{ success: false, error: \"...\", details: [...] }` on failure. Exceptions: `GET /api/operations/schema` returns raw JSON (per-tier private caching with ETag revalidation per ADR-0002 + I3), health probes return flat objects, and `POST /api/contact` returns 204 with no body.  **Availability metadata.** This spec uses the `x-availability` vendor extension as **decorative documentation only**. Per [ADR-0001](../docs/decisions/0001-contract-first-availability.md) §1.5, the runtime endpoint `GET /api/operations/schema` (ticket I3) is the authoritative source; the sidecar `availability.json` (ticket I3b) is the authoritative companion (generated, never hand-edited; CI cross-checks runtime ⇄ sidecar). SDKs MUST NOT depend on `x-availability` reaching generated code — code-generators that surface vendor extensions may emit it as documentation, but consumers read availability from the runtime endpoint, not from the generated bindings.  The 5-value vocabulary (`stable | beta | experimental | planned | deprecated`) is defined in the `AvailabilityValue` schema. See `schemas/FORMAT.md` §Availability Taxonomy for the operational rules (parser obligation: absent = stable; per-enum-value granularity is the `per_value_availability` primitive landed via ticket I17).  **Localisation (per ticket [I26](https://trello.com/c/rcnqwgI4)).**  Error responses + paused/blocked workflow statuses carry a localised human-readable `message` alongside a stable, never-localised `message_key`. Machine-readable fields (`error`, enum values, status codes) stay canonical English.  - **Currently committed locales:** `en-GB` only (per ticket   [`4GKyuYo6`](https://trello.com/c/4GKyuYo6)). The I26 carrier   shape (`Accept-Language` + `Content-Language` + `Vary` headers +   `locale` envelope field + `message_key` + `message_params`) is   stable and exercised; the **catalog** of translated `message`   strings is en-GB-only at runtime today. Additional locales (e.g.   `pt-PT`) will be advertised by name when their catalogs ship —   the request/response carrier shape does NOT change when a new   locale lands. Treat unrequested locales as \"machine-code +   `message_key` path is committed; localised `message` prose is   not\" until this prose enumerates them by name. - **Request:** `Accept-Language` header per RFC 9110 §12.5.4 (q-value   negotiation supported). The server selects the best-match locale   from its supported list; falls back to `en-GB` when no match —   which, until additional catalogs land, is every non-`en-GB`   `Accept-Language`. - **Response:** `Content-Language: <locale>` echo on every localised   response; `Vary: Accept-Language` on every response (CDN/cache   correctness — different `Accept-Language` requests produce   different responses). `Vary` is emitted unconditionally so the   header contract does not flip when a second locale ships. - **Fallback locale:** `en-GB` (also the canonical locale for   `message_key` translations and English `message` prose). - **SDK guidance:** switch on `error` (machine code) for typed   error branches; surface `message_key` to client-side i18n   catalogs (SDK companion work tracked at X19, cross-repo);   display `message` for end-user UI; **never parse `message` for   control flow** — it changes per locale.  Carrier shape lives on `ErrorEnvelope` (envelope-level optional `message_key` + `message` + `locale` + `message_params`) and `ValidationErrorEnvelope` (also per-`details[]` entry). Existing 402 / 403 / 422 envelopes (`BalanceExhaustedResponse`, `FeatureNotAvailableResponse`, `FeatureTierRestrictedResponse`, `WorkflowPausedDetail`) inherit the convention.  **Upload thresholds (per tickets [u0ar7Yye](https://trello.com/c/u0ar7Yye) + [58nBQLWQ](https://trello.com/c/58nBQLWQ)).** Canonical upload constants (single-shot cap, multipart chunk size, multipart concurrency default, multipart first-chunk size) live on the `UploadThresholds` schema with `const:`-pinned values. SDK generators emit these as typed binding constants so frontend / API / SDKs reference one source of truth instead of hardcoding magic numbers. A runtime `GET /api/uploads/limits` endpoint for dynamic discovery (per-tier / per-environment overrides) is a deferred follow-up.
  *
- * The version of the OpenAPI document: 2.53.0
+ * The version of the OpenAPI document: 2.60.0
  * Generated by: https://openapi-generator.tech
  * Generator version: 7.21.0
  */
@@ -35,7 +35,7 @@ use \Gisl\Generated\OpenApi\ObjectSerializer;
  * OperationsSchemaResponse Class Doc Comment
  *
  * @category Class
- * @description Operations meta-schema. Describes all available operation types, their options, constraints, defaults, MIME type applicability, and **availability metadata** (operation/mime_group/option-level via &#x60;availability:&#x60; per ADR-0001 §1.3 + ticket I1; per-enum-value via &#x60;per_value_availability:&#x60; per ADR-0001 §1.4 + ticket I17).  Each operation defines options with types, constraints, and conditional dependencies (via &#x60;depends_on&#x60;). Clients use this to build dynamic forms and validate options before submission.  **Tier-scoped per caller.** The response varies by the caller&#39;s subscription tier (&#x60;free&#x60; / &#x60;pro&#x60; / &#x60;enterprise&#x60;) — features gated by &#x60;required_tier&#x60; are rendered as &#x60;availability: planned&#x60; (or the appropriate tier-restriction state) for callers below the gating tier. Anonymous (unauthenticated) callers receive the &#x60;free&#x60; tier baseline (&#x60;user_tier: null&#x60; on the wire).  **Caching.** Per-tier private caching with ETag-based revalidation (per ADR-0002). Public CDN caching is NOT used because the cache key includes the caller&#39;s &#x60;user_tier&#x60;. Clients send &#x60;If-None-Match&#x60; (and/or &#x60;If-Modified-Since&#x60;) to revalidate; the server returns &#x60;304 Not Modified&#x60; when fresh.  Cache-key composition: &#x60;user_tier + schema_version + capabilities_version + environment&#x60;.
+ * @description Operations meta-schema. Describes all available operation types, their options, constraints, defaults, MIME type applicability, and **availability metadata** (operation/mime_group/option-level via &#x60;availability:&#x60; per ADR-0001 §1.3 + ticket I1; per-enum-value via &#x60;per_value_availability:&#x60; per ADR-0001 §1.4 + ticket I17).  Each operation defines options with types, constraints, and conditional dependencies (via &#x60;depends_on&#x60;). Clients use this to build dynamic forms and validate options before submission.  **Tier-scoped per caller.** The response varies by the caller&#39;s subscription tier (&#x60;free&#x60; / &#x60;pro&#x60; / &#x60;enterprise&#x60;) — features gated by &#x60;required_tier&#x60; are rendered as &#x60;availability: planned&#x60; (or the appropriate tier-restriction state) for callers below the gating tier. Anonymous (unauthenticated) callers receive the &#x60;free&#x60; tier baseline (&#x60;user_tier: null&#x60; on the wire).  **Caching.** Per-tier private caching with ETag-based revalidation (per ADR-0002). Public CDN caching is NOT used because the cache key includes the caller&#39;s &#x60;user_tier&#x60;. Clients send &#x60;If-None-Match&#x60; to revalidate; the server returns &#x60;304 Not Modified&#x60; when fresh. The content &#x60;ETag&#x60; is the sole conditional validator — &#x60;If-Modified-Since&#x60; is not honored and &#x60;Last-Modified&#x60; is informational only (per &#x60;sUyA9ZXD&#x60;).  Cache-key composition: &#x60;user_tier + schema_version + capabilities_version + environment&#x60;.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -66,7 +66,8 @@ class OperationsSchemaResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'user_tier' => '\Gisl\Generated\OpenApi\Model\UserTier',
         'operations' => 'array<string,\Gisl\Generated\OpenApi\Model\OperationSchemaDefinition>',
         'endpoints' => 'array<string,\Gisl\Generated\OpenApi\Model\EndpointProjection>',
-        'workflow_features' => '\Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeatures'
+        'workflow_features' => '\Gisl\Generated\OpenApi\Model\OperationsSchemaResponseWorkflowFeatures',
+        'image_encode_capabilities' => '\Gisl\Generated\OpenApi\Model\ImageEncodeCapabilities'
     ];
 
     /**
@@ -85,7 +86,8 @@ class OperationsSchemaResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'user_tier' => null,
         'operations' => null,
         'endpoints' => null,
-        'workflow_features' => null
+        'workflow_features' => null,
+        'image_encode_capabilities' => null
     ];
 
     /**
@@ -102,7 +104,8 @@ class OperationsSchemaResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'user_tier' => true,
         'operations' => false,
         'endpoints' => false,
-        'workflow_features' => false
+        'workflow_features' => false,
+        'image_encode_capabilities' => false
     ];
 
     /**
@@ -199,7 +202,8 @@ class OperationsSchemaResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'user_tier' => 'user_tier',
         'operations' => 'operations',
         'endpoints' => 'endpoints',
-        'workflow_features' => 'workflow_features'
+        'workflow_features' => 'workflow_features',
+        'image_encode_capabilities' => 'image_encode_capabilities'
     ];
 
     /**
@@ -216,7 +220,8 @@ class OperationsSchemaResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'user_tier' => 'setUserTier',
         'operations' => 'setOperations',
         'endpoints' => 'setEndpoints',
-        'workflow_features' => 'setWorkflowFeatures'
+        'workflow_features' => 'setWorkflowFeatures',
+        'image_encode_capabilities' => 'setImageEncodeCapabilities'
     ];
 
     /**
@@ -233,7 +238,8 @@ class OperationsSchemaResponse implements ModelInterface, ArrayAccess, \JsonSeri
         'user_tier' => 'getUserTier',
         'operations' => 'getOperations',
         'endpoints' => 'getEndpoints',
-        'workflow_features' => 'getWorkflowFeatures'
+        'workflow_features' => 'getWorkflowFeatures',
+        'image_encode_capabilities' => 'getImageEncodeCapabilities'
     ];
 
     /**
@@ -302,6 +308,7 @@ class OperationsSchemaResponse implements ModelInterface, ArrayAccess, \JsonSeri
         $this->setIfExists('operations', $data ?? [], null);
         $this->setIfExists('endpoints', $data ?? [], null);
         $this->setIfExists('workflow_features', $data ?? [], null);
+        $this->setIfExists('image_encode_capabilities', $data ?? [], null);
     }
 
     /**
@@ -634,6 +641,33 @@ class OperationsSchemaResponse implements ModelInterface, ArrayAccess, \JsonSeri
             throw new \InvalidArgumentException('non-nullable workflow_features cannot be null');
         }
         $this->container['workflow_features'] = $workflow_features;
+
+        return $this;
+    }
+
+    /**
+     * Gets image_encode_capabilities
+     *
+     * @return \Gisl\Generated\OpenApi\Model\ImageEncodeCapabilities|null
+     */
+    public function getImageEncodeCapabilities()
+    {
+        return $this->container['image_encode_capabilities'];
+    }
+
+    /**
+     * Sets image_encode_capabilities
+     *
+     * @param \Gisl\Generated\OpenApi\Model\ImageEncodeCapabilities|null $image_encode_capabilities Pre-flight image-encode capability matrix (`webp_quality_supported`, `background_flatten`, …) — **IDENTICAL shape to `composition_plan.capabilities`** on the create-workflow 201, surfaced here so SDK/FE can fail-fast guard format/quality/alpha-flatten choices BEFORE submitting a workflow. Reuses the same API-side producer so the two can never disagree.  **Tier-invariant.** This is a fixed codec/hardware capability fact (what the image encoders CAN do), NOT an entitlement — identical for every tier including anonymous. Deliberately carries no `availability` tag, no `per_value_availability`, and does NOT vary by `user_tier` (even though the enclosing response is tier-scoped).  **Optional in the wire envelope** (same incremental-mirroring stance as `endpoints` / `workflow_features`): the committed sidecar MAY emit it; the runtime `GET /api/operations/schema` emits it once the API generator catches up. Consumers MUST tolerate its absence and its presence from either source. Per ticket [`kybXQe2S`](https://trello.com/c/kybXQe2S).
+     *
+     * @return self
+     */
+    public function setImageEncodeCapabilities($image_encode_capabilities)
+    {
+        if (is_null($image_encode_capabilities)) {
+            throw new \InvalidArgumentException('non-nullable image_encode_capabilities cannot be null');
+        }
+        $this->container['image_encode_capabilities'] = $image_encode_capabilities;
 
         return $this;
     }

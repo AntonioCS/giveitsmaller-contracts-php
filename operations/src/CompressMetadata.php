@@ -23,22 +23,10 @@ final class CompressMetadata
                         'quality' => new OptionMetadata(
                             per_value_availability: [],
                         ),
-                        'width' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
-                        'height' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
-                        'fit' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
                         'metadata' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'icc_profile' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
-                        'auto_orient' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'progressive' => new OptionMetadata(

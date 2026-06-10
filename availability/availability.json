@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 78,
+  "capabilities_version": 85,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -41,6 +41,13 @@
       "availability": "stable",
       "identity_scoped": true,
       "operation_id": "getCreditsUsage",
+      "required_tier": null
+    },
+    "GET /api/workflows": {
+      "auth": "required",
+      "availability": "stable",
+      "identity_scoped": true,
+      "operation_id": "listWorkflows",
       "required_tier": null
     },
     "GET /api/workflows/{id}/downloads": {
@@ -253,7 +260,7 @@
       "options": {
         "folder_structure": {
           "default": "flat",
-          "description": "flat = all files in root, by_job = subfolder per source job",
+          "description": "flat = all files together at the top level; by_job = a separate subfolder for each source",
           "type": "enum",
           "values": [
             "flat",
@@ -635,7 +642,7 @@
             },
             "framerate": {
               "default": 2,
-              "description": "Output video framerate. Default `2` fps \u2014 combined with\nFFmpeg `-tune stillimage`, keeps the file size tiny for\nthe common case of a single still overlay. Raise for\nanimated overlays (not supported in V1 \u2014 overlay must be\na still image) or platform requirements (e.g. YouTube\nrecommends 24+ fps; some platforms accept lower).\n",
+              "description": "Output video framerate. Default `2` fps keeps the file size\ntiny for the common case of a single still overlay. Raise for\nanimated overlays (not supported in V1 \u2014 overlay must be\na still image) or platform requirements (e.g. YouTube\nrecommends 24+ fps; some platforms accept lower).\n",
               "max": 60,
               "min": 1,
               "type": "integer"
@@ -652,7 +659,7 @@
             },
             "output_format": {
               "default": "mp4",
-              "description": "Output container format. V1 supports `mp4` only. Future\nadditions (webm, mov) await Lambda follow-up.\n",
+              "description": "Output container format. V1 supports `mp4` only; webm and mov\nare planned additions.\n",
               "type": "enum",
               "values": [
                 "mp4"
@@ -1027,32 +1034,6 @@
             "image/avif"
           ],
           "options": {
-            "auto_orient": {
-              "default": true,
-              "description": "Auto-rotate based on EXIF orientation",
-              "type": "boolean"
-            },
-            "fit": {
-              "default": "max",
-              "depends_on": {
-                "height": "set",
-                "logic": "or",
-                "width": "set"
-              },
-              "description": "Resize mode. max = fit within bounds, crop = fill and trim, scale = force exact dimensions. Only applies when width or height is set.",
-              "type": "enum",
-              "values": [
-                "max",
-                "crop",
-                "scale"
-              ]
-            },
-            "height": {
-              "description": "Maximum output height in pixels",
-              "max": 16384,
-              "min": 1,
-              "type": "integer"
-            },
             "icc_profile": {
               "default": "preserve",
               "description": "ICC color profile handling. preserve = keep original, strip = remove, srgb = convert to sRGB",
@@ -1110,12 +1091,6 @@
               },
               "description": "Compression quality (1 = smallest file, 100 = best quality). Only applies to lossy mode.",
               "max": 100,
-              "min": 1,
-              "type": "integer"
-            },
-            "width": {
-              "description": "Maximum output width in pixels",
-              "max": 16384,
               "min": 1,
               "type": "integer"
             }
@@ -1577,7 +1552,7 @@
           "options": {
             "anchor": {
               "default": "bottom_right",
-              "description": "9-grid anchor position on the base image. Mirrors\nMux/Cloudinary positioning. Combined with margin_x and\nmargin_y for fine-grained offset from the anchor point.\n",
+              "description": "9-grid anchor position on the base image. Combined with\nmargin_x and margin_y for fine-grained offset from the\nanchor point.\n",
               "type": "enum",
               "values": [
                 "top_left",
@@ -3290,7 +3265,7 @@
       }
     }
   },
-  "schema_version": "2.53.0",
+  "schema_version": "2.60.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
@@ -3312,10 +3287,10 @@
         "type": {
           "per_value_availability": {
             "all_outputs": {
-              "availability": "planned"
+              "availability": "stable"
             },
             "explicit": {
-              "availability": "planned"
+              "availability": "stable"
             },
             "terminal": {
               "availability": "stable"
