@@ -1,6 +1,6 @@
 <?php
 /**
- * ProcessingClassBandViolation
+ * ProcessingClassEntry
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * ProcessingClassBandViolation Class Doc Comment
+ * ProcessingClassEntry Class Doc Comment
  *
  * @category Class
- * @description One band-ceiling overflow on a workflow-create reject. Carries the I26 localisation quad on the violation (mirrors &#x60;FeatureViolation&#x60;); envelope-level localisation rides via &#x60;allOf [ErrorEnvelope]&#x60; on &#x60;ProcessingClassExceedsBandResponse&#x60;.  &#x60;job_ref&#x60;, &#x60;actual&#x60;, &#x60;ceiling&#x60;, &#x60;operation&#x60;, and &#x60;processing_class&#x60; are REQUIRED — the server always knows them at reject time and consumers rely on them to (a) correlate fail-all violations back to the offending job in multi-job workflows and (b) render \&quot;X exceeded by Y\&quot; without re-deriving caps from the per-tier overlay.
+ * @description Single processing-class entry within a mime_group&#39;s &#x60;processing_class&#x60; map (per ticket [I15-CONS &#x60;YZpBKzOM&#x60;](https://trello.com/c/YZpBKzOM)). Mirrors &#x60;PerValueAvailabilityEntry&#x60; (availability + optional tier / eta / documentation_url) plus per-class &#x60;constraints&#x60; and an optional &#x60;per_tier_constraints&#x60; overlay. Surfaced on the typed getSchema model per ticket [&#x60;yWeBr81O&#x60;](https://trello.com/c/yWeBr81O). See &#x60;schemas/FORMAT.md&#x60; §&#x60;processing_class:&#x60; block.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \JsonSerializable
+class ProcessingClassEntry implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
      *
      * @var string
      */
-    protected static $openAPIModelName = 'ProcessingClassBandViolation';
+    protected static $openAPIModelName = 'ProcessingClassEntry';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,19 +58,12 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
      * @var string[]
      */
     protected static $openAPITypes = [
-        'reason' => '\Gisl\Generated\OpenApi\Model\ProcessingClassRejectReason',
-        'job_ref' => 'string',
-        'input_index' => 'int',
-        'operation' => '\Gisl\Generated\OpenApi\Model\OperationType',
-        'processing_class' => '\Gisl\Generated\OpenApi\Model\ProcessingClass',
-        'actual' => 'int',
-        'ceiling' => 'int',
+        'availability' => '\Gisl\Generated\OpenApi\Model\AvailabilityValue',
         'required_tier' => '\Gisl\Generated\OpenApi\Model\UserTier',
+        'eta' => 'string',
         'documentation_url' => 'string',
-        'message_key' => 'string',
-        'message' => 'string',
-        'locale' => 'string',
-        'message_params' => 'array<string,mixed>'
+        'constraints' => '\Gisl\Generated\OpenApi\Model\ProcessingClassConstraints',
+        'per_tier_constraints' => 'array<string,\Gisl\Generated\OpenApi\Model\ProcessingClassConstraints>'
     ];
 
     /**
@@ -81,19 +74,12 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'reason' => null,
-        'job_ref' => null,
-        'input_index' => null,
-        'operation' => null,
-        'processing_class' => null,
-        'actual' => null,
-        'ceiling' => null,
+        'availability' => null,
         'required_tier' => null,
+        'eta' => null,
         'documentation_url' => 'uri',
-        'message_key' => null,
-        'message' => null,
-        'locale' => null,
-        'message_params' => null
+        'constraints' => null,
+        'per_tier_constraints' => null
     ];
 
     /**
@@ -102,19 +88,12 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'reason' => false,
-        'job_ref' => false,
-        'input_index' => false,
-        'operation' => false,
-        'processing_class' => false,
-        'actual' => false,
-        'ceiling' => false,
+        'availability' => false,
         'required_tier' => true,
+        'eta' => false,
         'documentation_url' => false,
-        'message_key' => false,
-        'message' => false,
-        'locale' => false,
-        'message_params' => false
+        'constraints' => false,
+        'per_tier_constraints' => false
     ];
 
     /**
@@ -203,19 +182,12 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
      * @var string[]
      */
     protected static $attributeMap = [
-        'reason' => 'reason',
-        'job_ref' => 'job_ref',
-        'input_index' => 'input_index',
-        'operation' => 'operation',
-        'processing_class' => 'processing_class',
-        'actual' => 'actual',
-        'ceiling' => 'ceiling',
+        'availability' => 'availability',
         'required_tier' => 'required_tier',
+        'eta' => 'eta',
         'documentation_url' => 'documentation_url',
-        'message_key' => 'message_key',
-        'message' => 'message',
-        'locale' => 'locale',
-        'message_params' => 'message_params'
+        'constraints' => 'constraints',
+        'per_tier_constraints' => 'per_tier_constraints'
     ];
 
     /**
@@ -224,19 +196,12 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
      * @var string[]
      */
     protected static $setters = [
-        'reason' => 'setReason',
-        'job_ref' => 'setJobRef',
-        'input_index' => 'setInputIndex',
-        'operation' => 'setOperation',
-        'processing_class' => 'setProcessingClass',
-        'actual' => 'setActual',
-        'ceiling' => 'setCeiling',
+        'availability' => 'setAvailability',
         'required_tier' => 'setRequiredTier',
+        'eta' => 'setEta',
         'documentation_url' => 'setDocumentationUrl',
-        'message_key' => 'setMessageKey',
-        'message' => 'setMessage',
-        'locale' => 'setLocale',
-        'message_params' => 'setMessageParams'
+        'constraints' => 'setConstraints',
+        'per_tier_constraints' => 'setPerTierConstraints'
     ];
 
     /**
@@ -245,19 +210,12 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
      * @var string[]
      */
     protected static $getters = [
-        'reason' => 'getReason',
-        'job_ref' => 'getJobRef',
-        'input_index' => 'getInputIndex',
-        'operation' => 'getOperation',
-        'processing_class' => 'getProcessingClass',
-        'actual' => 'getActual',
-        'ceiling' => 'getCeiling',
+        'availability' => 'getAvailability',
         'required_tier' => 'getRequiredTier',
+        'eta' => 'getEta',
         'documentation_url' => 'getDocumentationUrl',
-        'message_key' => 'getMessageKey',
-        'message' => 'getMessage',
-        'locale' => 'getLocale',
-        'message_params' => 'getMessageParams'
+        'constraints' => 'getConstraints',
+        'per_tier_constraints' => 'getPerTierConstraints'
     ];
 
     /**
@@ -317,19 +275,12 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('reason', $data ?? [], null);
-        $this->setIfExists('job_ref', $data ?? [], null);
-        $this->setIfExists('input_index', $data ?? [], null);
-        $this->setIfExists('operation', $data ?? [], null);
-        $this->setIfExists('processing_class', $data ?? [], null);
-        $this->setIfExists('actual', $data ?? [], null);
-        $this->setIfExists('ceiling', $data ?? [], null);
+        $this->setIfExists('availability', $data ?? [], null);
         $this->setIfExists('required_tier', $data ?? [], null);
+        $this->setIfExists('eta', $data ?? [], null);
         $this->setIfExists('documentation_url', $data ?? [], null);
-        $this->setIfExists('message_key', $data ?? [], null);
-        $this->setIfExists('message', $data ?? [], null);
-        $this->setIfExists('locale', $data ?? [], null);
-        $this->setIfExists('message_params', $data ?? [], null);
+        $this->setIfExists('constraints', $data ?? [], null);
+        $this->setIfExists('per_tier_constraints', $data ?? [], null);
     }
 
     /**
@@ -359,36 +310,9 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
     {
         $invalidProperties = [];
 
-        if ($this->container['reason'] === null) {
-            $invalidProperties[] = "'reason' can't be null";
+        if ($this->container['availability'] === null) {
+            $invalidProperties[] = "'availability' can't be null";
         }
-        if ($this->container['job_ref'] === null) {
-            $invalidProperties[] = "'job_ref' can't be null";
-        }
-        if (!is_null($this->container['input_index']) && ($this->container['input_index'] < 0)) {
-            $invalidProperties[] = "invalid value for 'input_index', must be bigger than or equal to 0.";
-        }
-
-        if ($this->container['operation'] === null) {
-            $invalidProperties[] = "'operation' can't be null";
-        }
-        if ($this->container['processing_class'] === null) {
-            $invalidProperties[] = "'processing_class' can't be null";
-        }
-        if ($this->container['actual'] === null) {
-            $invalidProperties[] = "'actual' can't be null";
-        }
-        if (($this->container['actual'] < 0)) {
-            $invalidProperties[] = "invalid value for 'actual', must be bigger than or equal to 0.";
-        }
-
-        if ($this->container['ceiling'] === null) {
-            $invalidProperties[] = "'ceiling' can't be null";
-        }
-        if (($this->container['ceiling'] < 0)) {
-            $invalidProperties[] = "invalid value for 'ceiling', must be bigger than or equal to 0.";
-        }
-
         return $invalidProperties;
     }
 
@@ -405,205 +329,28 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
 
 
     /**
-     * Gets reason
+     * Gets availability
      *
-     * @return \Gisl\Generated\OpenApi\Model\ProcessingClassRejectReason
+     * @return \Gisl\Generated\OpenApi\Model\AvailabilityValue
      */
-    public function getReason()
+    public function getAvailability()
     {
-        return $this->container['reason'];
+        return $this->container['availability'];
     }
 
     /**
-     * Sets reason
+     * Sets availability
      *
-     * @param \Gisl\Generated\OpenApi\Model\ProcessingClassRejectReason $reason reason
+     * @param \Gisl\Generated\OpenApi\Model\AvailabilityValue $availability Per-class availability tag.
      *
      * @return self
      */
-    public function setReason($reason)
+    public function setAvailability($availability)
     {
-        if (is_null($reason)) {
-            throw new \InvalidArgumentException('non-nullable reason cannot be null');
+        if (is_null($availability)) {
+            throw new \InvalidArgumentException('non-nullable availability cannot be null');
         }
-        $this->container['reason'] = $reason;
-
-        return $this;
-    }
-
-    /**
-     * Gets job_ref
-     *
-     * @return string
-     */
-    public function getJobRef()
-    {
-        return $this->container['job_ref'];
-    }
-
-    /**
-     * Sets job_ref
-     *
-     * @param string $job_ref Workflow-local job identifier — `JobDefinition.id` if the caller supplied one, otherwise the auto-generated `job_N` positional token assigned by the server during request validation (e.g. `job_0`, `job_1`). Workflow-create rejects fire BEFORE persisted server UUIDs are assigned; `job_ref` is the request-local handle that survives across reject and (later) success paths. Per `JobDefinition.id` pattern + auto-generation rules.
-     *
-     * @return self
-     */
-    public function setJobRef($job_ref)
-    {
-        if (is_null($job_ref)) {
-            throw new \InvalidArgumentException('non-nullable job_ref cannot be null');
-        }
-        $this->container['job_ref'] = $job_ref;
-
-        return $this;
-    }
-
-    /**
-     * Gets input_index
-     *
-     * @return int|null
-     */
-    public function getInputIndex()
-    {
-        return $this->container['input_index'];
-    }
-
-    /**
-     * Sets input_index
-     *
-     * @param int|null $input_index 0-based ordinal into `JobDefinition.inputs[]` identifying the specific input that violated the per-input ceiling. Set ONLY on `input_*_exceeds_long_form` reasons for multi-input operations; omitted on single-input operations (no positional ambiguity) and on `combined_*_exceeds_long_form` reasons (whole-job violation across all inputs).
-     *
-     * @return self
-     */
-    public function setInputIndex($input_index)
-    {
-        if (is_null($input_index)) {
-            throw new \InvalidArgumentException('non-nullable input_index cannot be null');
-        }
-
-        if (($input_index < 0)) {
-            throw new \InvalidArgumentException('invalid value for $input_index when calling ProcessingClassBandViolation., must be bigger than or equal to 0.');
-        }
-
-        $this->container['input_index'] = $input_index;
-
-        return $this;
-    }
-
-    /**
-     * Gets operation
-     *
-     * @return \Gisl\Generated\OpenApi\Model\OperationType
-     */
-    public function getOperation()
-    {
-        return $this->container['operation'];
-    }
-
-    /**
-     * Sets operation
-     *
-     * @param \Gisl\Generated\OpenApi\Model\OperationType $operation Operation type that triggered the band-ceiling reject.
-     *
-     * @return self
-     */
-    public function setOperation($operation)
-    {
-        if (is_null($operation)) {
-            throw new \InvalidArgumentException('non-nullable operation cannot be null');
-        }
-        $this->container['operation'] = $operation;
-
-        return $this;
-    }
-
-    /**
-     * Gets processing_class
-     *
-     * @return \Gisl\Generated\OpenApi\Model\ProcessingClass
-     */
-    public function getProcessingClass()
-    {
-        return $this->container['processing_class'];
-    }
-
-    /**
-     * Sets processing_class
-     *
-     * @param \Gisl\Generated\OpenApi\Model\ProcessingClass $processing_class The class whose ceiling was exceeded — typically `long_form` or `long_form_re_encode`.
-     *
-     * @return self
-     */
-    public function setProcessingClass($processing_class)
-    {
-        if (is_null($processing_class)) {
-            throw new \InvalidArgumentException('non-nullable processing_class cannot be null');
-        }
-        $this->container['processing_class'] = $processing_class;
-
-        return $this;
-    }
-
-    /**
-     * Gets actual
-     *
-     * @return int
-     */
-    public function getActual()
-    {
-        return $this->container['actual'];
-    }
-
-    /**
-     * Sets actual
-     *
-     * @param int $actual Observed value. Bytes for `*_size_exceeds_long_form` reasons; whole seconds for `*_duration_exceeds_long_form` reasons.
-     *
-     * @return self
-     */
-    public function setActual($actual)
-    {
-        if (is_null($actual)) {
-            throw new \InvalidArgumentException('non-nullable actual cannot be null');
-        }
-
-        if (($actual < 0)) {
-            throw new \InvalidArgumentException('invalid value for $actual when calling ProcessingClassBandViolation., must be bigger than or equal to 0.');
-        }
-
-        $this->container['actual'] = $actual;
-
-        return $this;
-    }
-
-    /**
-     * Gets ceiling
-     *
-     * @return int
-     */
-    public function getCeiling()
-    {
-        return $this->container['ceiling'];
-    }
-
-    /**
-     * Sets ceiling
-     *
-     * @param int $ceiling Effective per-tier ceiling for this caller (same units as `actual`). The binding cap after `per_tier_constraints` overlay; lets consumers render \"X exceeded by Y\" without re-deriving caps from the per-tier overlay.
-     *
-     * @return self
-     */
-    public function setCeiling($ceiling)
-    {
-        if (is_null($ceiling)) {
-            throw new \InvalidArgumentException('non-nullable ceiling cannot be null');
-        }
-
-        if (($ceiling < 0)) {
-            throw new \InvalidArgumentException('invalid value for $ceiling when calling ProcessingClassBandViolation., must be bigger than or equal to 0.');
-        }
-
-        $this->container['ceiling'] = $ceiling;
+        $this->container['availability'] = $availability;
 
         return $this;
     }
@@ -643,6 +390,33 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
     }
 
     /**
+     * Gets eta
+     *
+     * @return string|null
+     */
+    public function getEta()
+    {
+        return $this->container['eta'];
+    }
+
+    /**
+     * Sets eta
+     *
+     * @param string|null $eta ISO-8601 date (`2026-09-15`) or quarter (`2026-Q3`) when this class is expected to ship. Only meaningful for `availability: planned`.
+     *
+     * @return self
+     */
+    public function setEta($eta)
+    {
+        if (is_null($eta)) {
+            throw new \InvalidArgumentException('non-nullable eta cannot be null');
+        }
+        $this->container['eta'] = $eta;
+
+        return $this;
+    }
+
+    /**
      * Gets documentation_url
      *
      * @return string|null
@@ -670,109 +444,55 @@ class ProcessingClassBandViolation implements ModelInterface, ArrayAccess, \Json
     }
 
     /**
-     * Gets message_key
+     * Gets constraints
      *
-     * @return string|null
+     * @return \Gisl\Generated\OpenApi\Model\ProcessingClassConstraints|null
      */
-    public function getMessageKey()
+    public function getConstraints()
     {
-        return $this->container['message_key'];
+        return $this->container['constraints'];
     }
 
     /**
-     * Sets message_key
+     * Sets constraints
      *
-     * @param string|null $message_key Per I26. See `ErrorEnvelope.message_key`.
+     * @param \Gisl\Generated\OpenApi\Model\ProcessingClassConstraints|null $constraints Baseline caps for the lowest tier this class's `required_tier` permits. Overlaid per-caller by `per_tier_constraints` (see below).
      *
      * @return self
      */
-    public function setMessageKey($message_key)
+    public function setConstraints($constraints)
     {
-        if (is_null($message_key)) {
-            throw new \InvalidArgumentException('non-nullable message_key cannot be null');
+        if (is_null($constraints)) {
+            throw new \InvalidArgumentException('non-nullable constraints cannot be null');
         }
-        $this->container['message_key'] = $message_key;
+        $this->container['constraints'] = $constraints;
 
         return $this;
     }
 
     /**
-     * Gets message
+     * Gets per_tier_constraints
      *
-     * @return string|null
+     * @return array<string,\Gisl\Generated\OpenApi\Model\ProcessingClassConstraints>|null
      */
-    public function getMessage()
+    public function getPerTierConstraints()
     {
-        return $this->container['message'];
+        return $this->container['per_tier_constraints'];
     }
 
     /**
-     * Sets message
+     * Sets per_tier_constraints
      *
-     * @param string|null $message Per I26. Human-readable, localised per `Accept-Language`. Never parse for control flow.
+     * @param array<string,\Gisl\Generated\OpenApi\Model\ProcessingClassConstraints>|null $per_tier_constraints Optional per-tier numeric-cap override map (per [ADR-0011](../docs/decisions/0011-per-tier-processing-class-constraints.md), ticket [`z4GDTUMx`](https://trello.com/c/z4GDTUMx)). Keys MUST be a subset of the `UserTier` enum and SHOULD name only tiers HIGHER than the class baseline (CI-enforced by `scripts/check-per-tier-constraints.py`). Each value overrides `constraints` field-by-field for callers of that tier. A consumer that ignores this map reads `constraints` and sees the smallest permitted-tier cap — it can never over-promise. `per_tier_constraints` sizes caps, it does NOT grant access (eligibility stays governed by `availability` + `required_tier`).
      *
      * @return self
      */
-    public function setMessage($message)
+    public function setPerTierConstraints($per_tier_constraints)
     {
-        if (is_null($message)) {
-            throw new \InvalidArgumentException('non-nullable message cannot be null');
+        if (is_null($per_tier_constraints)) {
+            throw new \InvalidArgumentException('non-nullable per_tier_constraints cannot be null');
         }
-        $this->container['message'] = $message;
-
-        return $this;
-    }
-
-    /**
-     * Gets locale
-     *
-     * @return string|null
-     */
-    public function getLocale()
-    {
-        return $this->container['locale'];
-    }
-
-    /**
-     * Sets locale
-     *
-     * @param string|null $locale BCP 47 locale tag. See `ErrorEnvelope.locale`.
-     *
-     * @return self
-     */
-    public function setLocale($locale)
-    {
-        if (is_null($locale)) {
-            throw new \InvalidArgumentException('non-nullable locale cannot be null');
-        }
-        $this->container['locale'] = $locale;
-
-        return $this;
-    }
-
-    /**
-     * Gets message_params
-     *
-     * @return array<string,mixed>|null
-     */
-    public function getMessageParams()
-    {
-        return $this->container['message_params'];
-    }
-
-    /**
-     * Sets message_params
-     *
-     * @param array<string,mixed>|null $message_params Per I26. Optional interpolation values for the localised `message`. Excludes cost numbers.
-     *
-     * @return self
-     */
-    public function setMessageParams($message_params)
-    {
-        if (is_null($message_params)) {
-            throw new \InvalidArgumentException('non-nullable message_params cannot be null');
-        }
-        $this->container['message_params'] = $message_params;
+        $this->container['per_tier_constraints'] = $per_tier_constraints;
 
         return $this;
     }

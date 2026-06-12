@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 85,
+  "capabilities_version": 87,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -613,7 +613,17 @@
           }
         }
       },
-      "min_inputs": 2
+      "min_inputs": 2,
+      "per_role_cardinality": {
+        "base": {
+          "max": 1,
+          "min": 1
+        },
+        "overlay": {
+          "max": 1,
+          "min": 1
+        }
+      }
     },
     "audio_to_video": {
       "availability": "beta",
@@ -1529,6 +1539,16 @@
         }
       },
       "min_inputs": 2,
+      "per_role_cardinality": {
+        "base": {
+          "max": 1,
+          "min": 1
+        },
+        "transition_mask": {
+          "max": 1,
+          "min": 1
+        }
+      },
       "required_tier": "pro"
     },
     "image_watermark": {
@@ -1641,7 +1661,17 @@
           }
         }
       },
-      "min_inputs": 2
+      "min_inputs": 2,
+      "per_role_cardinality": {
+        "base": {
+          "max": 1,
+          "min": 1
+        },
+        "overlay": {
+          "max": 1,
+          "min": 1
+        }
+      }
     },
     "merge": {
       "default": false,
@@ -3265,7 +3295,7 @@
       }
     }
   },
-  "schema_version": "2.60.0",
+  "schema_version": "2.62.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

@@ -1,6 +1,6 @@
 <?php
 /**
- * AuthRejectionEnvelope
+ * ProcessingClassConstraints
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * AuthRejectionEnvelope Class Doc Comment
+ * ProcessingClassConstraints Class Doc Comment
  *
  * @category Class
- * @description Flat **domain-rejection** 422 envelope for the auth surface — the non-validation branch of the auth-422 &#x60;oneOf&#x60; (per [ADR-0019](../docs/decisions/0019-auth-422-discriminated-oneof.md), the sibling adoption of [ADR-0018](../docs/decisions/0018-universal-422-error-type-discriminator.md) anticipated for non-workflow &#x60;oneOf&#x60; sites). Distinct from &#x60;ValidationErrorEnvelope&#x60;: it has **no &#x60;details[]&#x60;** (the rejection is a single business-rule failure, not a field-by-field validation report). Carries the same I26 localisation triple as &#x60;ErrorEnvelope&#x60;.  Returned alongside &#x60;ValidationErrorEnvelope&#x60; on the four auth endpoints that have a domain-reject 422 branch: &#x60;register&#x60; (disposable/blocklisted email), &#x60;verify-email&#x60; (invalid/expired token), &#x60;api-keys&#x60; POST (duplicate/invalid key name) — all &#x60;error: UNPROCESSABLE_ENTITY&#x60;, &#x60;error_type: unprocessable_entity&#x60; — and &#x60;profile&#x60; PATCH (&#x60;error: EMAIL_SAME&#x60;, &#x60;error_type: email_same&#x60;, new email equals current).  **&#x60;error_type&#x60; vs &#x60;error&#x60;** (per ADR-0018): &#x60;error_type&#x60; is the &#x60;oneOf&#x60; branch discriminator; the specific failure stays in the &#x60;error&#x60; machine code. &#x60;email_same&#x60; is retained as its own discriminator value (pre-existing wire shape) rather than folded into &#x60;unprocessable_entity&#x60;; both map to this envelope.
+ * @description Numeric size / duration caps for a single processing class (or a per-tier override of those caps). All fields optional; the &#x60;max_input_*&#x60; keys apply to single-input mime_groups while the &#x60;max_total_*&#x60; keys apply to multi-input merge-style mime_groups (a merge can have many small inputs whose combined size triggers long-form). Byte caps are positive integers; duration caps are ISO-8601 duration strings (e.g. &#x60;PT5M&#x60;). Field set is CI-fixed — &#x60;scripts/check-per-tier-constraints.py&#x60; rejects unknown keys and bad value types. See &#x60;schemas/FORMAT.md&#x60; §&#x60;constraints&#x60; sub-block.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSerializable
+class ProcessingClassConstraints implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      *
      * @var string
      */
-    protected static $openAPIModelName = 'AuthRejectionEnvelope';
+    protected static $openAPIModelName = 'ProcessingClassConstraints';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,13 +58,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $openAPITypes = [
-        'success' => 'bool',
-        'error' => 'string',
-        'error_type' => 'string',
-        'message' => 'string',
-        'message_key' => 'string',
-        'locale' => 'string',
-        'message_params' => 'array<string,mixed>'
+        'max_input_duration' => 'string',
+        'max_input_size_bytes' => 'int',
+        'max_output_size_bytes' => 'int',
+        'max_total_duration' => 'string',
+        'max_total_input_size_bytes' => 'int'
     ];
 
     /**
@@ -75,13 +73,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'success' => null,
-        'error' => null,
-        'error_type' => null,
-        'message' => null,
-        'message_key' => null,
-        'locale' => null,
-        'message_params' => null
+        'max_input_duration' => null,
+        'max_input_size_bytes' => null,
+        'max_output_size_bytes' => null,
+        'max_total_duration' => null,
+        'max_total_input_size_bytes' => null
     ];
 
     /**
@@ -90,13 +86,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'success' => false,
-        'error' => false,
-        'error_type' => false,
-        'message' => false,
-        'message_key' => false,
-        'locale' => false,
-        'message_params' => false
+        'max_input_duration' => false,
+        'max_input_size_bytes' => false,
+        'max_output_size_bytes' => false,
+        'max_total_duration' => false,
+        'max_total_input_size_bytes' => false
     ];
 
     /**
@@ -185,13 +179,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $attributeMap = [
-        'success' => 'success',
-        'error' => 'error',
-        'error_type' => 'error_type',
-        'message' => 'message',
-        'message_key' => 'message_key',
-        'locale' => 'locale',
-        'message_params' => 'message_params'
+        'max_input_duration' => 'max_input_duration',
+        'max_input_size_bytes' => 'max_input_size_bytes',
+        'max_output_size_bytes' => 'max_output_size_bytes',
+        'max_total_duration' => 'max_total_duration',
+        'max_total_input_size_bytes' => 'max_total_input_size_bytes'
     ];
 
     /**
@@ -200,13 +192,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $setters = [
-        'success' => 'setSuccess',
-        'error' => 'setError',
-        'error_type' => 'setErrorType',
-        'message' => 'setMessage',
-        'message_key' => 'setMessageKey',
-        'locale' => 'setLocale',
-        'message_params' => 'setMessageParams'
+        'max_input_duration' => 'setMaxInputDuration',
+        'max_input_size_bytes' => 'setMaxInputSizeBytes',
+        'max_output_size_bytes' => 'setMaxOutputSizeBytes',
+        'max_total_duration' => 'setMaxTotalDuration',
+        'max_total_input_size_bytes' => 'setMaxTotalInputSizeBytes'
     ];
 
     /**
@@ -215,13 +205,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      * @var string[]
      */
     protected static $getters = [
-        'success' => 'getSuccess',
-        'error' => 'getError',
-        'error_type' => 'getErrorType',
-        'message' => 'getMessage',
-        'message_key' => 'getMessageKey',
-        'locale' => 'getLocale',
-        'message_params' => 'getMessageParams'
+        'max_input_duration' => 'getMaxInputDuration',
+        'max_input_size_bytes' => 'getMaxInputSizeBytes',
+        'max_output_size_bytes' => 'getMaxOutputSizeBytes',
+        'max_total_duration' => 'getMaxTotalDuration',
+        'max_total_input_size_bytes' => 'getMaxTotalInputSizeBytes'
     ];
 
     /**
@@ -265,21 +253,6 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
         return self::$openAPIModelName;
     }
 
-    public const ERROR_TYPE_UNPROCESSABLE_ENTITY = 'unprocessable_entity';
-    public const ERROR_TYPE_EMAIL_SAME = 'email_same';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getErrorTypeAllowableValues()
-    {
-        return [
-            self::ERROR_TYPE_UNPROCESSABLE_ENTITY,
-            self::ERROR_TYPE_EMAIL_SAME,
-        ];
-    }
 
     /**
      * Associative array for storing property values
@@ -296,13 +269,11 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('success', $data ?? [], null);
-        $this->setIfExists('error', $data ?? [], null);
-        $this->setIfExists('error_type', $data ?? [], null);
-        $this->setIfExists('message', $data ?? [], null);
-        $this->setIfExists('message_key', $data ?? [], null);
-        $this->setIfExists('locale', $data ?? [], null);
-        $this->setIfExists('message_params', $data ?? [], null);
+        $this->setIfExists('max_input_duration', $data ?? [], null);
+        $this->setIfExists('max_input_size_bytes', $data ?? [], null);
+        $this->setIfExists('max_output_size_bytes', $data ?? [], null);
+        $this->setIfExists('max_total_duration', $data ?? [], null);
+        $this->setIfExists('max_total_input_size_bytes', $data ?? [], null);
     }
 
     /**
@@ -332,23 +303,16 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         $invalidProperties = [];
 
-        if ($this->container['success'] === null) {
-            $invalidProperties[] = "'success' can't be null";
+        if (!is_null($this->container['max_input_size_bytes']) && ($this->container['max_input_size_bytes'] < 1)) {
+            $invalidProperties[] = "invalid value for 'max_input_size_bytes', must be bigger than or equal to 1.";
         }
 
-        if ($this->container['error'] === null) {
-            $invalidProperties[] = "'error' can't be null";
+        if (!is_null($this->container['max_output_size_bytes']) && ($this->container['max_output_size_bytes'] < 1)) {
+            $invalidProperties[] = "invalid value for 'max_output_size_bytes', must be bigger than or equal to 1.";
         }
-        if ($this->container['error_type'] === null) {
-            $invalidProperties[] = "'error_type' can't be null";
-        }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!is_null($this->container['error_type']) && !in_array($this->container['error_type'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'error_type', must be one of '%s'",
-                $this->container['error_type'],
-                implode("', '", $allowedValues)
-            );
+
+        if (!is_null($this->container['max_total_input_size_bytes']) && ($this->container['max_total_input_size_bytes'] < 1)) {
+            $invalidProperties[] = "invalid value for 'max_total_input_size_bytes', must be bigger than or equal to 1.";
         }
 
         return $invalidProperties;
@@ -367,200 +331,151 @@ class AuthRejectionEnvelope implements ModelInterface, ArrayAccess, \JsonSeriali
 
 
     /**
-     * Gets success
-     *
-     * @return bool
-     */
-    public function getSuccess()
-    {
-        return $this->container['success'];
-    }
-
-    /**
-     * Sets success
-     *
-     * @param bool $success success
-     *
-     * @return self
-     */
-    public function setSuccess($success)
-    {
-        if (is_null($success)) {
-            throw new \InvalidArgumentException('non-nullable success cannot be null');
-        }
-        $this->container['success'] = $success;
-
-        return $this;
-    }
-
-    /**
-     * Gets error
-     *
-     * @return string
-     */
-    public function getError()
-    {
-        return $this->container['error'];
-    }
-
-    /**
-     * Sets error
-     *
-     * @param string $error Stable machine-readable failure code. `UNPROCESSABLE_ENTITY` for the generic auth domain rejections (register / verify-email / api-keys); `EMAIL_SAME` for the profile new-email-equals-current rejection. Canonical English; never localised. See `ErrorEnvelope.error`.
-     *
-     * @return self
-     */
-    public function setError($error)
-    {
-        if (is_null($error)) {
-            throw new \InvalidArgumentException('non-nullable error cannot be null');
-        }
-        $this->container['error'] = $error;
-
-        return $this;
-    }
-
-    /**
-     * Gets error_type
-     *
-     * @return string
-     */
-    public function getErrorType()
-    {
-        return $this->container['error_type'];
-    }
-
-    /**
-     * Sets error_type
-     *
-     * @param string $error_type Discriminator for the auth-422 `oneOf` (per ADR-0019). Names the envelope **shape**, not the failure — the failure is in `error`. `unprocessable_entity` for the generic flat auth rejections; `email_same` preserved as the profile-specific pre-existing wire value. Both resolve to this `AuthRejectionEnvelope`. Distinct from `ValidationErrorEnvelope.error_type` (`validation_error`), the other branch of the auth-422 `oneOf`.
-     *
-     * @return self
-     */
-    public function setErrorType($error_type)
-    {
-        if (is_null($error_type)) {
-            throw new \InvalidArgumentException('non-nullable error_type cannot be null');
-        }
-        $allowedValues = $this->getErrorTypeAllowableValues();
-        if (!in_array($error_type, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'error_type', must be one of '%s'",
-                    $error_type,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-        $this->container['error_type'] = $error_type;
-
-        return $this;
-    }
-
-    /**
-     * Gets message
+     * Gets max_input_duration
      *
      * @return string|null
      */
-    public function getMessage()
+    public function getMaxInputDuration()
     {
-        return $this->container['message'];
+        return $this->container['max_input_duration'];
     }
 
     /**
-     * Sets message
+     * Sets max_input_duration
      *
-     * @param string|null $message Human-readable message, localised per `Accept-Language` (fallback `en-GB`). Never parse for control flow. See `ErrorEnvelope.message`.
+     * @param string|null $max_input_duration Max per-input duration as an ISO-8601 duration string. Single-input mime_groups.
      *
      * @return self
      */
-    public function setMessage($message)
+    public function setMaxInputDuration($max_input_duration)
     {
-        if (is_null($message)) {
-            throw new \InvalidArgumentException('non-nullable message cannot be null');
+        if (is_null($max_input_duration)) {
+            throw new \InvalidArgumentException('non-nullable max_input_duration cannot be null');
         }
-        $this->container['message'] = $message;
+        $this->container['max_input_duration'] = $max_input_duration;
 
         return $this;
     }
 
     /**
-     * Gets message_key
+     * Gets max_input_size_bytes
+     *
+     * @return int|null
+     */
+    public function getMaxInputSizeBytes()
+    {
+        return $this->container['max_input_size_bytes'];
+    }
+
+    /**
+     * Sets max_input_size_bytes
+     *
+     * @param int|null $max_input_size_bytes Max per-input file size in bytes. Single-input mime_groups.
+     *
+     * @return self
+     */
+    public function setMaxInputSizeBytes($max_input_size_bytes)
+    {
+        if (is_null($max_input_size_bytes)) {
+            throw new \InvalidArgumentException('non-nullable max_input_size_bytes cannot be null');
+        }
+
+        if (($max_input_size_bytes < 1)) {
+            throw new \InvalidArgumentException('invalid value for $max_input_size_bytes when calling ProcessingClassConstraints., must be bigger than or equal to 1.');
+        }
+
+        $this->container['max_input_size_bytes'] = $max_input_size_bytes;
+
+        return $this;
+    }
+
+    /**
+     * Gets max_output_size_bytes
+     *
+     * @return int|null
+     */
+    public function getMaxOutputSizeBytes()
+    {
+        return $this->container['max_output_size_bytes'];
+    }
+
+    /**
+     * Sets max_output_size_bytes
+     *
+     * @param int|null $max_output_size_bytes Max output file size in bytes. Any mime_group.
+     *
+     * @return self
+     */
+    public function setMaxOutputSizeBytes($max_output_size_bytes)
+    {
+        if (is_null($max_output_size_bytes)) {
+            throw new \InvalidArgumentException('non-nullable max_output_size_bytes cannot be null');
+        }
+
+        if (($max_output_size_bytes < 1)) {
+            throw new \InvalidArgumentException('invalid value for $max_output_size_bytes when calling ProcessingClassConstraints., must be bigger than or equal to 1.');
+        }
+
+        $this->container['max_output_size_bytes'] = $max_output_size_bytes;
+
+        return $this;
+    }
+
+    /**
+     * Gets max_total_duration
      *
      * @return string|null
      */
-    public function getMessageKey()
+    public function getMaxTotalDuration()
     {
-        return $this->container['message_key'];
+        return $this->container['max_total_duration'];
     }
 
     /**
-     * Sets message_key
+     * Sets max_total_duration
      *
-     * @param string|null $message_key Stable canonical lookup key for the message. Never localised. See `ErrorEnvelope.message_key`.
+     * @param string|null $max_total_duration Max combined duration across all inputs as an ISO-8601 duration string. Multi-input (merge) mime_groups.
      *
      * @return self
      */
-    public function setMessageKey($message_key)
+    public function setMaxTotalDuration($max_total_duration)
     {
-        if (is_null($message_key)) {
-            throw new \InvalidArgumentException('non-nullable message_key cannot be null');
+        if (is_null($max_total_duration)) {
+            throw new \InvalidArgumentException('non-nullable max_total_duration cannot be null');
         }
-        $this->container['message_key'] = $message_key;
+        $this->container['max_total_duration'] = $max_total_duration;
 
         return $this;
     }
 
     /**
-     * Gets locale
+     * Gets max_total_input_size_bytes
      *
-     * @return string|null
+     * @return int|null
      */
-    public function getLocale()
+    public function getMaxTotalInputSizeBytes()
     {
-        return $this->container['locale'];
+        return $this->container['max_total_input_size_bytes'];
     }
 
     /**
-     * Sets locale
+     * Sets max_total_input_size_bytes
      *
-     * @param string|null $locale BCP 47 locale tag echoing `Content-Language`. See `ErrorEnvelope.locale`.
+     * @param int|null $max_total_input_size_bytes Max combined input size in bytes. Multi-input (merge) mime_groups.
      *
      * @return self
      */
-    public function setLocale($locale)
+    public function setMaxTotalInputSizeBytes($max_total_input_size_bytes)
     {
-        if (is_null($locale)) {
-            throw new \InvalidArgumentException('non-nullable locale cannot be null');
+        if (is_null($max_total_input_size_bytes)) {
+            throw new \InvalidArgumentException('non-nullable max_total_input_size_bytes cannot be null');
         }
-        $this->container['locale'] = $locale;
 
-        return $this;
-    }
-
-    /**
-     * Gets message_params
-     *
-     * @return array<string,mixed>|null
-     */
-    public function getMessageParams()
-    {
-        return $this->container['message_params'];
-    }
-
-    /**
-     * Sets message_params
-     *
-     * @param array<string,mixed>|null $message_params Optional interpolation values for the localised `message`. See `ErrorEnvelope.message_params`.
-     *
-     * @return self
-     */
-    public function setMessageParams($message_params)
-    {
-        if (is_null($message_params)) {
-            throw new \InvalidArgumentException('non-nullable message_params cannot be null');
+        if (($max_total_input_size_bytes < 1)) {
+            throw new \InvalidArgumentException('invalid value for $max_total_input_size_bytes when calling ProcessingClassConstraints., must be bigger than or equal to 1.');
         }
-        $this->container['message_params'] = $message_params;
+
+        $this->container['max_total_input_size_bytes'] = $max_total_input_size_bytes;
 
         return $this;
     }
