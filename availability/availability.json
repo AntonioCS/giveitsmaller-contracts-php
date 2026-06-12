@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 87,
+  "capabilities_version": 88,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1170,7 +1170,7 @@
             },
             "faststart": {
               "default": true,
-              "description": "Move MP4 moov atom to start for progressive web playback (MP4 only)",
+              "description": "Move the MP4/MOV moov atom to start for progressive web playback. MP4/MOV only; an explicit faststart on a WebM output is rejected as invalid_options (no moov atom).",
               "type": "boolean"
             },
             "fit": {
@@ -1196,9 +1196,9 @@
               "type": "float"
             },
             "height": {
-              "description": "Output height in pixels",
+              "description": "Output height in pixels. Must be an EVEN integer >= 2 (yuv420p chroma-subsampling); odd values are rejected as invalid_options by the encoder.",
               "max": 4320,
-              "min": 1,
+              "min": 2,
               "type": "integer"
             },
             "preset": {
@@ -1238,9 +1238,9 @@
               "type": "float"
             },
             "width": {
-              "description": "Output width in pixels",
+              "description": "Output width in pixels. Must be an EVEN integer >= 2 (yuv420p chroma-subsampling); odd values are rejected as invalid_options by the encoder.",
               "max": 7680,
-              "min": 1,
+              "min": 2,
               "type": "integer"
             }
           },
@@ -3295,7 +3295,7 @@
       }
     }
   },
-  "schema_version": "2.62.0",
+  "schema_version": "2.63.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
