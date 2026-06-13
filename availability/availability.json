@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 88,
+  "capabilities_version": 89,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -3295,7 +3295,7 @@
       }
     }
   },
-  "schema_version": "2.63.0",
+  "schema_version": "2.64.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
