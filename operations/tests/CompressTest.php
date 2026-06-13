@@ -534,7 +534,7 @@ final class CompressTest extends TestCase
         $this->assertSame(CompressVideoEncodingMode::Crf, $obj->encoding_mode);
         $this->assertSame(CompressVideoPreset::Medium, $obj->preset);
         $this->assertSame(true, $obj->faststart);
-        $this->assertSame(CompressVideoAudioCodec::Aac, $obj->audio_codec);
+        $this->assertSame(CompressVideoAudioCodec::Copy, $obj->audio_codec);
         $this->assertSame(CompressVideoAudioBitrate::_128, $obj->audio_bitrate);
         $this->assertNull($obj->crf);
         $this->assertNull($obj->target_size_bytes);

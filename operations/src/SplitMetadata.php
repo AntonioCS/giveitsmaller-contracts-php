@@ -98,7 +98,7 @@ final class SplitMetadata
                             ),
                         ),
                         'long_form' => new AvailabilityEntry(
-                            availability: 'planned',
+                            availability: 'beta',
                             required_tier: 'pro',
                             constraints: new ProcessingClassConstraints(
                                 max_input_duration: 'PT12H',

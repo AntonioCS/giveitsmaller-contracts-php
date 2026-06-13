@@ -13,7 +13,7 @@ final class CompressVideoOptions
         public readonly CompressVideoEncodingMode $encoding_mode = CompressVideoEncodingMode::Crf,
         public readonly CompressVideoPreset $preset = CompressVideoPreset::Medium,
         public readonly bool $faststart = true,
-        public readonly CompressVideoAudioCodec $audio_codec = CompressVideoAudioCodec::Aac,
+        public readonly CompressVideoAudioCodec $audio_codec = CompressVideoAudioCodec::Copy,
         public readonly CompressVideoAudioBitrate $audio_bitrate = CompressVideoAudioBitrate::_128,
         public readonly ?int $crf = null,
         public readonly ?int $target_size_bytes = null,
