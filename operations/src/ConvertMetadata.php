@@ -15,7 +15,14 @@ final class ConvertMetadata
             mime_groups: [
                 'image' => new MimeGroupMetadata(
                     processing_class: [],
-                    per_mime_availability: [],
+                    per_mime_availability: [
+                        'image/avif' => new AvailabilityEntry(
+                            availability: 'beta',
+                        ),
+                        'image/heic' => new AvailabilityEntry(
+                            availability: 'beta',
+                        ),
+                    ],
                     options: [
                         'output_format' => new OptionMetadata(
                             per_value_availability: [],

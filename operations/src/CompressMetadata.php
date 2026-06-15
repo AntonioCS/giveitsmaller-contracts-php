@@ -15,7 +15,11 @@ final class CompressMetadata
             mime_groups: [
                 'image' => new MimeGroupMetadata(
                     processing_class: [],
-                    per_mime_availability: [],
+                    per_mime_availability: [
+                        'image/avif' => new AvailabilityEntry(
+                            availability: 'beta',
+                        ),
+                    ],
                     options: [
                         'mode' => new OptionMetadata(
                             per_value_availability: [],

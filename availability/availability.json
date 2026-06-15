@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 91,
+  "capabilities_version": 93,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -867,7 +867,7 @@
           "options": {
             "bitrate": {
               "default": 128,
-              "description": "Output bitrate in kbps",
+              "description": "Output bitrate in kbps. Applies to lossy outputs (mpeg/aac/ogg/mp4) \u2014 CBR/ABR; rejected as invalid_options for lossless outputs (flac/wav, which have no bitrate target). The other knobs (channels/sample_rate/normalize) apply to all formats.\n",
               "type": "enum",
               "value_type": "integer",
               "values": [
@@ -1103,6 +1103,11 @@
               "max": 100,
               "min": 1,
               "type": "integer"
+            }
+          },
+          "per_mime_availability": {
+            "image/avif": {
+              "availability": "beta"
             }
           }
         },
@@ -1397,6 +1402,14 @@
               "max": 100,
               "min": 1,
               "type": "integer"
+            }
+          },
+          "per_mime_availability": {
+            "image/avif": {
+              "availability": "beta"
+            },
+            "image/heic": {
+              "availability": "beta"
             }
           }
         },
@@ -2994,6 +3007,14 @@
               "required": true,
               "type": "integer"
             }
+          },
+          "per_mime_availability": {
+            "image/avif": {
+              "availability": "beta"
+            },
+            "image/heic": {
+              "availability": "beta"
+            }
           }
         },
         "video": {
@@ -3295,7 +3316,7 @@
       }
     }
   },
-  "schema_version": "2.66.0",
+  "schema_version": "2.68.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
