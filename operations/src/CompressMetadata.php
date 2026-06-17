@@ -37,7 +37,26 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'auto' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'smallest' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'jpeg' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'png' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'webp' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'avif' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                     ],
                     per_input_options: [],
@@ -46,6 +65,25 @@ final class CompressMetadata
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [
+                                'mp3' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'aac' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'ogg' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'flac' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'wav' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
+                        ),
                         'bitrate' => new OptionMetadata(
                             per_value_availability: [],
                         ),

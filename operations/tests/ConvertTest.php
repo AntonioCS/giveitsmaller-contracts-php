@@ -159,8 +159,8 @@ final class ConvertTest extends TestCase
             output_format: ConvertVideoOutputFormat::Mp4,
         );
         $this->assertInstanceOf(ConvertVideoOptions::class, $obj);
-        $this->assertSame(23, $obj->quality);
         $this->assertNull($obj->codec);
+        $this->assertNull($obj->quality);
     }
 
     public function testConvertVideoOptionsFullConstruction(): void

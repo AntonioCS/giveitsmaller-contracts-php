@@ -9,6 +9,7 @@ namespace Gisl\Generated\Operations;
 final class CompressAudioOptions
 {
     public function __construct(
+        public readonly CompressAudioOutputFormat $output_format = CompressAudioOutputFormat::Original,
         public readonly CompressAudioBitrate $bitrate = CompressAudioBitrate::_128,
         public readonly bool $normalize = false,
         public readonly ?int $channels = null,

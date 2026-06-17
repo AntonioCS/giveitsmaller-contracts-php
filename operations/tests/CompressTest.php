@@ -9,6 +9,7 @@ namespace Gisl\Generated\Operations\Tests;
 use PHPUnit\Framework\TestCase;
 use Gisl\Generated\Operations\CompressAudioBitrate;
 use Gisl\Generated\Operations\CompressAudioOptions;
+use Gisl\Generated\Operations\CompressAudioOutputFormat;
 use Gisl\Generated\Operations\CompressAudioSampleRate;
 use Gisl\Generated\Operations\CompressDocumentEpubOptions;
 use Gisl\Generated\Operations\CompressDocumentOdfOptions;
@@ -195,6 +196,53 @@ final class CompressTest extends TestCase
         $this->assertInstanceOf(CompressImageOptions::class, $obj);
     }
 
+    public function testCompressAudioOutputFormatOriginalBackingValue(): void
+    {
+        $enum = CompressAudioOutputFormat::from('original');
+        $this->assertSame(CompressAudioOutputFormat::Original, $enum);
+        $this->assertSame('original', $enum->value);
+    }
+
+    public function testCompressAudioOutputFormatMp3BackingValue(): void
+    {
+        $enum = CompressAudioOutputFormat::from('mp3');
+        $this->assertSame(CompressAudioOutputFormat::Mp3, $enum);
+        $this->assertSame('mp3', $enum->value);
+    }
+
+    public function testCompressAudioOutputFormatAacBackingValue(): void
+    {
+        $enum = CompressAudioOutputFormat::from('aac');
+        $this->assertSame(CompressAudioOutputFormat::Aac, $enum);
+        $this->assertSame('aac', $enum->value);
+    }
+
+    public function testCompressAudioOutputFormatOggBackingValue(): void
+    {
+        $enum = CompressAudioOutputFormat::from('ogg');
+        $this->assertSame(CompressAudioOutputFormat::Ogg, $enum);
+        $this->assertSame('ogg', $enum->value);
+    }
+
+    public function testCompressAudioOutputFormatFlacBackingValue(): void
+    {
+        $enum = CompressAudioOutputFormat::from('flac');
+        $this->assertSame(CompressAudioOutputFormat::Flac, $enum);
+        $this->assertSame('flac', $enum->value);
+    }
+
+    public function testCompressAudioOutputFormatWavBackingValue(): void
+    {
+        $enum = CompressAudioOutputFormat::from('wav');
+        $this->assertSame(CompressAudioOutputFormat::Wav, $enum);
+        $this->assertSame('wav', $enum->value);
+    }
+
+    public function testCompressAudioOutputFormatCaseCount(): void
+    {
+        $this->assertCount(6, CompressAudioOutputFormat::cases());
+    }
+
     public function testCompressAudioBitrate_64BackingValue(): void
     {
         $enum = CompressAudioBitrate::from(64);
@@ -272,6 +320,7 @@ final class CompressTest extends TestCase
     {
         $obj = new CompressAudioOptions();
         $this->assertInstanceOf(CompressAudioOptions::class, $obj);
+        $this->assertSame(CompressAudioOutputFormat::Original, $obj->output_format);
         $this->assertSame(CompressAudioBitrate::_128, $obj->bitrate);
         $this->assertSame(false, $obj->normalize);
         $this->assertNull($obj->channels);
@@ -283,6 +332,7 @@ final class CompressTest extends TestCase
     public function testCompressAudioOptionsFullConstruction(): void
     {
         $obj = new CompressAudioOptions(
+            output_format: CompressAudioOutputFormat::Original,
             bitrate: CompressAudioBitrate::_64,
             channels: 1,
             sample_rate: CompressAudioSampleRate::_22050,
@@ -535,13 +585,13 @@ final class CompressTest extends TestCase
         $this->assertSame(CompressVideoPreset::Medium, $obj->preset);
         $this->assertSame(true, $obj->faststart);
         $this->assertSame(CompressVideoAudioCodec::Copy, $obj->audio_codec);
-        $this->assertSame(CompressVideoAudioBitrate::_128, $obj->audio_bitrate);
         $this->assertNull($obj->crf);
         $this->assertNull($obj->target_size_bytes);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
         $this->assertNull($obj->fit);
         $this->assertNull($obj->fps);
+        $this->assertNull($obj->audio_bitrate);
         $this->assertNull($obj->trim_start);
         $this->assertNull($obj->trim_end);
     }
