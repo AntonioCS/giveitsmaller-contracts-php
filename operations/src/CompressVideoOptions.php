@@ -9,6 +9,7 @@ namespace Gisl\Generated\Operations;
 final class CompressVideoOptions
 {
     public function __construct(
+        public readonly CompressVideoOutputFormat $output_format = CompressVideoOutputFormat::Original,
         public readonly CompressVideoCodec $codec = CompressVideoCodec::H264,
         public readonly CompressVideoEncodingMode $encoding_mode = CompressVideoEncodingMode::Crf,
         public readonly CompressVideoPreset $preset = CompressVideoPreset::Medium,

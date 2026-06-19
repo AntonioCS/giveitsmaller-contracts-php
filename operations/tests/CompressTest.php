@@ -28,6 +28,7 @@ use Gisl\Generated\Operations\CompressVideoCodec;
 use Gisl\Generated\Operations\CompressVideoEncodingMode;
 use Gisl\Generated\Operations\CompressVideoFit;
 use Gisl\Generated\Operations\CompressVideoOptions;
+use Gisl\Generated\Operations\CompressVideoOutputFormat;
 use Gisl\Generated\Operations\CompressVideoPreset;
 
 final class CompressTest extends TestCase
@@ -343,6 +344,39 @@ final class CompressTest extends TestCase
         $this->assertInstanceOf(CompressAudioOptions::class, $obj);
     }
 
+    public function testCompressVideoOutputFormatOriginalBackingValue(): void
+    {
+        $enum = CompressVideoOutputFormat::from('original');
+        $this->assertSame(CompressVideoOutputFormat::Original, $enum);
+        $this->assertSame('original', $enum->value);
+    }
+
+    public function testCompressVideoOutputFormatMp4BackingValue(): void
+    {
+        $enum = CompressVideoOutputFormat::from('mp4');
+        $this->assertSame(CompressVideoOutputFormat::Mp4, $enum);
+        $this->assertSame('mp4', $enum->value);
+    }
+
+    public function testCompressVideoOutputFormatWebmBackingValue(): void
+    {
+        $enum = CompressVideoOutputFormat::from('webm');
+        $this->assertSame(CompressVideoOutputFormat::Webm, $enum);
+        $this->assertSame('webm', $enum->value);
+    }
+
+    public function testCompressVideoOutputFormatOggBackingValue(): void
+    {
+        $enum = CompressVideoOutputFormat::from('ogg');
+        $this->assertSame(CompressVideoOutputFormat::Ogg, $enum);
+        $this->assertSame('ogg', $enum->value);
+    }
+
+    public function testCompressVideoOutputFormatCaseCount(): void
+    {
+        $this->assertCount(4, CompressVideoOutputFormat::cases());
+    }
+
     public function testCompressVideoCodecH264BackingValue(): void
     {
         $enum = CompressVideoCodec::from('h264');
@@ -580,6 +614,7 @@ final class CompressTest extends TestCase
     {
         $obj = new CompressVideoOptions();
         $this->assertInstanceOf(CompressVideoOptions::class, $obj);
+        $this->assertSame(CompressVideoOutputFormat::Original, $obj->output_format);
         $this->assertSame(CompressVideoCodec::H264, $obj->codec);
         $this->assertSame(CompressVideoEncodingMode::Crf, $obj->encoding_mode);
         $this->assertSame(CompressVideoPreset::Medium, $obj->preset);
@@ -599,6 +634,7 @@ final class CompressTest extends TestCase
     public function testCompressVideoOptionsFullConstruction(): void
     {
         $obj = new CompressVideoOptions(
+            output_format: CompressVideoOutputFormat::Original,
             codec: CompressVideoCodec::H264,
             encoding_mode: CompressVideoEncodingMode::Crf,
             crf: 0,

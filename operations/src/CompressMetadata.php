@@ -50,9 +50,6 @@ final class CompressMetadata
                                 'png' => new AvailabilityEntry(
                                     availability: 'planned',
                                 ),
-                                'webp' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
                                 'avif' => new AvailabilityEntry(
                                     availability: 'planned',
                                 ),
@@ -66,23 +63,7 @@ final class CompressMetadata
                     per_mime_availability: [],
                     options: [
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [
-                                'mp3' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'aac' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'ogg' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'flac' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'wav' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'bitrate' => new OptionMetadata(
                             per_value_availability: [],
@@ -129,16 +110,34 @@ final class CompressMetadata
                     ],
                     per_mime_availability: [],
                     options: [
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [
+                                'mp4' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'webm' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'ogg' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
+                        ),
                         'codec' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'encoding_mode' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'target_size' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'crf' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'target_size_bytes' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'preset' => new OptionMetadata(

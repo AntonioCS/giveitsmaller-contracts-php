@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 98,
+  "capabilities_version": 101,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -874,7 +874,7 @@
           "options": {
             "bitrate": {
               "default": 128,
-              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. Only a caller-EXPLICIT bitrate against a lossless output is rejected as invalid_options (flac/wav have no bitrate target); the `default: 128` is never the basis for a rejection (ADR-0020 D1 \u2014 a default a caller did not set is the server's to resolve, and is dropped for a lossless target). The output is the input format unless `output_format` re-targets it: with `output_format: original` the lossy/lossless distinction follows the input MIME (mpeg/aac/ogg/mp4 = lossy \u2192 bitrate applies; flac/wav input \u2192 an explicit bitrate is rejected); with an explicit `output_format`, it follows that target (flac/wav target \u2192 an explicit bitrate is rejected). Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels/sample_rate/normalize) apply to all formats.\n",
+              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. Only a caller-EXPLICIT bitrate against a lossless output is rejected as invalid_options (flac/wav have no bitrate target); the `default: 128` is never the basis for a rejection (ADR-0020 D1, carried into ADR-0023 \u2014 a default a caller did not set is the server's to resolve, and is dropped for a lossless target). The output is the input format unless `output_format` re-targets it: with `output_format: original` the lossy/lossless distinction follows the input MIME (mpeg/aac/ogg/mp4 = lossy \u2192 bitrate applies; flac/wav input \u2192 an explicit bitrate is rejected); with an explicit `output_format`, it follows that target (flac/wav target \u2192 an explicit bitrate is rejected). Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels/sample_rate/normalize) apply to all formats.\n",
               "type": "enum",
               "value_type": "integer",
               "values": [
@@ -900,23 +900,6 @@
             "output_format": {
               "default": "original",
               "description": "Output audio format. original = keep input format (default, same-format compression). Non-`original` values re-target the container/codec via the API \"compress+format\" facade (one canonicalized convert pass); see FORMAT.md.",
-              "per_value_availability": {
-                "aac": {
-                  "availability": "planned"
-                },
-                "flac": {
-                  "availability": "planned"
-                },
-                "mp3": {
-                  "availability": "planned"
-                },
-                "ogg": {
-                  "availability": "planned"
-                },
-                "wav": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
                 "original",
@@ -1130,9 +1113,6 @@
                 },
                 "smallest": {
                   "availability": "planned"
-                },
-                "webp": {
-                  "availability": "planned"
                 }
               },
               "type": "enum",
@@ -1197,7 +1177,7 @@
             },
             "audio_codec": {
               "default": "copy",
-              "description": "Audio codec. copy = passthrough (keep the source audio stream as-is; re-encode only on explicit request) \u2014 aac = widest compatibility, opus = best quality/size. Default is `copy` (ADR-0020 D7): it MATCHES the worker's actual absent-audio behaviour and is container-safe for compress (output container = input container, so the source stream is already compatible). Set an explicit codec to re-encode; an explicit codec the output container cannot carry (e.g. aac on a WebM output) returns invalid_options. A DEFAULT value is never rejected. See FORMAT.md \"Container-conditional defaults\" + ADR-0020.\n",
+              "description": "Audio codec. copy = passthrough (keep the source stream as-is; re-encode only on explicit request) \u2014 aac/opus/vorbis re-encode. Default is `copy` (ADR-0020 D7, carried into ADR-0023): on the same-container path (`output_format` original/absent) the source stream is already container-compatible, so copy is safe. When `output_format` RE-TARGETS the container, an absent/default audio_codec resolves to a container-valid codec via the facade (e.g. webm -> opus), NOT a blind copy of an incompatible stream \u2014 a DEFAULT is never rejected (the exact per-container resolution, incl. ogg vorbis-vs-opus, is an output_format stable-flip prerequisite, ADR-0023 D5). A caller-EXPLICIT codec the resolved container cannot carry (e.g. aac on a webm target) returns invalid_options. See FORMAT.md \"Container-conditional defaults\" + ADR-0023 (supersedes ADR-0020).\n",
               "type": "enum",
               "values": [
                 "aac",
@@ -1208,7 +1188,7 @@
             },
             "codec": {
               "default": "h264",
-              "description": "Video codec. h264 = widest compatibility, h265/av1 = better compression but slower. The default (h264) is the MP4/MOV standard and is CONTAINER-CONDITIONAL: for an output container that cannot carry it (e.g. WebM, which carries VP8/VP9/AV1) the server resolves a container-valid codec (WebM -> vp9). A DEFAULT value is never rejected; only a caller-EXPLICIT incompatible codec returns invalid_options. See FORMAT.md \"Container-conditional defaults\" + ADR-0020.\n",
+              "description": "Video codec. h264 = widest compatibility, h265/av1 = better compression but slower. The default (h264) is the MP4/MOV standard and is CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input container): for a container that cannot carry it (e.g. WebM, which carries VP8/VP9/ AV1) the server resolves a container-valid codec (WebM -> vp9). A DEFAULT value is never rejected \u2014 including an explicit `output_format: webm` left at the default `h264` (resolves to vp9, NOT invalid_options); only a caller-EXPLICIT incompatible codec returns invalid_options. See FORMAT.md \"Container-conditional defaults\" + ADR-0023 (supersedes ADR-0020).\n",
               "type": "enum",
               "values": [
                 "h264",
@@ -1229,7 +1209,12 @@
             },
             "encoding_mode": {
               "default": "crf",
-              "description": "crf = constant quality (variable file size), target_size = constrained file size",
+              "description": "crf = constant quality (variable file size). target_size = constrained file size \u2014 `planned`: the worker does not yet implement the two-pass encode (it rejects target_size); crf only today.",
+              "per_value_availability": {
+                "target_size": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
                 "crf",
@@ -1238,7 +1223,7 @@
             },
             "faststart": {
               "default": true,
-              "description": "Move the MP4/MOV moov atom to start for progressive web playback. MP4/MOV only. CONTAINER-CONDITIONAL: the default (true) is silently inapplicable for a container with no moov atom (e.g. WebM) \u2014 that is NOT a rejection. Only a caller-EXPLICIT faststart:true on such a container returns invalid_options. See FORMAT.md \"Container-conditional defaults\" + ADR-0020.\n",
+              "description": "Move the MP4/MOV moov atom to start for progressive web playback. MP4/MOV only. CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input): the default (true) is silently inapplicable for a container with no moov atom (e.g. WebM) \u2014 that is NOT a rejection. Only a caller-EXPLICIT faststart:true on such a container returns invalid_options. See FORMAT.md \"Container-conditional defaults\" + ADR-0023 (supersedes ADR-0020).\n",
               "type": "boolean"
             },
             "fit": {
@@ -1269,6 +1254,28 @@
               "min": 2,
               "type": "integer"
             },
+            "output_format": {
+              "default": "original",
+              "description": "Output container. original = keep the input container (default, same-format compression). Non-`original` values re-target the container via the API \"compress+format\" facade (one canonicalized convert-with-size-cap pass); see per_value_availability + ADR-0023 + FORMAT.md. When set, the RESOLVED target container determines the valid codec/audio_codec/faststart sets \u2014 an absent/default codec resolves to a container-valid one (e.g. webm -> vp9) and is never rejected; only a caller-EXPLICIT incompatible value is invalid_options.",
+              "per_value_availability": {
+                "mp4": {
+                  "availability": "planned"
+                },
+                "ogg": {
+                  "availability": "planned"
+                },
+                "webm": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "original",
+                "mp4",
+                "webm",
+                "ogg"
+              ]
+            },
             "preset": {
               "default": "medium",
               "description": "Encoding speed vs compression ratio trade-off",
@@ -1286,10 +1293,11 @@
               ]
             },
             "target_size_bytes": {
+              "availability": "planned",
               "depends_on": {
                 "encoding_mode": "target_size"
               },
-              "description": "Target output file size in bytes (min 1MB).",
+              "description": "Target output file size in bytes (min 1MB). `planned` \u2014 the worker does not yet implement the two-pass target-size encode.",
               "min": 1048576,
               "type": "integer"
             },
@@ -1491,7 +1499,7 @@
                   "ogg"
                 ]
               },
-              "description": "Video codec for target format. Defaults to the format's standard codec (no literal default \u2014 the required output_format determines it). This is the container-conditional-default principle applied via an explicit container choice. See FORMAT.md \"Container-conditional defaults\" + ADR-0020. Not applicable to a `gif` output (no video codec): an explicit `codec` on a `gif` output is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); FE/SDK prune it pre-submit.\n",
+              "description": "Video codec for target format. Defaults to the format's standard codec (no literal default \u2014 the required output_format determines it). This is the container-conditional-default principle applied via an explicit container choice. See FORMAT.md \"Container-conditional defaults\" + ADR-0023 (supersedes ADR-0020). Not applicable to a `gif` output (no video codec): an explicit `codec` on a `gif` output is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); FE/SDK prune it pre-submit.\n",
               "type": "enum",
               "values": [
                 "h264",
@@ -3393,7 +3401,7 @@
       }
     }
   },
-  "schema_version": "2.74.0",
+  "schema_version": "2.78.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
