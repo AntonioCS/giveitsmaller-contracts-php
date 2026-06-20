@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 110,
+  "capabilities_version": 111,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1886,7 +1886,7 @@
     },
     "image_watermark": {
       "default": false,
-      "description": "Apply an image overlay onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). Each input\nis a `MultiInputSource` \u2014 an external_import handle, a vault\nconnection, or an upstream `job_output` (uploads are NOT referenced\ndirectly inside inputs[]). To use an uploaded base or overlay, feed\nit through a `passthrough` source job and reference that job via\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until Lambda\nsupport ships. Per Tension 1 (ADR-0001) + plan v5 \u00a7F4 round 6.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`) which routes through\nFFmpeg overlay + re-encode. Per ADR-0013.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 25 megapixels for image bases (V1 watermark\nprecedent retained); per-frame caps for animated GIF bases will be\ndefined when the corresponding Lambda support ships.\nPer ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n",
+      "description": "Apply an image overlay onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). Each input\nis a `MultiInputSource` \u2014 an external_import handle, a vault\nconnection, or an upstream `job_output` (uploads are NOT referenced\ndirectly inside inputs[]). To use an uploaded base or overlay, feed\nit through a `passthrough` source job and reference that job via\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until Lambda\nsupport ships. Per Tension 1 (ADR-0001) + plan v5 \u00a7F4 round 6.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`) which routes through\nFFmpeg overlay + re-encode. Per ADR-0013.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 100 megapixels for image bases (raised from 25MP \u2014\nlambdas #250, proven on the 45.9MP report case); per-frame caps for\nanimated GIF bases will be defined when the corresponding Lambda\nsupport ships. Per ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n",
       "features": {
         "multi_overlay_stack": {
           "availability": "planned",
@@ -3113,7 +3113,7 @@
     },
     "text_watermark": {
       "default": false,
-      "description": "Render a text overlay onto an image using bundled Liberation Sans\n(SIL OFL). Single-input \u2014 text comes from options, not from a file\ninput. Source capped at 25 megapixels (V1 watermark precedent\nretained). Per ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n\nTwo rendering modes:\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source image (Cinavia / Adobe Stock\n  pattern); rotation default -45\u00b0 and tile_spacing controls density.\n",
+      "description": "Render a text overlay onto an image using bundled Liberation Sans\n(SIL OFL). Single-input \u2014 text comes from options, not from a file\ninput. Source capped at 100 megapixels in `single` mode (raised from\n25MP \u2014 lambdas #250, proven on the 45.9MP report case). `tiled` mode\nkeeps the 25-megapixel canvas bound (see `tile_spacing` /\n`watermark_mode`). Per ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n\nTwo rendering modes:\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source image (Cinavia / Adobe Stock\n  pattern); rotation default -45\u00b0 and tile_spacing controls density.\n",
       "input_model": "single",
       "mime_groups": {
         "image": {
@@ -3681,7 +3681,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.88.0",
+  "schema_version": "2.89.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
