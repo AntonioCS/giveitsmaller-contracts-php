@@ -133,6 +133,15 @@
             "trim_end",
             "trim_start"
           ],
+          "opus": [
+            "bitrate",
+            "channels",
+            "normalize",
+            "output_format",
+            "sample_rate",
+            "trim_end",
+            "trim_start"
+          ],
           "original": [
             "bitrate",
             "channels",
@@ -528,19 +537,27 @@
       "video": {
         "accepted_options": {
           "gif": [
-            "output_format"
+            "output_format",
+            "trim_end",
+            "trim_start"
           ],
           "mp4": [
             "crf",
-            "output_format"
+            "output_format",
+            "trim_end",
+            "trim_start"
           ],
           "ogg": [
             "crf",
-            "output_format"
+            "output_format",
+            "trim_end",
+            "trim_start"
           ],
           "webm": [
             "crf",
-            "output_format"
+            "output_format",
+            "trim_end",
+            "trim_start"
           ]
         },
         "output_format_option": "output_format"
@@ -812,5 +829,5 @@
       }
     }
   },
-  "schema_version": "2.83.0"
+  "schema_version": "2.84.0"
 }

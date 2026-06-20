@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 105,
+  "capabilities_version": 106,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -914,6 +914,7 @@
                 "mp3",
                 "aac",
                 "ogg",
+                "opus",
                 "flac",
                 "wav"
               ]
@@ -1707,6 +1708,18 @@
                 "ogg",
                 "gif"
               ]
+            },
+            "trim_end": {
+              "availability": "planned",
+              "description": "Trim from end in seconds (absent = to the end of the clip). Removes this many seconds from the end; combined with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Gated `planned` \u2014 see `trim_start`.\n",
+              "min": 0,
+              "type": "float"
+            },
+            "trim_start": {
+              "availability": "planned",
+              "description": "Trim from beginning in seconds (absent = from the start). The convert-video worker cuts the clip before transcoding \u2014 the user's \"trim a video then make a GIF\" path. The kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Gated `planned` until the convert-trim worker ships + staging-proves; flips `stable` for the video outputs (gif/mp4/webm/ogg) then.\n",
+              "min": 0,
+              "type": "float"
             }
           },
           "processing_class": {
@@ -3622,7 +3635,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.83.0",
+  "schema_version": "2.84.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

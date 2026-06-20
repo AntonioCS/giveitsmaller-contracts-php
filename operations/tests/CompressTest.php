@@ -414,6 +414,13 @@ final class CompressTest extends TestCase
         $this->assertSame('ogg', $enum->value);
     }
 
+    public function testCompressAudioOutputFormatOpusBackingValue(): void
+    {
+        $enum = CompressAudioOutputFormat::from('opus');
+        $this->assertSame(CompressAudioOutputFormat::Opus, $enum);
+        $this->assertSame('opus', $enum->value);
+    }
+
     public function testCompressAudioOutputFormatFlacBackingValue(): void
     {
         $enum = CompressAudioOutputFormat::from('flac');
@@ -430,7 +437,7 @@ final class CompressTest extends TestCase
 
     public function testCompressAudioOutputFormatCaseCount(): void
     {
-        $this->assertCount(6, CompressAudioOutputFormat::cases());
+        $this->assertCount(7, CompressAudioOutputFormat::cases());
     }
 
     public function testCompressAudioBitrate_64BackingValue(): void

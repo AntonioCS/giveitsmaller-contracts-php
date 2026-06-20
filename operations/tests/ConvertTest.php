@@ -126,6 +126,8 @@ final class ConvertTest extends TestCase
         );
         $this->assertInstanceOf(ConvertVideoOptions::class, $obj);
         $this->assertNull($obj->crf);
+        $this->assertNull($obj->trim_start);
+        $this->assertNull($obj->trim_end);
     }
 
     public function testConvertVideoOptionsFullConstruction(): void
@@ -133,6 +135,8 @@ final class ConvertTest extends TestCase
         $obj = new ConvertVideoOptions(
             output_format: ConvertVideoOutputFormat::Mp4,
             crf: 0,
+            trim_start: 0.0,
+            trim_end: 0.0,
         );
         $this->assertInstanceOf(ConvertVideoOptions::class, $obj);
     }

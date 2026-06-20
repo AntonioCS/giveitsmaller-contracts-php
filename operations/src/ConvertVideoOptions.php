@@ -11,5 +11,7 @@ final class ConvertVideoOptions
     public function __construct(
         public readonly ConvertVideoOutputFormat $output_format,
         public readonly ?int $crf = null,
+        public readonly ?float $trim_start = null,
+        public readonly ?float $trim_end = null,
     ) {}
 }

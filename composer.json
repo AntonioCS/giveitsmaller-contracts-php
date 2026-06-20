@@ -1,7 +1,7 @@
 {
     "name": "giveitsmaller/contracts",
     "description": "Generated contract types for GISL (Give It Smaller)",
-    "version": "0.23.0",
+    "version": "0.24.0",
     "type": "library",
     "license": "MIT",
     "require": {
@@ -10,10 +10,10 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "psr/http-message": "^1.1 || ^2.0",
-        "guzzlehttp/psr7": "^1.7 || ^2.0"
+        "guzzlehttp/psr7": "^2.12.1"
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "^7.3",
+        "guzzlehttp/guzzle": "^7.12.1",
         "phpunit/phpunit": "^10"
     },
     "autoload": {

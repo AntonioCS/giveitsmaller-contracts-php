@@ -64,6 +64,14 @@ final class ConvertMetadata
                         'crf' => new OptionMetadata(
                             per_value_availability: [],
                         ),
+                        'trim_start' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
+                        'trim_end' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
                     ],
                     per_input_options: [],
                 ),
