@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 106,
+  "capabilities_version": 108,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1698,6 +1698,54 @@
               "min": 0,
               "type": "integer"
             },
+            "dither": {
+              "availability": "planned",
+              "default": "bayer",
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "GIF dithering method (ffmpeg `paletteuse`). `bayer` is a good size/quality balance; `none` is smallest (may band). `planned` \u2014 see `fps`.\n",
+              "type": "enum",
+              "values": [
+                "none",
+                "bayer",
+                "floyd_steinberg",
+                "sierra2",
+                "sierra2_4a"
+              ]
+            },
+            "fps": {
+              "availability": "planned",
+              "default": 15,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "Output frame rate for video \u2192 GIF (ffmpeg `fps` filter). Lower = fewer frames = smaller file. Video \u2192 GIF only. `planned` until the convert-gif worker proves on staging.\n",
+              "max": 50,
+              "min": 1,
+              "type": "float"
+            },
+            "loop": {
+              "availability": "planned",
+              "default": 0,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "GIF loop count: 0 = infinite (default), N > 0 = loop N times, -1 = play once. `planned` \u2014 see `fps`.\n",
+              "min": -1,
+              "type": "integer"
+            },
+            "max_colors": {
+              "availability": "planned",
+              "default": 256,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "GIF palette size (ffmpeg `palettegen` max_colors). Fewer colors = smaller file. `planned` \u2014 see `fps`.\n",
+              "max": 256,
+              "min": 2,
+              "type": "integer"
+            },
             "output_format": {
               "description": "Target format. The video codec is fixed by the container (mp4->H.264, webm->VP9, ogg->Theora, gif->palette) \u2014 not caller-selectable.",
               "required": true,
@@ -1710,16 +1758,25 @@
               ]
             },
             "trim_end": {
-              "availability": "planned",
-              "description": "Trim from end in seconds (absent = to the end of the clip). Removes this many seconds from the end; combined with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Gated `planned` \u2014 see `trim_start`.\n",
+              "description": "Trim from end in seconds (absent = to the end of the clip). Removes this many seconds from the end; combined with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Live \u2014 see `trim_start`.\n",
               "min": 0,
               "type": "float"
             },
             "trim_start": {
-              "availability": "planned",
-              "description": "Trim from beginning in seconds (absent = from the start). The convert-video worker cuts the clip before transcoding \u2014 the user's \"trim a video then make a GIF\" path. The kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Gated `planned` until the convert-trim worker ships + staging-proves; flips `stable` for the video outputs (gif/mp4/webm/ogg) then.\n",
+              "description": "Trim from beginning in seconds (absent = from the start). The convert-video worker cuts the clip before transcoding \u2014 the user's \"trim a video then make a GIF\" path. The kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Live for all video outputs (gif/mp4/webm/ogg).\n",
               "min": 0,
               "type": "float"
+            },
+            "width": {
+              "availability": "planned",
+              "default": 640,
+              "depends_on": {
+                "output_format": "gif"
+              },
+              "description": "Maximum output width in pixels \u2014 a downscale-only CAP (a source narrower than this is left untouched; height is aspect-preserved). Smaller = smaller file. `planned` \u2014 see `fps`.\n",
+              "max": 4096,
+              "min": 1,
+              "type": "integer"
             }
           },
           "processing_class": {
@@ -3635,7 +3692,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.84.0",
+  "schema_version": "2.86.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

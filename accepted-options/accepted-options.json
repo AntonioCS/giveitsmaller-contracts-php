@@ -537,9 +537,14 @@
       "video": {
         "accepted_options": {
           "gif": [
+            "dither",
+            "fps",
+            "loop",
+            "max_colors",
             "output_format",
             "trim_end",
-            "trim_start"
+            "trim_start",
+            "width"
           ],
           "mp4": [
             "crf",
@@ -829,5 +834,5 @@
       }
     }
   },
-  "schema_version": "2.84.0"
+  "schema_version": "2.86.0"
 }

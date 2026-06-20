@@ -14,6 +14,7 @@ use Gisl\Generated\Operations\ConvertDocumentPdfOptions;
 use Gisl\Generated\Operations\ConvertDocumentPdfOutputFormat;
 use Gisl\Generated\Operations\ConvertImageOptions;
 use Gisl\Generated\Operations\ConvertImageOutputFormat;
+use Gisl\Generated\Operations\ConvertVideoDither;
 use Gisl\Generated\Operations\ConvertVideoOptions;
 use Gisl\Generated\Operations\ConvertVideoOutputFormat;
 
@@ -119,6 +120,46 @@ final class ConvertTest extends TestCase
         $this->assertCount(4, ConvertVideoOutputFormat::cases());
     }
 
+    public function testConvertVideoDitherNoneBackingValue(): void
+    {
+        $enum = ConvertVideoDither::from('none');
+        $this->assertSame(ConvertVideoDither::None, $enum);
+        $this->assertSame('none', $enum->value);
+    }
+
+    public function testConvertVideoDitherBayerBackingValue(): void
+    {
+        $enum = ConvertVideoDither::from('bayer');
+        $this->assertSame(ConvertVideoDither::Bayer, $enum);
+        $this->assertSame('bayer', $enum->value);
+    }
+
+    public function testConvertVideoDitherFloydSteinbergBackingValue(): void
+    {
+        $enum = ConvertVideoDither::from('floyd_steinberg');
+        $this->assertSame(ConvertVideoDither::FloydSteinberg, $enum);
+        $this->assertSame('floyd_steinberg', $enum->value);
+    }
+
+    public function testConvertVideoDitherSierra2BackingValue(): void
+    {
+        $enum = ConvertVideoDither::from('sierra2');
+        $this->assertSame(ConvertVideoDither::Sierra2, $enum);
+        $this->assertSame('sierra2', $enum->value);
+    }
+
+    public function testConvertVideoDitherSierra24aBackingValue(): void
+    {
+        $enum = ConvertVideoDither::from('sierra2_4a');
+        $this->assertSame(ConvertVideoDither::Sierra24a, $enum);
+        $this->assertSame('sierra2_4a', $enum->value);
+    }
+
+    public function testConvertVideoDitherCaseCount(): void
+    {
+        $this->assertCount(5, ConvertVideoDither::cases());
+    }
+
     public function testConvertVideoOptionsDefaultConstruction(): void
     {
         $obj = new ConvertVideoOptions(
@@ -128,6 +169,11 @@ final class ConvertTest extends TestCase
         $this->assertNull($obj->crf);
         $this->assertNull($obj->trim_start);
         $this->assertNull($obj->trim_end);
+        $this->assertNull($obj->fps);
+        $this->assertNull($obj->width);
+        $this->assertNull($obj->max_colors);
+        $this->assertNull($obj->loop);
+        $this->assertNull($obj->dither);
     }
 
     public function testConvertVideoOptionsFullConstruction(): void
@@ -137,6 +183,11 @@ final class ConvertTest extends TestCase
             crf: 0,
             trim_start: 0.0,
             trim_end: 0.0,
+            fps: 1.0,
+            width: 1,
+            max_colors: 2,
+            loop: -1,
+            dither: ConvertVideoDither::None,
         );
         $this->assertInstanceOf(ConvertVideoOptions::class, $obj);
     }
