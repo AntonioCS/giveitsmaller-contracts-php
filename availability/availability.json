@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 109,
+  "capabilities_version": 110,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1400,12 +1400,7 @@
             },
             "encoding_mode": {
               "default": "crf",
-              "description": "crf = constant quality (variable file size). target_size = constrained file size \u2014 `planned`: the worker does not yet implement the two-pass encode (it rejects target_size); crf only today.",
-              "per_value_availability": {
-                "target_size": {
-                  "availability": "planned"
-                }
-              },
+              "description": "crf = constant quality (variable file size). target_size = constrained output file size (two-pass). target_size is LIVE for mp4/MOV output; for webm/ogg output and long-form the server returns `feature_not_available` (use crf there) until VP9 two-pass ships.",
               "type": "enum",
               "values": [
                 "crf",
@@ -1484,11 +1479,10 @@
               ]
             },
             "target_size_bytes": {
-              "availability": "planned",
               "depends_on": {
                 "encoding_mode": "target_size"
               },
-              "description": "Target output file size in bytes (min 1MB). `planned` \u2014 the worker does not yet implement the two-pass target-size encode.",
+              "description": "Target output file size in bytes (min 1MiB). The libx264 two-pass encode lands the output at or under the target (a safety undershoot + audio reserve apply). mp4/MOV output only \u2014 webm/ogg + long-form return `feature_not_available` until VP9 two-pass ships.",
               "min": 1048576,
               "type": "integer"
             },
@@ -3687,7 +3681,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.87.0",
+  "schema_version": "2.88.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

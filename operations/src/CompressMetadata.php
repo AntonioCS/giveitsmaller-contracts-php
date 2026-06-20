@@ -220,17 +220,12 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'encoding_mode' => new OptionMetadata(
-                            per_value_availability: [
-                                'target_size' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'crf' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'target_size_bytes' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'preset' => new OptionMetadata(
