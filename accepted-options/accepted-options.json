@@ -1,0 +1,688 @@
+{
+  "operations": {
+    "archive": {
+      "_operation": {
+        "accepted_options": {
+          "*": [
+            "folder_structure",
+            "format"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "audio_overlay": {
+      "audio": {
+        "accepted_options": {
+          "*": [
+            "duck_attack_ms",
+            "duck_ratio",
+            "duck_release_ms",
+            "duck_threshold",
+            "duration",
+            "fade_in_ms",
+            "fade_out_ms",
+            "loop",
+            "loop_interval",
+            "min_silence_ms",
+            "mode",
+            "overlay_gain_db",
+            "silence_threshold_db",
+            "start_at"
+          ]
+        },
+        "output_format_option": null
+      },
+      "video": {
+        "accepted_options": {
+          "*": [
+            "duck_attack_ms",
+            "duck_ratio",
+            "duck_release_ms",
+            "duck_threshold",
+            "duration",
+            "fade_in_ms",
+            "fade_out_ms",
+            "loop",
+            "loop_interval",
+            "min_silence_ms",
+            "mode",
+            "no_audio_track_behaviour",
+            "overlay_gain_db",
+            "silence_threshold_db",
+            "start_at"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "audio_to_video": {
+      "audio": {
+        "accepted_options": {
+          "mp4": [
+            "background_color",
+            "framerate",
+            "image_fit",
+            "output_format",
+            "output_resolution"
+          ]
+        },
+        "output_format_option": "output_format"
+      }
+    },
+    "audio_watermark": {
+      "audio": {
+        "accepted_options": {
+          "*": [
+            "density",
+            "method",
+            "payload",
+            "robustness"
+          ]
+        },
+        "output_format_option": null
+      },
+      "video": {
+        "accepted_options": {
+          "*": [
+            "density",
+            "method",
+            "payload",
+            "robustness"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "compress": {
+      "audio": {
+        "accepted_options": {
+          "aac": [
+            "bitrate",
+            "channels",
+            "normalize",
+            "output_format",
+            "sample_rate",
+            "trim_end",
+            "trim_start"
+          ],
+          "flac": [
+            "bitrate",
+            "channels",
+            "normalize",
+            "output_format",
+            "sample_rate",
+            "trim_end",
+            "trim_start"
+          ],
+          "mp3": [
+            "bitrate",
+            "channels",
+            "normalize",
+            "output_format",
+            "sample_rate",
+            "trim_end",
+            "trim_start"
+          ],
+          "ogg": [
+            "bitrate",
+            "channels",
+            "normalize",
+            "output_format",
+            "sample_rate",
+            "trim_end",
+            "trim_start"
+          ],
+          "original": [
+            "bitrate",
+            "channels",
+            "normalize",
+            "output_format",
+            "sample_rate",
+            "trim_end",
+            "trim_start"
+          ],
+          "wav": [
+            "bitrate",
+            "channels",
+            "normalize",
+            "output_format",
+            "sample_rate",
+            "trim_end",
+            "trim_start"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "document_epub": {
+        "accepted_options": {
+          "*": [
+            "font_subsetting",
+            "image_quality",
+            "strip_unused_css"
+          ]
+        },
+        "output_format_option": null
+      },
+      "document_odf": {
+        "accepted_options": {
+          "*": [
+            "image_quality",
+            "strip_metadata",
+            "strip_unused_styles"
+          ]
+        },
+        "output_format_option": null
+      },
+      "document_office": {
+        "accepted_options": {
+          "*": [
+            "image_quality",
+            "strip_hidden_data",
+            "strip_macros",
+            "strip_unused_fonts"
+          ]
+        },
+        "output_format_option": null
+      },
+      "document_pdf": {
+        "accepted_options": {
+          "*": [
+            "colorspace",
+            "flatten_forms",
+            "pages",
+            "profile"
+          ]
+        },
+        "output_format_option": null
+      },
+      "image": {
+        "accepted_options": {
+          "auto": [
+            "icc_profile",
+            "metadata",
+            "mode",
+            "output_format",
+            "progressive",
+            "quality"
+          ],
+          "avif": [
+            "icc_profile",
+            "metadata",
+            "mode",
+            "output_format",
+            "progressive",
+            "quality"
+          ],
+          "jpeg": [
+            "icc_profile",
+            "metadata",
+            "mode",
+            "output_format",
+            "progressive",
+            "quality"
+          ],
+          "original": [
+            "icc_profile",
+            "metadata",
+            "mode",
+            "output_format",
+            "progressive",
+            "quality"
+          ],
+          "png": [
+            "icc_profile",
+            "metadata",
+            "mode",
+            "output_format",
+            "progressive",
+            "quality"
+          ],
+          "smallest": [
+            "icc_profile",
+            "metadata",
+            "mode",
+            "output_format",
+            "progressive",
+            "quality"
+          ],
+          "webp": [
+            "icc_profile",
+            "metadata",
+            "mode",
+            "output_format",
+            "progressive",
+            "quality"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "video": {
+        "accepted_options": {
+          "mp4": [
+            "audio_bitrate",
+            "audio_codec",
+            "codec",
+            "crf",
+            "encoding_mode",
+            "faststart",
+            "fit",
+            "fps",
+            "height",
+            "output_format",
+            "preset",
+            "target_size_bytes",
+            "trim_end",
+            "trim_start",
+            "width"
+          ],
+          "ogg": [
+            "audio_bitrate",
+            "audio_codec",
+            "codec",
+            "crf",
+            "encoding_mode",
+            "faststart",
+            "fit",
+            "fps",
+            "height",
+            "output_format",
+            "preset",
+            "target_size_bytes",
+            "trim_end",
+            "trim_start",
+            "width"
+          ],
+          "original": [
+            "audio_bitrate",
+            "audio_codec",
+            "codec",
+            "crf",
+            "encoding_mode",
+            "faststart",
+            "fit",
+            "fps",
+            "height",
+            "output_format",
+            "preset",
+            "target_size_bytes",
+            "trim_end",
+            "trim_start",
+            "width"
+          ],
+          "webm": [
+            "audio_bitrate",
+            "audio_codec",
+            "codec",
+            "crf",
+            "encoding_mode",
+            "faststart",
+            "fit",
+            "fps",
+            "height",
+            "output_format",
+            "preset",
+            "target_size_bytes",
+            "trim_end",
+            "trim_start",
+            "width"
+          ]
+        },
+        "output_format_option": "output_format"
+      }
+    },
+    "convert": {
+      "audio": {
+        "accepted_options": {
+          "aac": [
+            "bitrate",
+            "output_format"
+          ],
+          "flac": [
+            "output_format"
+          ],
+          "mp3": [
+            "bitrate",
+            "output_format"
+          ],
+          "ogg": [
+            "bitrate",
+            "output_format"
+          ],
+          "wav": [
+            "output_format"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "document_pdf": {
+        "accepted_options": {
+          "jpeg": [
+            "dpi",
+            "output_format",
+            "pages"
+          ],
+          "png": [
+            "dpi",
+            "output_format",
+            "pages"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "image": {
+        "accepted_options": {
+          "avif": [
+            "output_format",
+            "quality"
+          ],
+          "gif": [
+            "output_format"
+          ],
+          "jpeg": [
+            "background",
+            "output_format",
+            "quality"
+          ],
+          "png": [
+            "output_format"
+          ],
+          "tiff": [
+            "output_format"
+          ],
+          "webp": [
+            "output_format",
+            "quality"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "video": {
+        "accepted_options": {
+          "gif": [
+            "output_format"
+          ],
+          "mp4": [
+            "codec",
+            "output_format",
+            "quality"
+          ],
+          "ogg": [
+            "codec",
+            "output_format",
+            "quality"
+          ],
+          "webm": [
+            "codec",
+            "output_format",
+            "quality"
+          ]
+        },
+        "output_format_option": "output_format"
+      }
+    },
+    "custom_luma": {
+      "video": {
+        "accepted_options": {
+          "*": [
+            "duration",
+            "mask_blur",
+            "mask_contrast",
+            "mask_invert",
+            "start_offset"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "image_watermark": {
+      "image": {
+        "accepted_options": {
+          "*": [
+            "anchor",
+            "margin_x",
+            "margin_y",
+            "opacity",
+            "overlay_width"
+          ]
+        },
+        "output_format_option": null
+      },
+      "image_gif": {
+        "accepted_options": {
+          "*": [
+            "anchor",
+            "margin_x",
+            "margin_y",
+            "opacity",
+            "overlay_width"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "merge": {
+      "audio": {
+        "accepted_options": {
+          "*": [
+            "crossfade_duration",
+            "gap_duration",
+            "normalize_audio",
+            "output_type",
+            "transition"
+          ]
+        },
+        "accepted_per_input_options": {
+          "*": [
+            "crossfade_duration",
+            "gap_duration",
+            "transition",
+            "trim_end",
+            "trim_start"
+          ]
+        },
+        "output_format_option": null
+      },
+      "image": {
+        "accepted_options": {
+          "*": [
+            "delay",
+            "duration_per_image",
+            "fps",
+            "loop_count",
+            "output_type",
+            "transition",
+            "transition_duration",
+            "video_format"
+          ]
+        },
+        "output_format_option": null
+      },
+      "video": {
+        "accepted_options": {
+          "*": [
+            "codec",
+            "crf",
+            "crossfade_duration",
+            "encoding_mode",
+            "normalize_audio",
+            "output_type",
+            "preset",
+            "re_encode_mode",
+            "target_resolution",
+            "target_size_bytes",
+            "transition"
+          ]
+        },
+        "accepted_per_input_options": {
+          "*": [
+            "crossfade_duration",
+            "transition",
+            "trim_end",
+            "trim_start"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "render_variants": {
+      "image": {
+        "accepted_options": {
+          "*": [
+            "targets"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "split": {
+      "audio": {
+        "accepted_options": {
+          "*": [
+            "count",
+            "cut_points",
+            "interval",
+            "mode",
+            "precision",
+            "silence_handling",
+            "silence_min_duration",
+            "silence_threshold_db"
+          ]
+        },
+        "output_format_option": null
+      },
+      "document_pdf": {
+        "accepted_options": {
+          "*": [
+            "mode",
+            "page_groups",
+            "page_range"
+          ]
+        },
+        "output_format_option": null
+      },
+      "image_gif": {
+        "accepted_options": {
+          "jpg": [
+            "frame_range",
+            "output_format"
+          ],
+          "png": [
+            "frame_range",
+            "output_format"
+          ],
+          "webp": [
+            "frame_range",
+            "output_format"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "video": {
+        "accepted_options": {
+          "*": [
+            "count",
+            "cut_points",
+            "interval",
+            "mode",
+            "precision"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "text_watermark": {
+      "image": {
+        "accepted_options": {
+          "*": [
+            "anchor",
+            "color",
+            "font_family",
+            "font_size",
+            "margin_x",
+            "margin_y",
+            "opacity",
+            "rotation",
+            "text",
+            "tile_spacing",
+            "watermark_mode"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "thumbnail": {
+      "document": {
+        "accepted_options": {
+          "*": [
+            "fit",
+            "format",
+            "height",
+            "page",
+            "source",
+            "width"
+          ]
+        },
+        "output_format_option": null
+      },
+      "image": {
+        "accepted_options": {
+          "*": [
+            "fit",
+            "format",
+            "height",
+            "width"
+          ]
+        },
+        "output_format_option": null
+      },
+      "video": {
+        "accepted_options": {
+          "*": [
+            "fit",
+            "format",
+            "height",
+            "timestamp",
+            "width"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "video_text_watermark": {
+      "video": {
+        "accepted_options": {
+          "*": [
+            "anchor",
+            "color",
+            "font_family",
+            "font_size",
+            "margin_x",
+            "margin_y",
+            "opacity",
+            "rotation",
+            "text",
+            "tile_spacing",
+            "watermark_mode"
+          ]
+        },
+        "output_format_option": null
+      }
+    },
+    "video_watermark": {
+      "video": {
+        "accepted_options": {
+          "*": [
+            "anchor",
+            "margin_x",
+            "margin_y",
+            "opacity",
+            "overlay_width"
+          ]
+        },
+        "output_format_option": null
+      }
+    }
+  },
+  "schema_version": "2.79.0"
+}

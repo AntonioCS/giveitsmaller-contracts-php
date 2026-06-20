@@ -3401,7 +3401,7 @@
       }
     }
   },
-  "schema_version": "2.78.0",
+  "schema_version": "2.79.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
