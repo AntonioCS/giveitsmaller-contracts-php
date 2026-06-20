@@ -36,6 +36,9 @@ final class ThumbnailMetadata
                         'format' => new OptionMetadata(
                             per_value_availability: [],
                         ),
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
                     ],
                     per_input_options: [],
                 ),
@@ -74,6 +77,9 @@ final class ThumbnailMetadata
                         'format' => new OptionMetadata(
                             per_value_availability: [],
                         ),
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
                     ],
                     per_input_options: [],
                 ),
@@ -97,6 +103,9 @@ final class ThumbnailMetadata
                             per_value_availability: [],
                         ),
                         'format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'quality' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                     ],

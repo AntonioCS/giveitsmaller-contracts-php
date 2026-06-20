@@ -1,0 +1,17 @@
+<?php
+
+// Auto-generated -- do not edit
+
+declare(strict_types=1);
+
+namespace Gisl\Generated\Operations;
+
+final class CompressImageAvifOptions
+{
+    public function __construct(
+        public readonly int $quality = 80,
+        public readonly CompressImageAvifMetadata $metadata = CompressImageAvifMetadata::All,
+        public readonly int $avif_speed = 4,
+        public readonly CompressImageAvifOutputFormat $output_format = CompressImageAvifOutputFormat::Original,
+    ) {}
+}

@@ -61,10 +61,7 @@ final class ConvertMetadata
                         'output_format' => new OptionMetadata(
                             per_value_availability: [],
                         ),
-                        'codec' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
-                        'quality' => new OptionMetadata(
+                        'crf' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                     ],

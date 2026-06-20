@@ -11,6 +11,7 @@ enum ConvertAudioOutputFormat: string
     case Mp3 = 'mp3';
     case Aac = 'aac';
     case Ogg = 'ogg';
+    case Opus = 'opus';
     case Flac = 'flac';
     case Wav = 'wav';
 }

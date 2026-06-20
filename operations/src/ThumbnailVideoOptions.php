@@ -14,5 +14,6 @@ final class ThumbnailVideoOptions
         public readonly string $timestamp = '00:00:01',
         public readonly ThumbnailVideoFit $fit = ThumbnailVideoFit::Crop,
         public readonly ThumbnailVideoFormat $format = ThumbnailVideoFormat::Jpg,
+        public readonly ?int $quality = null,
     ) {}
 }

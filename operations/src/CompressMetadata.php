@@ -13,27 +13,120 @@ final class CompressMetadata
         return new OperationMetadata(
             features: [],
             mime_groups: [
-                'image' => new MimeGroupMetadata(
+                'image_jpeg' => new MimeGroupMetadata(
                     processing_class: [],
-                    per_mime_availability: [
-                        'image/avif' => new AvailabilityEntry(
-                            availability: 'beta',
-                        ),
-                    ],
+                    per_mime_availability: [],
                     options: [
-                        'mode' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
                         'quality' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
                             per_value_availability: [],
                         ),
-                        'icc_profile' => new OptionMetadata(
+                        'progressive' => new OptionMetadata(
                             per_value_availability: [],
                         ),
-                        'progressive' => new OptionMetadata(
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [
+                                'auto' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'smallest' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'jpeg' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'png' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'avif' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'image_png' => new MimeGroupMetadata(
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'metadata' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'optimization_level' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [
+                                'auto' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'smallest' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'jpeg' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'png' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'avif' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'image_avif' => new MimeGroupMetadata(
+                    availability: 'beta',
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'metadata' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'avif_speed' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [
+                                'auto' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'smallest' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'jpeg' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'png' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'avif' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'image' => new MimeGroupMetadata(
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'metadata' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
@@ -179,16 +272,23 @@ final class CompressMetadata
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
                         'profile' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'colorspace' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'pages' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'flatten_forms' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
@@ -198,16 +298,23 @@ final class CompressMetadata
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
                         'image_quality' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'strip_macros' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'strip_hidden_data' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'strip_unused_fonts' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
@@ -217,13 +324,19 @@ final class CompressMetadata
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
                         'image_quality' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'strip_metadata' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'strip_unused_styles' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
@@ -233,13 +346,19 @@ final class CompressMetadata
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
                         'image_quality' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'font_subsetting' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'strip_unused_css' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],

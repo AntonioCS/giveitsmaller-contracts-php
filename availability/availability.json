@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 101,
+  "capabilities_version": 105,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -267,7 +267,12 @@
       "options": {
         "folder_structure": {
           "default": "flat",
-          "description": "flat = all files together at the top level; by_job = a separate subfolder for each source",
+          "description": "flat = all files together at the top level (default); by_job = a separate subfolder for each source (planned \u2014 not yet honored by the worker)",
+          "per_value_availability": {
+            "by_job": {
+              "availability": "planned"
+            }
+          },
           "type": "enum",
           "values": [
             "flat",
@@ -283,7 +288,8 @@
             "tar.gz"
           ]
         }
-      }
+      },
+      "sole_op": true
     },
     "audio_overlay": {
       "availability": "planned",
@@ -630,7 +636,8 @@
           "max": 1,
           "min": 1
         }
-      }
+      },
+      "sole_op": true
     },
     "audio_to_video": {
       "availability": "beta",
@@ -705,7 +712,8 @@
           "max": 1,
           "min": 0
         }
-      }
+      },
+      "sole_op": true
     },
     "audio_watermark": {
       "availability": "planned",
@@ -940,20 +948,30 @@
           ],
           "options": {
             "font_subsetting": {
+              "availability": "planned",
               "default": true,
-              "description": "Subset embedded fonts to only include glyphs used in the document. Significant size reduction for books with large font files",
+              "description": "Subset embedded fonts to only include glyphs used in the document. Significant size reduction for books with large font files. `planned` \u2014 not yet read by the worker.",
               "type": "boolean"
             },
             "image_quality": {
+              "availability": "planned",
               "default": 80,
-              "description": "Recompress embedded images at this quality level",
+              "description": "Recompress embedded images at this quality level. `planned` \u2014 not yet read by the worker (use `quality`).",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "quality": {
+              "default": 50,
+              "description": "Compression quality (1 = smallest, 100 = best). The only worker-honored document option today.",
               "max": 100,
               "min": 1,
               "type": "integer"
             },
             "strip_unused_css": {
+              "availability": "planned",
               "default": false,
-              "description": "Remove CSS rules not referenced by any content. Risk: may affect rendering in some readers",
+              "description": "Remove CSS rules not referenced by any content. Risk: may affect rendering in some readers. `planned` \u2014 not yet read by the worker.",
               "type": "boolean"
             }
           }
@@ -966,20 +984,30 @@
           ],
           "options": {
             "image_quality": {
+              "availability": "planned",
               "default": 80,
-              "description": "Recompress embedded images at this quality level",
+              "description": "Recompress embedded images at this quality level. `planned` \u2014 not yet read by the worker (use `quality`).",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "quality": {
+              "default": 50,
+              "description": "Compression quality (1 = smallest, 100 = best). The only worker-honored document option today.",
               "max": 100,
               "min": 1,
               "type": "integer"
             },
             "strip_metadata": {
+              "availability": "planned",
               "default": true,
-              "description": "Remove document metadata (author, revision history, comments)",
+              "description": "Remove document metadata (author, revision history, comments). `planned` \u2014 not yet read by the worker.",
               "type": "boolean"
             },
             "strip_unused_styles": {
+              "availability": "planned",
               "default": false,
-              "description": "Remove style definitions not referenced in document content",
+              "description": "Remove style definitions not referenced in document content. `planned` \u2014 not yet read by the worker.",
               "type": "boolean"
             }
           }
@@ -992,25 +1020,36 @@
           ],
           "options": {
             "image_quality": {
+              "availability": "planned",
               "default": 80,
-              "description": "Recompress embedded images at this quality level (1 = smallest, 100 = best)",
+              "description": "Recompress embedded images at this quality level (1 = smallest, 100 = best). `planned` \u2014 not yet read by the worker (use `quality`).",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "quality": {
+              "default": 50,
+              "description": "Compression quality (1 = smallest, 100 = best). The only worker-honored document option today.",
               "max": 100,
               "min": 1,
               "type": "integer"
             },
             "strip_hidden_data": {
+              "availability": "planned",
               "default": true,
-              "description": "Remove revisions, comments, personal info, hidden rows/columns, and speaker notes",
+              "description": "Remove revisions, comments, personal info, hidden rows/columns, and speaker notes. `planned` \u2014 not yet read by the worker.",
               "type": "boolean"
             },
             "strip_macros": {
+              "availability": "planned",
               "default": true,
-              "description": "Remove VBA macros and ActiveX controls",
+              "description": "Remove VBA macros and ActiveX controls. `planned` \u2014 not yet read by the worker.",
               "type": "boolean"
             },
             "strip_unused_fonts": {
+              "availability": "planned",
               "default": false,
-              "description": "Remove embedded fonts not referenced in the document. Risk: may affect rendering on systems without the font installed",
+              "description": "Remove embedded fonts not referenced in the document. Risk: may affect rendering on systems without the font installed. `planned` \u2014 not yet read by the worker.",
               "type": "boolean"
             }
           }
@@ -1021,8 +1060,9 @@
           ],
           "options": {
             "colorspace": {
+              "availability": "planned",
               "default": "unchanged",
-              "description": "Output color space",
+              "description": "Output color space. `planned` \u2014 not yet read by the worker.",
               "type": "enum",
               "values": [
                 "unchanged",
@@ -1032,17 +1072,20 @@
               ]
             },
             "flatten_forms": {
+              "availability": "planned",
               "default": false,
-              "description": "Flatten interactive form fields into static content",
+              "description": "Flatten interactive form fields into static content. `planned` \u2014 not yet read by the worker.",
               "type": "boolean"
             },
             "pages": {
-              "description": "Page selection (e.g. '1-5,8,10-12'). Omit to keep all pages.",
+              "availability": "planned",
+              "description": "Page selection (e.g. '1-5,8,10-12'). Omit to keep all pages. `planned` \u2014 not yet read by the worker.",
               "type": "string"
             },
             "profile": {
+              "availability": "planned",
               "default": "web",
-              "description": "Optimization profile. web = aggressive (downsample images, strip metadata), print = preserve quality, archive = PDF/A compliance, max = smallest file",
+              "description": "Optimization profile. web = aggressive (downsample images, strip metadata), print = preserve quality, archive = PDF/A compliance, max = smallest file. `planned` \u2014 not yet read by the worker (use `quality`).",
               "type": "enum",
               "values": [
                 "web",
@@ -1050,49 +1093,144 @@
                 "archive",
                 "max"
               ]
+            },
+            "quality": {
+              "default": 50,
+              "description": "Compression quality (1 = smallest, 100 = best). Maps to a document compression preset (the only worker-honored document option today).",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
             }
           }
         },
         "image": {
           "mimes": [
-            "image/jpeg",
-            "image/png",
-            "image/gif",
             "image/webp",
+            "image/gif",
             "image/svg+xml",
-            "image/tiff",
+            "image/tiff"
+          ],
+          "options": {
+            "metadata": {
+              "default": "all",
+              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP \u2014 the only supported behaviour (the compress worker always strips; preservation is not currently available).",
+              "type": "enum",
+              "values": [
+                "all"
+              ]
+            },
+            "output_format": {
+              "default": "original",
+              "description": "Output format. original = keep input format (default); auto = best for browser support (AVIF > WebP > JPEG via Accept hint); smallest = try all supported formats, return the smallest. Non-`original` values are served by the API \"compress+format\" facade (one combined convert-with-size-cap pass); see per_value_availability + FORMAT.md.",
+              "per_value_availability": {
+                "auto": {
+                  "availability": "planned"
+                },
+                "avif": {
+                  "availability": "planned"
+                },
+                "jpeg": {
+                  "availability": "planned"
+                },
+                "png": {
+                  "availability": "planned"
+                },
+                "smallest": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "original",
+                "auto",
+                "smallest",
+                "jpeg",
+                "png",
+                "webp",
+                "avif"
+              ]
+            },
+            "quality": {
+              "default": 80,
+              "description": "Compression quality (1 = smallest file, 100 = best quality). For animated GIF the worker honours this but real-world size reduction is typically small.",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            }
+          }
+        },
+        "image_avif": {
+          "availability": "beta",
+          "mimes": [
             "image/avif"
           ],
           "options": {
-            "icc_profile": {
-              "default": "preserve",
-              "description": "ICC color profile handling. preserve = keep original, strip = remove, srgb = convert to sRGB",
-              "type": "enum",
-              "values": [
-                "preserve",
-                "strip",
-                "srgb"
-              ]
+            "avif_speed": {
+              "default": 4,
+              "description": "AVIF encode speed (1-10, ravif). Lower = smaller file, slower encode; higher = faster, larger. Default 4.",
+              "max": 10,
+              "min": 1,
+              "type": "integer"
             },
             "metadata": {
               "default": "all",
-              "description": "Metadata handling. all = strip everything (smallest file), none = keep all EXIF/IPTC/XMP, copyright = keep only copyright/author fields, sensitive = keep EXIF but strip GPS/location (GDPR-friendly)",
+              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP \u2014 the only supported behaviour (the compress worker always strips; preservation is not currently available).",
               "type": "enum",
               "values": [
-                "all",
-                "none",
-                "copyright",
-                "sensitive"
+                "all"
               ]
             },
-            "mode": {
-              "default": "lossy",
-              "description": "Compression algorithm. lossy = smaller file, lossless = no quality loss, auto = best for format",
+            "output_format": {
+              "default": "original",
+              "description": "Output format. original = keep input format (default); auto = best for browser support (AVIF > WebP > JPEG via Accept hint); smallest = try all supported formats, return the smallest. Non-`original` values are served by the API \"compress+format\" facade (one combined convert-with-size-cap pass); see per_value_availability + FORMAT.md.",
+              "per_value_availability": {
+                "auto": {
+                  "availability": "planned"
+                },
+                "avif": {
+                  "availability": "planned"
+                },
+                "jpeg": {
+                  "availability": "planned"
+                },
+                "png": {
+                  "availability": "planned"
+                },
+                "smallest": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
-                "lossy",
-                "lossless",
-                "auto"
+                "original",
+                "auto",
+                "smallest",
+                "jpeg",
+                "png",
+                "webp",
+                "avif"
+              ]
+            },
+            "quality": {
+              "default": 80,
+              "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            }
+          }
+        },
+        "image_jpeg": {
+          "mimes": [
+            "image/jpeg"
+          ],
+          "options": {
+            "metadata": {
+              "default": "all",
+              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP \u2014 the only supported behaviour (the compress worker always strips; preservation is not currently available).",
+              "type": "enum",
+              "values": [
+                "all"
               ]
             },
             "output_format": {
@@ -1128,23 +1266,75 @@
             },
             "progressive": {
               "default": true,
-              "description": "Enable progressive rendering (JPEG only). Renders low-quality preview first, then refines.",
+              "description": "Enable progressive JPEG rendering (a low-quality preview renders first, then refines). JPEG only.",
               "type": "boolean"
             },
             "quality": {
               "default": 80,
-              "depends_on": {
-                "mode": "lossy"
-              },
-              "description": "Compression quality (1 = smallest file, 100 = best quality). Only applies to lossy mode.",
+              "description": "Compression quality (1 = smallest file, 100 = best quality).",
               "max": 100,
               "min": 1,
               "type": "integer"
             }
-          },
-          "per_mime_availability": {
-            "image/avif": {
-              "availability": "beta"
+          }
+        },
+        "image_png": {
+          "mimes": [
+            "image/png"
+          ],
+          "options": {
+            "metadata": {
+              "default": "all",
+              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP \u2014 the only supported behaviour (the compress worker always strips; preservation is not currently available).",
+              "type": "enum",
+              "values": [
+                "all"
+              ]
+            },
+            "optimization_level": {
+              "default": 3,
+              "description": "PNG optimization effort (0-6, oxipng). Higher = smaller file, slower encode. Default 3.",
+              "max": 6,
+              "min": 0,
+              "type": "integer"
+            },
+            "output_format": {
+              "default": "original",
+              "description": "Output format. original = keep input format (default); auto = best for browser support (AVIF > WebP > JPEG via Accept hint); smallest = try all supported formats, return the smallest. Non-`original` values are served by the API \"compress+format\" facade (one combined convert-with-size-cap pass); see per_value_availability + FORMAT.md.",
+              "per_value_availability": {
+                "auto": {
+                  "availability": "planned"
+                },
+                "avif": {
+                  "availability": "planned"
+                },
+                "jpeg": {
+                  "availability": "planned"
+                },
+                "png": {
+                  "availability": "planned"
+                },
+                "smallest": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "original",
+                "auto",
+                "smallest",
+                "jpeg",
+                "png",
+                "webp",
+                "avif"
+              ]
+            },
+            "quality": {
+              "default": 80,
+              "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
             }
           }
         },
@@ -1369,10 +1559,11 @@
                 "output_format": [
                   "mp3",
                   "aac",
-                  "ogg"
+                  "ogg",
+                  "opus"
                 ]
               },
-              "description": "Output bitrate in kbps (lossy formats only)",
+              "description": "Output bitrate in kbps (lossy formats only \u2014 mp3/aac/ogg/opus)",
               "type": "enum",
               "value_type": "integer",
               "values": [
@@ -1392,6 +1583,7 @@
                 "mp3",
                 "aac",
                 "ogg",
+                "opus",
                 "flac",
                 "wav"
               ]
@@ -1491,35 +1683,7 @@
             "video/ogg"
           ],
           "options": {
-            "codec": {
-              "depends_on": {
-                "output_format": [
-                  "mp4",
-                  "webm",
-                  "ogg"
-                ]
-              },
-              "description": "Video codec for target format. Defaults to the format's standard codec (no literal default \u2014 the required output_format determines it). This is the container-conditional-default principle applied via an explicit container choice. See FORMAT.md \"Container-conditional defaults\" + ADR-0023 (supersedes ADR-0020). Not applicable to a `gif` output (no video codec): an explicit `codec` on a `gif` output is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); FE/SDK prune it pre-submit.\n",
-              "type": "enum",
-              "values": [
-                "h264",
-                "h265",
-                "vp9",
-                "av1"
-              ]
-            },
-            "output_format": {
-              "description": "Target format",
-              "required": true,
-              "type": "enum",
-              "values": [
-                "mp4",
-                "webm",
-                "ogg",
-                "gif"
-              ]
-            },
-            "quality": {
+            "crf": {
               "default": 23,
               "depends_on": {
                 "output_format": [
@@ -1528,10 +1692,21 @@
                   "ogg"
                 ]
               },
-              "description": "CRF value (0 = lossless, 51 = worst). Video outputs only \u2014 NOT applicable to a `gif` output (frame extraction has no CRF). An explicit `quality` on a `gif` output is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); FE/SDK prune it pre-submit.\n",
+              "description": "CRF (Constant Rate Factor): 0 = lossless/best, 51 = worst. Lower = higher quality + larger file (the inverse of image `quality`). Video outputs only \u2014 NOT applicable to a `gif` output (frame extraction has no CRF). An explicit `crf` on a `gif` output is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); FE/SDK prune it pre-submit.\n",
               "max": 51,
               "min": 0,
               "type": "integer"
+            },
+            "output_format": {
+              "description": "Target format. The video codec is fixed by the container (mp4->H.264, webm->VP9, ogg->Theora, gif->palette) \u2014 not caller-selectable.",
+              "required": true,
+              "type": "enum",
+              "values": [
+                "mp4",
+                "webm",
+                "ogg",
+                "gif"
+              ]
             }
           },
           "processing_class": {
@@ -1647,7 +1822,8 @@
           "min": 1
         }
       },
-      "required_tier": "pro"
+      "required_tier": "pro",
+      "sole_op": true
     },
     "image_watermark": {
       "default": false,
@@ -1769,7 +1945,8 @@
           "max": 1,
           "min": 1
         }
-      }
+      },
+      "sole_op": true
     },
     "merge": {
       "default": false,
@@ -2514,7 +2691,8 @@
           }
         }
       },
-      "min_inputs": 2
+      "min_inputs": 2,
+      "sole_op": true
     },
     "passthrough": {
       "availability": "beta",
@@ -2871,7 +3049,8 @@
             }
           }
         }
-      }
+      },
+      "sole_op": true
     },
     "text_watermark": {
       "default": false,
@@ -2973,7 +3152,8 @@
             }
           }
         }
-      }
+      },
+      "sole_op": true
     },
     "thumbnail": {
       "default": false,
@@ -3025,6 +3205,19 @@
                 "source": "page"
               },
               "description": "1-based index of the printed page to render, after print-layout pagination is applied. For office formats this is the page in the LibreOffice PDF export \u2014 NOT a 1:1 sheet/slide index: a spreadsheet sheet may span multiple printed pages and multi-sheet workbooks paginate their sheets in order. For PDF inputs it is the PDF page number directly.",
+              "min": 1,
+              "type": "integer"
+            },
+            "quality": {
+              "default": 85,
+              "depends_on": {
+                "format": [
+                  "jpg",
+                  "webp"
+                ]
+              },
+              "description": "Output quality for lossy thumbnail formats (jpg/webp): higher = better quality, larger file. Ignored for png (lossless).",
+              "max": 100,
               "min": 1,
               "type": "integer"
             },
@@ -3085,6 +3278,19 @@
               "required": true,
               "type": "integer"
             },
+            "quality": {
+              "default": 85,
+              "depends_on": {
+                "format": [
+                  "jpg",
+                  "webp"
+                ]
+              },
+              "description": "Output quality for lossy thumbnail formats (jpg/webp): higher = better quality, larger file. Ignored for png (lossless).",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
             "width": {
               "description": "Thumbnail width in pixels",
               "max": 4096,
@@ -3134,6 +3340,19 @@
               "max": 4096,
               "min": 1,
               "required": true,
+              "type": "integer"
+            },
+            "quality": {
+              "default": 85,
+              "depends_on": {
+                "format": [
+                  "jpg",
+                  "webp"
+                ]
+              },
+              "description": "Output quality for lossy thumbnail formats (jpg/webp): higher = better quality, larger file. Ignored for png (lossless).",
+              "max": 100,
+              "min": 1,
               "type": "integer"
             },
             "timestamp": {
@@ -3299,7 +3518,8 @@
             }
           }
         }
-      }
+      },
+      "sole_op": true
     },
     "video_watermark": {
       "availability": "beta",
@@ -3398,10 +3618,11 @@
           "max": 1,
           "min": 1
         }
-      }
+      },
+      "sole_op": true
     }
   },
-  "schema_version": "2.79.0",
+  "schema_version": "2.83.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

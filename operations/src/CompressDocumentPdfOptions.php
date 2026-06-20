@@ -9,6 +9,7 @@ namespace Gisl\Generated\Operations;
 final class CompressDocumentPdfOptions
 {
     public function __construct(
+        public readonly int $quality = 50,
         public readonly CompressDocumentPdfProfile $profile = CompressDocumentPdfProfile::Web,
         public readonly CompressDocumentPdfColorspace $colorspace = CompressDocumentPdfColorspace::Unchanged,
         public readonly bool $flatten_forms = false,

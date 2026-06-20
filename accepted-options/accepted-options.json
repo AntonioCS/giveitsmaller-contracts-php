@@ -159,6 +159,7 @@
           "*": [
             "font_subsetting",
             "image_quality",
+            "quality",
             "strip_unused_css"
           ]
         },
@@ -168,6 +169,7 @@
         "accepted_options": {
           "*": [
             "image_quality",
+            "quality",
             "strip_metadata",
             "strip_unused_styles"
           ]
@@ -178,6 +180,7 @@
         "accepted_options": {
           "*": [
             "image_quality",
+            "quality",
             "strip_hidden_data",
             "strip_macros",
             "strip_unused_fonts"
@@ -191,7 +194,8 @@
             "colorspace",
             "flatten_forms",
             "pages",
-            "profile"
+            "profile",
+            "quality"
           ]
         },
         "output_format_option": null
@@ -199,59 +203,179 @@
       "image": {
         "accepted_options": {
           "auto": [
-            "icc_profile",
             "metadata",
-            "mode",
+            "output_format",
+            "quality"
+          ],
+          "avif": [
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "jpeg": [
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "original": [
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "png": [
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "smallest": [
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "webp": [
+            "metadata",
+            "output_format",
+            "quality"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "image_avif": {
+        "accepted_options": {
+          "auto": [
+            "avif_speed",
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "avif": [
+            "avif_speed",
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "jpeg": [
+            "avif_speed",
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "original": [
+            "avif_speed",
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "png": [
+            "avif_speed",
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "smallest": [
+            "avif_speed",
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "webp": [
+            "avif_speed",
+            "metadata",
+            "output_format",
+            "quality"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "image_jpeg": {
+        "accepted_options": {
+          "auto": [
+            "metadata",
             "output_format",
             "progressive",
             "quality"
           ],
           "avif": [
-            "icc_profile",
             "metadata",
-            "mode",
             "output_format",
             "progressive",
             "quality"
           ],
           "jpeg": [
-            "icc_profile",
             "metadata",
-            "mode",
             "output_format",
             "progressive",
             "quality"
           ],
           "original": [
-            "icc_profile",
             "metadata",
-            "mode",
             "output_format",
             "progressive",
             "quality"
           ],
           "png": [
-            "icc_profile",
             "metadata",
-            "mode",
             "output_format",
             "progressive",
             "quality"
           ],
           "smallest": [
-            "icc_profile",
             "metadata",
-            "mode",
             "output_format",
             "progressive",
             "quality"
           ],
           "webp": [
-            "icc_profile",
             "metadata",
-            "mode",
             "output_format",
             "progressive",
+            "quality"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "image_png": {
+        "accepted_options": {
+          "auto": [
+            "metadata",
+            "optimization_level",
+            "output_format",
+            "quality"
+          ],
+          "avif": [
+            "metadata",
+            "optimization_level",
+            "output_format",
+            "quality"
+          ],
+          "jpeg": [
+            "metadata",
+            "optimization_level",
+            "output_format",
+            "quality"
+          ],
+          "original": [
+            "metadata",
+            "optimization_level",
+            "output_format",
+            "quality"
+          ],
+          "png": [
+            "metadata",
+            "optimization_level",
+            "output_format",
+            "quality"
+          ],
+          "smallest": [
+            "metadata",
+            "optimization_level",
+            "output_format",
+            "quality"
+          ],
+          "webp": [
+            "metadata",
+            "optimization_level",
+            "output_format",
             "quality"
           ]
         },
@@ -349,6 +473,10 @@
             "bitrate",
             "output_format"
           ],
+          "opus": [
+            "bitrate",
+            "output_format"
+          ],
           "wav": [
             "output_format"
           ]
@@ -403,19 +531,16 @@
             "output_format"
           ],
           "mp4": [
-            "codec",
-            "output_format",
-            "quality"
+            "crf",
+            "output_format"
           ],
           "ogg": [
-            "codec",
-            "output_format",
-            "quality"
+            "crf",
+            "output_format"
           ],
           "webm": [
-            "codec",
-            "output_format",
-            "quality"
+            "crf",
+            "output_format"
           ]
         },
         "output_format_option": "output_format"
@@ -619,6 +744,7 @@
             "format",
             "height",
             "page",
+            "quality",
             "source",
             "width"
           ]
@@ -631,6 +757,7 @@
             "fit",
             "format",
             "height",
+            "quality",
             "width"
           ]
         },
@@ -642,6 +769,7 @@
             "fit",
             "format",
             "height",
+            "quality",
             "timestamp",
             "width"
           ]
@@ -684,5 +812,5 @@
       }
     }
   },
-  "schema_version": "2.79.0"
+  "schema_version": "2.83.0"
 }

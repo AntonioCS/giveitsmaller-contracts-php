@@ -81,6 +81,7 @@ final class ThumbnailTest extends TestCase
         $this->assertInstanceOf(ThumbnailImageOptions::class, $obj);
         $this->assertSame(ThumbnailImageFit::Crop, $obj->fit);
         $this->assertSame(ThumbnailImageFormat::Jpg, $obj->format);
+        $this->assertNull($obj->quality);
     }
 
     public function testThumbnailImageOptionsFullConstruction(): void
@@ -90,6 +91,7 @@ final class ThumbnailTest extends TestCase
             height: 1,
             fit: ThumbnailImageFit::Max,
             format: ThumbnailImageFormat::Jpg,
+            quality: 1,
         );
         $this->assertInstanceOf(ThumbnailImageOptions::class, $obj);
     }
@@ -156,6 +158,7 @@ final class ThumbnailTest extends TestCase
         $this->assertSame('00:00:01', $obj->timestamp);
         $this->assertSame(ThumbnailVideoFit::Crop, $obj->fit);
         $this->assertSame(ThumbnailVideoFormat::Jpg, $obj->format);
+        $this->assertNull($obj->quality);
     }
 
     public function testThumbnailVideoOptionsFullConstruction(): void
@@ -166,6 +169,7 @@ final class ThumbnailTest extends TestCase
             height: 1,
             fit: ThumbnailVideoFit::Max,
             format: ThumbnailVideoFormat::Jpg,
+            quality: 1,
         );
         $this->assertInstanceOf(ThumbnailVideoOptions::class, $obj);
     }
@@ -252,6 +256,7 @@ final class ThumbnailTest extends TestCase
         $this->assertSame(ThumbnailDocumentFit::Crop, $obj->fit);
         $this->assertSame(ThumbnailDocumentFormat::Jpg, $obj->format);
         $this->assertNull($obj->page);
+        $this->assertNull($obj->quality);
     }
 
     public function testThumbnailDocumentOptionsFullConstruction(): void
@@ -263,6 +268,7 @@ final class ThumbnailTest extends TestCase
             height: 1,
             fit: ThumbnailDocumentFit::Max,
             format: ThumbnailDocumentFormat::Jpg,
+            quality: 1,
         );
         $this->assertInstanceOf(ThumbnailDocumentOptions::class, $obj);
     }

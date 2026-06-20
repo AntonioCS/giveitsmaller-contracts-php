@@ -18,7 +18,11 @@ final class ArchiveMetadata
                     per_value_availability: [],
                 ),
                 'folder_structure' => new OptionMetadata(
-                    per_value_availability: [],
+                    per_value_availability: [
+                        'by_job' => new AvailabilityEntry(
+                            availability: 'planned',
+                        ),
+                    ],
                 ),
             ],
         );

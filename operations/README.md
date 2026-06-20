@@ -8,7 +8,7 @@
 
 - **Spec:** `compression_contracts/schemas/operations/*.yaml` (custom schema format)
 - **Generator:** Custom Python emitter (`scripts/generators/operation_schema/php.py`)
-- **Files:** 147
+- **Files:** 153
 
 ## Contents
 

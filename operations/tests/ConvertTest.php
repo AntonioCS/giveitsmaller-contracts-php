@@ -14,7 +14,6 @@ use Gisl\Generated\Operations\ConvertDocumentPdfOptions;
 use Gisl\Generated\Operations\ConvertDocumentPdfOutputFormat;
 use Gisl\Generated\Operations\ConvertImageOptions;
 use Gisl\Generated\Operations\ConvertImageOutputFormat;
-use Gisl\Generated\Operations\ConvertVideoCodec;
 use Gisl\Generated\Operations\ConvertVideoOptions;
 use Gisl\Generated\Operations\ConvertVideoOutputFormat;
 
@@ -120,55 +119,20 @@ final class ConvertTest extends TestCase
         $this->assertCount(4, ConvertVideoOutputFormat::cases());
     }
 
-    public function testConvertVideoCodecH264BackingValue(): void
-    {
-        $enum = ConvertVideoCodec::from('h264');
-        $this->assertSame(ConvertVideoCodec::H264, $enum);
-        $this->assertSame('h264', $enum->value);
-    }
-
-    public function testConvertVideoCodecH265BackingValue(): void
-    {
-        $enum = ConvertVideoCodec::from('h265');
-        $this->assertSame(ConvertVideoCodec::H265, $enum);
-        $this->assertSame('h265', $enum->value);
-    }
-
-    public function testConvertVideoCodecVp9BackingValue(): void
-    {
-        $enum = ConvertVideoCodec::from('vp9');
-        $this->assertSame(ConvertVideoCodec::Vp9, $enum);
-        $this->assertSame('vp9', $enum->value);
-    }
-
-    public function testConvertVideoCodecAv1BackingValue(): void
-    {
-        $enum = ConvertVideoCodec::from('av1');
-        $this->assertSame(ConvertVideoCodec::Av1, $enum);
-        $this->assertSame('av1', $enum->value);
-    }
-
-    public function testConvertVideoCodecCaseCount(): void
-    {
-        $this->assertCount(4, ConvertVideoCodec::cases());
-    }
-
     public function testConvertVideoOptionsDefaultConstruction(): void
     {
         $obj = new ConvertVideoOptions(
             output_format: ConvertVideoOutputFormat::Mp4,
         );
         $this->assertInstanceOf(ConvertVideoOptions::class, $obj);
-        $this->assertNull($obj->codec);
-        $this->assertNull($obj->quality);
+        $this->assertNull($obj->crf);
     }
 
     public function testConvertVideoOptionsFullConstruction(): void
     {
         $obj = new ConvertVideoOptions(
             output_format: ConvertVideoOutputFormat::Mp4,
-            codec: ConvertVideoCodec::H264,
-            quality: 0,
+            crf: 0,
         );
         $this->assertInstanceOf(ConvertVideoOptions::class, $obj);
     }
@@ -194,6 +158,13 @@ final class ConvertTest extends TestCase
         $this->assertSame('ogg', $enum->value);
     }
 
+    public function testConvertAudioOutputFormatOpusBackingValue(): void
+    {
+        $enum = ConvertAudioOutputFormat::from('opus');
+        $this->assertSame(ConvertAudioOutputFormat::Opus, $enum);
+        $this->assertSame('opus', $enum->value);
+    }
+
     public function testConvertAudioOutputFormatFlacBackingValue(): void
     {
         $enum = ConvertAudioOutputFormat::from('flac');
@@ -210,7 +181,7 @@ final class ConvertTest extends TestCase
 
     public function testConvertAudioOutputFormatCaseCount(): void
     {
-        $this->assertCount(5, ConvertAudioOutputFormat::cases());
+        $this->assertCount(6, ConvertAudioOutputFormat::cases());
     }
 
     public function testConvertAudioBitrate_64BackingValue(): void

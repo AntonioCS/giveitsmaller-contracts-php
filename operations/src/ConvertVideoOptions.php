@@ -10,7 +10,6 @@ final class ConvertVideoOptions
 {
     public function __construct(
         public readonly ConvertVideoOutputFormat $output_format,
-        public readonly ?ConvertVideoCodec $codec = null,
-        public readonly ?int $quality = null,
+        public readonly ?int $crf = null,
     ) {}
 }

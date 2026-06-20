@@ -15,5 +15,6 @@ final class ThumbnailDocumentOptions
         public readonly ThumbnailDocumentFit $fit = ThumbnailDocumentFit::Crop,
         public readonly ThumbnailDocumentFormat $format = ThumbnailDocumentFormat::Jpg,
         public readonly ?int $page = null,
+        public readonly ?int $quality = null,
     ) {}
 }

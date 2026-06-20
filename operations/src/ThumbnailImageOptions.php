@@ -13,5 +13,6 @@ final class ThumbnailImageOptions
         public readonly int $height,
         public readonly ThumbnailImageFit $fit = ThumbnailImageFit::Crop,
         public readonly ThumbnailImageFormat $format = ThumbnailImageFormat::Jpg,
+        public readonly ?int $quality = null,
     ) {}
 }
