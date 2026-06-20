@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 108,
+  "capabilities_version": 109,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1699,12 +1699,11 @@
               "type": "integer"
             },
             "dither": {
-              "availability": "planned",
               "default": "bayer",
               "depends_on": {
                 "output_format": "gif"
               },
-              "description": "GIF dithering method (ffmpeg `paletteuse`). `bayer` is a good size/quality balance; `none` is smallest (may band). `planned` \u2014 see `fps`.\n",
+              "description": "GIF dithering method (ffmpeg `paletteuse`). `bayer` is a good size/quality balance; `none` is smallest (may band).\n",
               "type": "enum",
               "values": [
                 "none",
@@ -1715,33 +1714,30 @@
               ]
             },
             "fps": {
-              "availability": "planned",
               "default": 15,
               "depends_on": {
                 "output_format": "gif"
               },
-              "description": "Output frame rate for video \u2192 GIF (ffmpeg `fps` filter). Lower = fewer frames = smaller file. Video \u2192 GIF only. `planned` until the convert-gif worker proves on staging.\n",
+              "description": "Output frame rate for video \u2192 GIF (ffmpeg `fps` filter). Lower = fewer frames = smaller file. Video \u2192 GIF only.\n",
               "max": 50,
               "min": 1,
               "type": "float"
             },
             "loop": {
-              "availability": "planned",
               "default": 0,
               "depends_on": {
                 "output_format": "gif"
               },
-              "description": "GIF loop count: 0 = infinite (default), N > 0 = loop N times, -1 = play once. `planned` \u2014 see `fps`.\n",
+              "description": "GIF loop count: 0 = infinite (default), N > 0 = loop N times, -1 = play once.\n",
               "min": -1,
               "type": "integer"
             },
             "max_colors": {
-              "availability": "planned",
               "default": 256,
               "depends_on": {
                 "output_format": "gif"
               },
-              "description": "GIF palette size (ffmpeg `palettegen` max_colors). Fewer colors = smaller file. `planned` \u2014 see `fps`.\n",
+              "description": "GIF palette size (ffmpeg `palettegen` max_colors). Fewer colors = smaller file.\n",
               "max": 256,
               "min": 2,
               "type": "integer"
@@ -1768,12 +1764,11 @@
               "type": "float"
             },
             "width": {
-              "availability": "planned",
               "default": 640,
               "depends_on": {
                 "output_format": "gif"
               },
-              "description": "Maximum output width in pixels \u2014 a downscale-only CAP (a source narrower than this is left untouched; height is aspect-preserved). Smaller = smaller file. `planned` \u2014 see `fps`.\n",
+              "description": "Maximum output width in pixels \u2014 a downscale-only CAP (a source narrower than this is left untouched; height is aspect-preserved). Smaller = smaller file.\n",
               "max": 4096,
               "min": 1,
               "type": "integer"
@@ -3692,7 +3687,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.86.0",
+  "schema_version": "2.87.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

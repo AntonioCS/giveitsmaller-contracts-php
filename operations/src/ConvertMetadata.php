@@ -71,23 +71,18 @@ final class ConvertMetadata
                             per_value_availability: [],
                         ),
                         'fps' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'width' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'max_colors' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'loop' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'dither' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
