@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 113,
+  "capabilities_version": 114,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -3127,10 +3127,11 @@
     },
     "thumbnail": {
       "default": false,
-      "description": "Generate a preview image from the source file",
+      "description": "Resize an image to specific dimensions, or extract a preview frame/page from a video or document. For images this is a full resizer (1-16384px), not just small previews.",
       "input_model": "single",
       "mime_groups": {
         "document": {
+          "max_output_pixels": 16000000,
           "mimes": [
             "application/pdf",
             "application/epub+zip",
@@ -3163,8 +3164,8 @@
               ]
             },
             "height": {
-              "description": "Thumbnail height in pixels",
-              "max": 4096,
+              "description": "Target height in pixels (1-16384; width*height <= 16MP).",
+              "max": 16384,
               "min": 1,
               "required": true,
               "type": "integer"
@@ -3201,8 +3202,8 @@
               ]
             },
             "width": {
-              "description": "Thumbnail width in pixels",
-              "max": 4096,
+              "description": "Target width in pixels (1-16384; width*height <= 16MP).",
+              "max": 16384,
               "min": 1,
               "required": true,
               "type": "integer"
@@ -3210,6 +3211,7 @@
           }
         },
         "image": {
+          "max_output_pixels": 16000000,
           "mimes": [
             "image/jpeg",
             "image/png",
@@ -3242,8 +3244,8 @@
               ]
             },
             "height": {
-              "description": "Thumbnail height in pixels",
-              "max": 4096,
+              "description": "Target height in pixels (1-16384; width*height <= 16MP). For image input this is a full resize, not just a small preview.",
+              "max": 16384,
               "min": 1,
               "required": true,
               "type": "integer"
@@ -3262,8 +3264,8 @@
               "type": "integer"
             },
             "width": {
-              "description": "Thumbnail width in pixels",
-              "max": 4096,
+              "description": "Target width in pixels (1-16384; width*height <= 16MP). For image input this is a full resize, not just a small preview.",
+              "max": 16384,
               "min": 1,
               "required": true,
               "type": "integer"
@@ -3279,6 +3281,7 @@
           }
         },
         "video": {
+          "max_output_pixels": 16000000,
           "mimes": [
             "video/mp4",
             "video/webm",
@@ -3306,8 +3309,8 @@
               ]
             },
             "height": {
-              "description": "Thumbnail height in pixels",
-              "max": 4096,
+              "description": "Target height in pixels (1-16384; width*height <= 16MP). Rounded down to an even number by the worker.",
+              "max": 16384,
               "min": 1,
               "required": true,
               "type": "integer"
@@ -3331,8 +3334,8 @@
               "type": "string"
             },
             "width": {
-              "description": "Thumbnail width in pixels",
-              "max": 4096,
+              "description": "Target width in pixels (1-16384; width*height <= 16MP). Rounded down to an even number by the worker.",
+              "max": 16384,
               "min": 1,
               "required": true,
               "type": "integer"
@@ -3592,7 +3595,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.92.0",
+  "schema_version": "2.93.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
