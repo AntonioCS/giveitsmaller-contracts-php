@@ -1,7 +1,7 @@
 {
     "name": "giveitsmaller/contracts",
     "description": "Generated contract types for GISL (Give It Smaller)",
-    "version": "0.28.0",
+    "version": "0.29.0",
     "type": "library",
     "license": "MIT",
     "require": {

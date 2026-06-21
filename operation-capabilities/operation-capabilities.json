@@ -1,0 +1,495 @@
+{
+  "operations": {
+    "archive": {
+      "accepts": [
+        "*"
+      ],
+      "availability": "stable",
+      "input": {
+        "max": 50,
+        "min": 2,
+        "model": "multi"
+      },
+      "produces": {
+        "from_option": "format"
+      },
+      "sole_op": true
+    },
+    "audio_overlay": {
+      "accepts": [
+        "audio",
+        "video"
+      ],
+      "availability": "planned",
+      "excludes": [
+        {
+          "availability": "stable",
+          "constraint_id": "audio_overlay.requires_audio_output",
+          "message": "audio_overlay needs an output that carries an audio track; {output_format} has none.",
+          "when": {
+            "equals": false,
+            "field": "output_format.hasAudioTrack"
+          },
+          "wire_code": "OPERATION_NOT_VALID_FOR_OUTPUT"
+        }
+      ],
+      "input": {
+        "max": 2,
+        "min": 2,
+        "model": "multi",
+        "roles": [
+          "base",
+          "overlay"
+        ]
+      },
+      "produces": {
+        "same_as_input": true
+      },
+      "sole_op": true
+    },
+    "audio_to_video": {
+      "accepts": [
+        "audio"
+      ],
+      "availability": "beta",
+      "input": {
+        "max": 2,
+        "min": 1,
+        "model": "multi",
+        "roles": [
+          "base",
+          "overlay"
+        ]
+      },
+      "produces": {
+        "fixed": "mp4"
+      },
+      "sole_op": true
+    },
+    "audio_watermark": {
+      "accepts": [
+        "audio",
+        "video"
+      ],
+      "availability": "planned",
+      "excludes": [
+        {
+          "availability": "stable",
+          "constraint_id": "audio_watermark.requires_audio_output",
+          "message": "audio_watermark embeds in an audio track; {output_format} carries none.",
+          "when": {
+            "equals": false,
+            "field": "output_format.hasAudioTrack"
+          },
+          "wire_code": "OPERATION_NOT_VALID_FOR_OUTPUT"
+        }
+      ],
+      "input": {
+        "model": "single"
+      },
+      "produces": {
+        "same_as_input": true
+      },
+      "sole_op": false
+    },
+    "compress": {
+      "accepts": [
+        "audio",
+        "document",
+        "image",
+        "video"
+      ],
+      "availability": "stable",
+      "excludes": [
+        {
+          "availability": "stable",
+          "constraint_id": "compress.video.target_size.container",
+          "message": "target_size encoding is mp4/MOV-only; not yet available for {output_format} output. Use crf.",
+          "when": {
+            "all": [
+              {
+                "equals": "target_size",
+                "field": "compress.encoding_mode"
+              },
+              {
+                "field": "output_format",
+                "in": [
+                  "webm",
+                  "ogg"
+                ]
+              }
+            ]
+          },
+          "wire_code": "feature_not_available"
+        },
+        {
+          "availability": "stable",
+          "constraint_id": "compress.video.target_size.longform",
+          "eval_scope": "api",
+          "message": "target_size two-pass is not yet available for long-form video. Use crf.",
+          "when": {
+            "all": [
+              {
+                "equals": "target_size",
+                "field": "compress.encoding_mode"
+              },
+              {
+                "equals": "long_form",
+                "field": "processing_class"
+              }
+            ]
+          },
+          "wire_code": "feature_not_available"
+        }
+      ],
+      "input": {
+        "model": "single"
+      },
+      "option_conflicts": [
+        {
+          "constraint_id": "compress.video.target_size.codec_conflict",
+          "message": "target_size requires the h264 codec (two-pass is libx264-only); {compress.codec} is incompatible.",
+          "when": {
+            "all": [
+              {
+                "equals": "target_size",
+                "field": "compress.encoding_mode"
+              },
+              {
+                "field": "compress.codec",
+                "isSet": true
+              },
+              {
+                "field": "compress.codec",
+                "in": [
+                  "h265",
+                  "vp9",
+                  "av1"
+                ]
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
+        }
+      ],
+      "produces": {
+        "same_as_input": true
+      },
+      "requires": [
+        {
+          "constraint_id": "compress.video.target_size.bytes_required",
+          "message": "target_size_bytes is required when encoding_mode is target_size.",
+          "requires_field": "compress.target_size_bytes",
+          "when": {
+            "equals": "target_size",
+            "field": "compress.encoding_mode"
+          },
+          "wire_code": "invalid_options"
+        }
+      ],
+      "sole_op": false
+    },
+    "convert": {
+      "accepts": [
+        "audio",
+        "document",
+        "image",
+        "video"
+      ],
+      "availability": "stable",
+      "input": {
+        "model": "single"
+      },
+      "produces": {
+        "from_option": "output_format"
+      },
+      "sole_op": false
+    },
+    "custom_luma": {
+      "accepts": [
+        "video"
+      ],
+      "availability": "planned",
+      "excludes": [
+        {
+          "availability": "stable",
+          "constraint_id": "custom_luma.video_output_only",
+          "message": "custom_luma produces a video transition; it is not applicable to {output_format}.",
+          "when": {
+            "not": {
+              "field": "output_format",
+              "in": [
+                "mp4",
+                "webm",
+                "ogg"
+              ]
+            }
+          },
+          "wire_code": "OPERATION_NOT_VALID_FOR_OUTPUT"
+        }
+      ],
+      "input": {
+        "max": 2,
+        "min": 2,
+        "model": "multi",
+        "roles": [
+          "base",
+          "transition_mask"
+        ]
+      },
+      "produces": {
+        "same_as_input": true
+      },
+      "sole_op": true
+    },
+    "image_watermark": {
+      "accepts": [
+        "image"
+      ],
+      "availability": "stable",
+      "input": {
+        "max": 2,
+        "min": 2,
+        "model": "multi",
+        "roles": [
+          "base",
+          "overlay"
+        ]
+      },
+      "produces": {
+        "same_as_input": true
+      },
+      "sole_op": true
+    },
+    "merge": {
+      "accepts": [
+        "audio",
+        "image",
+        "video"
+      ],
+      "availability": "stable",
+      "input": {
+        "max": 10,
+        "min": 2,
+        "model": "multi"
+      },
+      "produces": {
+        "from_option": "output_type"
+      },
+      "sole_op": true
+    },
+    "passthrough": {
+      "accepts": [
+        "*"
+      ],
+      "availability": "beta",
+      "input": {
+        "model": "single"
+      },
+      "produces": {
+        "same_as_input": true
+      },
+      "sole_op": false
+    },
+    "render_variants": {
+      "accepts": [
+        "image"
+      ],
+      "availability": "planned",
+      "input": {
+        "model": "single"
+      },
+      "produces": {
+        "same_as_input": true
+      },
+      "sole_op": false
+    },
+    "split": {
+      "accepts": [
+        "audio",
+        "document",
+        "image",
+        "video"
+      ],
+      "availability": "beta",
+      "excludes": [
+        {
+          "availability": "stable",
+          "constraint_id": "split.requires_chain_predecessor",
+          "message": "split must follow a compress or convert operation.",
+          "when": {
+            "not": {
+              "any": [
+                {
+                  "opSelected": "compress"
+                },
+                {
+                  "opSelected": "convert"
+                }
+              ]
+            }
+          },
+          "wire_code": "INVALID_OPERATION_ORDER"
+        }
+      ],
+      "input": {
+        "model": "single"
+      },
+      "produces": {
+        "from_option": "output_format"
+      },
+      "sole_op": true
+    },
+    "text_watermark": {
+      "accepts": [
+        "image"
+      ],
+      "availability": "stable",
+      "input": {
+        "model": "single"
+      },
+      "produces": {
+        "same_as_input": true
+      },
+      "sole_op": true
+    },
+    "thumbnail": {
+      "accepts": [
+        "document",
+        "image",
+        "video"
+      ],
+      "availability": "stable",
+      "excludes": [
+        {
+          "availability": "stable",
+          "constraint_id": "thumbnail.requires_chain_predecessor",
+          "message": "thumbnail must follow a compress or convert operation.",
+          "when": {
+            "not": {
+              "any": [
+                {
+                  "opSelected": "compress"
+                },
+                {
+                  "opSelected": "convert"
+                }
+              ]
+            }
+          },
+          "wire_code": "INVALID_OPERATION_ORDER"
+        }
+      ],
+      "input": {
+        "model": "single"
+      },
+      "produces": {
+        "from_option": "format"
+      },
+      "sole_op": false
+    },
+    "video_text_watermark": {
+      "accepts": [
+        "video"
+      ],
+      "availability": "planned",
+      "input": {
+        "model": "single"
+      },
+      "produces": {
+        "same_as_input": true
+      },
+      "sole_op": true
+    },
+    "video_watermark": {
+      "accepts": [
+        "video"
+      ],
+      "availability": "beta",
+      "input": {
+        "max": 2,
+        "min": 2,
+        "model": "multi",
+        "roles": [
+          "base",
+          "overlay"
+        ]
+      },
+      "produces": {
+        "same_as_input": true
+      },
+      "sole_op": true
+    }
+  },
+  "output_properties": {
+    "aac": {
+      "hasAudioTrack": true,
+      "isAnimated": false
+    },
+    "avif": {
+      "hasAudioTrack": false,
+      "isAnimated": false
+    },
+    "bmp": {
+      "hasAudioTrack": false,
+      "isAnimated": false
+    },
+    "flac": {
+      "hasAudioTrack": true,
+      "isAnimated": false
+    },
+    "gif": {
+      "hasAudioTrack": false,
+      "isAnimated": true
+    },
+    "heic": {
+      "hasAudioTrack": false,
+      "isAnimated": false
+    },
+    "jpeg": {
+      "hasAudioTrack": false,
+      "isAnimated": false
+    },
+    "jpg": {
+      "hasAudioTrack": false,
+      "isAnimated": false
+    },
+    "mp3": {
+      "hasAudioTrack": true,
+      "isAnimated": false
+    },
+    "mp4": {
+      "hasAudioTrack": true,
+      "isAnimated": false
+    },
+    "ogg": {
+      "hasAudioTrack": true,
+      "isAnimated": false
+    },
+    "opus": {
+      "hasAudioTrack": true,
+      "isAnimated": false
+    },
+    "png": {
+      "hasAudioTrack": false,
+      "isAnimated": false
+    },
+    "tiff": {
+      "hasAudioTrack": false,
+      "isAnimated": false
+    },
+    "wav": {
+      "hasAudioTrack": true,
+      "isAnimated": false
+    },
+    "webm": {
+      "hasAudioTrack": true,
+      "isAnimated": false
+    },
+    "webp": {
+      "hasAudioTrack": false,
+      "isAnimated": "maybe"
+    }
+  },
+  "schema_version": "2.90.0"
+}
