@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 111,
+  "capabilities_version": 113,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1122,33 +1122,11 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); auto = best for browser support (AVIF > WebP > JPEG via Accept hint); smallest = try all supported formats, return the smallest. Non-`original` values are served by the API \"compress+format\" facade (one combined convert-with-size-cap pass); see per_value_availability + FORMAT.md.",
-              "per_value_availability": {
-                "auto": {
-                  "availability": "planned"
-                },
-                "avif": {
-                  "availability": "planned"
-                },
-                "jpeg": {
-                  "availability": "planned"
-                },
-                "png": {
-                  "availability": "planned"
-                },
-                "smallest": {
-                  "availability": "planned"
-                }
-              },
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Other format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. See FORMAT.md.",
               "type": "enum",
               "values": [
                 "original",
-                "auto",
-                "smallest",
-                "jpeg",
-                "png",
-                "webp",
-                "avif"
+                "webp"
               ]
             },
             "quality": {
@@ -1183,33 +1161,11 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); auto = best for browser support (AVIF > WebP > JPEG via Accept hint); smallest = try all supported formats, return the smallest. Non-`original` values are served by the API \"compress+format\" facade (one combined convert-with-size-cap pass); see per_value_availability + FORMAT.md.",
-              "per_value_availability": {
-                "auto": {
-                  "availability": "planned"
-                },
-                "avif": {
-                  "availability": "planned"
-                },
-                "jpeg": {
-                  "availability": "planned"
-                },
-                "png": {
-                  "availability": "planned"
-                },
-                "smallest": {
-                  "availability": "planned"
-                }
-              },
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Other format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. See FORMAT.md.",
               "type": "enum",
               "values": [
                 "original",
-                "auto",
-                "smallest",
-                "jpeg",
-                "png",
-                "webp",
-                "avif"
+                "webp"
               ]
             },
             "quality": {
@@ -1236,33 +1192,11 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); auto = best for browser support (AVIF > WebP > JPEG via Accept hint); smallest = try all supported formats, return the smallest. Non-`original` values are served by the API \"compress+format\" facade (one combined convert-with-size-cap pass); see per_value_availability + FORMAT.md.",
-              "per_value_availability": {
-                "auto": {
-                  "availability": "planned"
-                },
-                "avif": {
-                  "availability": "planned"
-                },
-                "jpeg": {
-                  "availability": "planned"
-                },
-                "png": {
-                  "availability": "planned"
-                },
-                "smallest": {
-                  "availability": "planned"
-                }
-              },
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Other format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. See FORMAT.md.",
               "type": "enum",
               "values": [
                 "original",
-                "auto",
-                "smallest",
-                "jpeg",
-                "png",
-                "webp",
-                "avif"
+                "webp"
               ]
             },
             "progressive": {
@@ -1301,33 +1235,11 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); auto = best for browser support (AVIF > WebP > JPEG via Accept hint); smallest = try all supported formats, return the smallest. Non-`original` values are served by the API \"compress+format\" facade (one combined convert-with-size-cap pass); see per_value_availability + FORMAT.md.",
-              "per_value_availability": {
-                "auto": {
-                  "availability": "planned"
-                },
-                "avif": {
-                  "availability": "planned"
-                },
-                "jpeg": {
-                  "availability": "planned"
-                },
-                "png": {
-                  "availability": "planned"
-                },
-                "smallest": {
-                  "availability": "planned"
-                }
-              },
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Other format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. See FORMAT.md.",
               "type": "enum",
               "values": [
                 "original",
-                "auto",
-                "smallest",
-                "jpeg",
-                "png",
-                "webp",
-                "avif"
+                "webp"
               ]
             },
             "quality": {
@@ -2997,7 +2909,6 @@
           }
         },
         "image_gif": {
-          "availability": "planned",
           "mimes": [
             "image/gif"
           ],
@@ -3681,7 +3592,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.90.0",
+  "schema_version": "2.92.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

@@ -20,7 +20,6 @@ final class SplitMetadata
             ],
             mime_groups: [
                 'image_gif' => new MimeGroupMetadata(
-                    availability: 'planned',
                     processing_class: [],
                     per_mime_availability: [],
                     options: [

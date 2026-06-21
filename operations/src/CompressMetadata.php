@@ -27,23 +27,7 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [
-                                'auto' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'smallest' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'jpeg' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'png' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'avif' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                     ],
                     per_input_options: [],
@@ -62,23 +46,7 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [
-                                'auto' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'smallest' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'jpeg' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'png' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'avif' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                     ],
                     per_input_options: [],
@@ -98,23 +66,7 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [
-                                'auto' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'smallest' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'jpeg' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'png' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'avif' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                     ],
                     per_input_options: [],
@@ -130,23 +82,7 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [
-                                'auto' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'smallest' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'jpeg' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'png' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'avif' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                     ],
                     per_input_options: [],

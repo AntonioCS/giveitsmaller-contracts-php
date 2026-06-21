@@ -211,32 +211,7 @@
       },
       "image": {
         "accepted_options": {
-          "auto": [
-            "metadata",
-            "output_format",
-            "quality"
-          ],
-          "avif": [
-            "metadata",
-            "output_format",
-            "quality"
-          ],
-          "jpeg": [
-            "metadata",
-            "output_format",
-            "quality"
-          ],
           "original": [
-            "metadata",
-            "output_format",
-            "quality"
-          ],
-          "png": [
-            "metadata",
-            "output_format",
-            "quality"
-          ],
-          "smallest": [
             "metadata",
             "output_format",
             "quality"
@@ -251,37 +226,7 @@
       },
       "image_avif": {
         "accepted_options": {
-          "auto": [
-            "avif_speed",
-            "metadata",
-            "output_format",
-            "quality"
-          ],
-          "avif": [
-            "avif_speed",
-            "metadata",
-            "output_format",
-            "quality"
-          ],
-          "jpeg": [
-            "avif_speed",
-            "metadata",
-            "output_format",
-            "quality"
-          ],
           "original": [
-            "avif_speed",
-            "metadata",
-            "output_format",
-            "quality"
-          ],
-          "png": [
-            "avif_speed",
-            "metadata",
-            "output_format",
-            "quality"
-          ],
-          "smallest": [
             "avif_speed",
             "metadata",
             "output_format",
@@ -298,37 +243,7 @@
       },
       "image_jpeg": {
         "accepted_options": {
-          "auto": [
-            "metadata",
-            "output_format",
-            "progressive",
-            "quality"
-          ],
-          "avif": [
-            "metadata",
-            "output_format",
-            "progressive",
-            "quality"
-          ],
-          "jpeg": [
-            "metadata",
-            "output_format",
-            "progressive",
-            "quality"
-          ],
           "original": [
-            "metadata",
-            "output_format",
-            "progressive",
-            "quality"
-          ],
-          "png": [
-            "metadata",
-            "output_format",
-            "progressive",
-            "quality"
-          ],
-          "smallest": [
             "metadata",
             "output_format",
             "progressive",
@@ -345,37 +260,7 @@
       },
       "image_png": {
         "accepted_options": {
-          "auto": [
-            "metadata",
-            "optimization_level",
-            "output_format",
-            "quality"
-          ],
-          "avif": [
-            "metadata",
-            "optimization_level",
-            "output_format",
-            "quality"
-          ],
-          "jpeg": [
-            "metadata",
-            "optimization_level",
-            "output_format",
-            "quality"
-          ],
           "original": [
-            "metadata",
-            "optimization_level",
-            "output_format",
-            "quality"
-          ],
-          "png": [
-            "metadata",
-            "optimization_level",
-            "output_format",
-            "quality"
-          ],
-          "smallest": [
             "metadata",
             "optimization_level",
             "output_format",
@@ -834,5 +719,5 @@
       }
     }
   },
-  "schema_version": "2.90.0"
+  "schema_version": "2.92.0"
 }
