@@ -1,6 +1,6 @@
 <?php
 /**
- * SseCompletionBase
+ * DownloadBundle
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * SseCompletionBase Class Doc Comment
+ * DownloadBundle Class Doc Comment
  *
  * @category Class
- * @description Shared base schema for the two &#x60;SseOperationCompletionResult&#x60; branches. Declares the &#x60;result_kind&#x60; discriminator field as a &#x60;[single, multi]&#x60; enum with both literal values, then each branch wrapper allOf-merges this base + its body schema.  **Rationale (v2.16.1):** the v2.15.3 design declared &#x60;result_kind&#x60; as a single-value &#x60;enum [single]&#x60; / &#x60;enum [multi]&#x60; inside each branch&#39;s inline &#x60;allOf&#x60; block. The openapi-generator PHP template for this shape flattens only the FIRST branch&#39;s discriminator enum into the root &#x60;getResultKindAllowableValues()&#x60; list, so PHP deserialisation rejects the other branch&#39;s wire value as invalid. Promoting &#x60;result_kind&#x60; to a shared base with the full union &#x60;enum [single, multi]&#x60; makes PHP accept both values; the per-branch &#x60;enum [single]&#x60; / &#x60;enum [multi]&#x60; (kept on the wrappers for JSON Schema-level branch identification + OpenAPI discriminator semantics) does not regress. TypeScript dispatch continues to use &#x60;switch (json[&#39;result_kind&#39;])&#x60; — confirmed by codegen verification on openapi-generator-cli v7.21.0.
+ * @description A single archive (zip) of **every** deliverable output in the workflow — the \&quot;download all\&quot; affordance (ticket [&#x60;6TRw40EM&#x60;](https://trello.com/c/6TRw40EM)).  **Presence &#x3D; readiness.** The field is present (with a &#x60;download_url&#x60;) only when a workflow-level bundle has been produced and is ready. It is **absent** when no bundle was requested, or one was requested but is not yet finalized — there is no \&quot;pending\&quot; placeholder. Poll &#x60;/downloads&#x60; (or watch the SSE stream) until &#x60;bundle&#x60; appears.  Tied to the &#x60;delivery.mode: bundle&#x60; / &#x60;both&#x60; selection (the canonical output-bundler, [ADR-0017](../docs/decisions/0017-archive-as-canonical-bundler.md)), which is currently &#x60;planned&#x60;; the field therefore only populates once that ships. The bundle artifact is produced by the &#x60;archive&#x60; operation over the workflow&#39;s job outputs (modeled via &#x60;workflow_edges&#x60;) — no new request surface is introduced here. A bespoke archive-from-output-keys invocation would only be needed if the bundle is produced out-of-band (not as a modeled &#x60;archive&#x60; op); that is a Lambdas/API call, deferred until confirmed needed.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializable
+class DownloadBundle implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
      *
      * @var string
      */
-    protected static $openAPIModelName = 'SseCompletionBase';
+    protected static $openAPIModelName = 'DownloadBundle';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,7 +58,9 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $openAPITypes = [
-        'result_kind' => 'string'
+        'download_url' => 'string',
+        'size_bytes' => 'int',
+        'expires_at' => '\DateTime'
     ];
 
     /**
@@ -69,7 +71,9 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'result_kind' => null
+        'download_url' => 'uri',
+        'size_bytes' => 'int64',
+        'expires_at' => 'date-time'
     ];
 
     /**
@@ -78,7 +82,9 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'result_kind' => false
+        'download_url' => false,
+        'size_bytes' => false,
+        'expires_at' => false
     ];
 
     /**
@@ -167,7 +173,9 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $attributeMap = [
-        'result_kind' => 'result_kind'
+        'download_url' => 'download_url',
+        'size_bytes' => 'size_bytes',
+        'expires_at' => 'expires_at'
     ];
 
     /**
@@ -176,7 +184,9 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $setters = [
-        'result_kind' => 'setResultKind'
+        'download_url' => 'setDownloadUrl',
+        'size_bytes' => 'setSizeBytes',
+        'expires_at' => 'setExpiresAt'
     ];
 
     /**
@@ -185,7 +195,9 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
      * @var string[]
      */
     protected static $getters = [
-        'result_kind' => 'getResultKind'
+        'download_url' => 'getDownloadUrl',
+        'size_bytes' => 'getSizeBytes',
+        'expires_at' => 'getExpiresAt'
     ];
 
     /**
@@ -229,21 +241,6 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
         return self::$openAPIModelName;
     }
 
-    public const RESULT_KIND_SINGLE = 'single';
-    public const RESULT_KIND_MULTI = 'multi';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getResultKindAllowableValues()
-    {
-        return [
-            self::RESULT_KIND_SINGLE,
-            self::RESULT_KIND_MULTI,
-        ];
-    }
 
     /**
      * Associative array for storing property values
@@ -260,7 +257,9 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('result_kind', $data ?? [], null);
+        $this->setIfExists('download_url', $data ?? [], null);
+        $this->setIfExists('size_bytes', $data ?? [], null);
+        $this->setIfExists('expires_at', $data ?? [], null);
     }
 
     /**
@@ -290,18 +289,9 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
     {
         $invalidProperties = [];
 
-        if ($this->container['result_kind'] === null) {
-            $invalidProperties[] = "'result_kind' can't be null";
+        if ($this->container['download_url'] === null) {
+            $invalidProperties[] = "'download_url' can't be null";
         }
-        $allowedValues = $this->getResultKindAllowableValues();
-        if (!is_null($this->container['result_kind']) && !in_array($this->container['result_kind'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'result_kind', must be one of '%s'",
-                $this->container['result_kind'],
-                implode("', '", $allowedValues)
-            );
-        }
-
         return $invalidProperties;
     }
 
@@ -318,38 +308,82 @@ class SseCompletionBase implements ModelInterface, ArrayAccess, \JsonSerializabl
 
 
     /**
-     * Gets result_kind
+     * Gets download_url
      *
      * @return string
      */
-    public function getResultKind()
+    public function getDownloadUrl()
     {
-        return $this->container['result_kind'];
+        return $this->container['download_url'];
     }
 
     /**
-     * Sets result_kind
+     * Sets download_url
      *
-     * @param string $result_kind Discriminator field on `SseOperationCompletionResult`. The API SSE serializer emits `\"single\"` for single-output completion payloads and `\"multi\"` for multi-output payloads; generated SDK dispatch routes on this value to pick the correct branch deserializer.
+     * @param string $download_url Pre-signed URL for the zip-all archive of all workflow outputs.
      *
      * @return self
      */
-    public function setResultKind($result_kind)
+    public function setDownloadUrl($download_url)
     {
-        if (is_null($result_kind)) {
-            throw new \InvalidArgumentException('non-nullable result_kind cannot be null');
+        if (is_null($download_url)) {
+            throw new \InvalidArgumentException('non-nullable download_url cannot be null');
         }
-        $allowedValues = $this->getResultKindAllowableValues();
-        if (!in_array($result_kind, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'result_kind', must be one of '%s'",
-                    $result_kind,
-                    implode("', '", $allowedValues)
-                )
-            );
+        $this->container['download_url'] = $download_url;
+
+        return $this;
+    }
+
+    /**
+     * Gets size_bytes
+     *
+     * @return int|null
+     */
+    public function getSizeBytes()
+    {
+        return $this->container['size_bytes'];
+    }
+
+    /**
+     * Sets size_bytes
+     *
+     * @param int|null $size_bytes Archive size in bytes. Optional — may be absent when the bundle size is not computed at response time (e.g. streamed archive).
+     *
+     * @return self
+     */
+    public function setSizeBytes($size_bytes)
+    {
+        if (is_null($size_bytes)) {
+            throw new \InvalidArgumentException('non-nullable size_bytes cannot be null');
         }
-        $this->container['result_kind'] = $result_kind;
+        $this->container['size_bytes'] = $size_bytes;
+
+        return $this;
+    }
+
+    /**
+     * Gets expires_at
+     *
+     * @return \DateTime|null
+     */
+    public function getExpiresAt()
+    {
+        return $this->container['expires_at'];
+    }
+
+    /**
+     * Sets expires_at
+     *
+     * @param \DateTime|null $expires_at Expiry of the pre-signed `download_url` (RFC 3339 / ISO-8601). Optional — absent when the URL does not carry a fixed expiry.
+     *
+     * @return self
+     */
+    public function setExpiresAt($expires_at)
+    {
+        if (is_null($expires_at)) {
+            throw new \InvalidArgumentException('non-nullable expires_at cannot be null');
+        }
+        $this->container['expires_at'] = $expires_at;
 
         return $this;
     }
