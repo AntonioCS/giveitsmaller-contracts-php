@@ -312,26 +312,6 @@
         "video"
       ],
       "availability": "beta",
-      "excludes": [
-        {
-          "availability": "stable",
-          "constraint_id": "split.requires_chain_predecessor",
-          "message": "split must follow a compress or convert operation.",
-          "when": {
-            "not": {
-              "any": [
-                {
-                  "opSelected": "compress"
-                },
-                {
-                  "opSelected": "convert"
-                }
-              ]
-            }
-          },
-          "wire_code": "INVALID_OPERATION_ORDER"
-        }
-      ],
       "input": {
         "model": "single"
       },
@@ -491,5 +471,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.94.0"
+  "schema_version": "2.96.0"
 }

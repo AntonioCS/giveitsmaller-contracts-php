@@ -8,8 +8,8 @@ namespace Gisl\Generated\Operations;
 
 enum CompressDocumentPdfProfile: string
 {
-    case Web = 'web';
-    case Print = 'print';
-    case Archive = 'archive';
-    case Max = 'max';
+    case Screen = 'screen';
+    case Ebook = 'ebook';
+    case Printer = 'printer';
+    case Prepress = 'prepress';
 }

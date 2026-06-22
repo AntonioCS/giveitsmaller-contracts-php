@@ -202,6 +202,8 @@
           "*": [
             "colorspace",
             "flatten_forms",
+            "grayscale",
+            "image_dpi",
             "pages",
             "profile",
             "quality"
@@ -719,5 +721,5 @@
       }
     }
   },
-  "schema_version": "2.94.0"
+  "schema_version": "2.96.0"
 }

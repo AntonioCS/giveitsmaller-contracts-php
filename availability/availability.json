@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 114,
+  "capabilities_version": 115,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1063,7 +1063,7 @@
             "colorspace": {
               "availability": "planned",
               "default": "unchanged",
-              "description": "Output color space. `planned` \u2014 not yet read by the worker.",
+              "description": "Output color space. `planned` \u2014 not yet read by the worker (use `grayscale` for grayscale conversion).",
               "type": "enum",
               "values": [
                 "unchanged",
@@ -1078,26 +1078,35 @@
               "description": "Flatten interactive form fields into static content. `planned` \u2014 not yet read by the worker.",
               "type": "boolean"
             },
+            "grayscale": {
+              "default": false,
+              "description": "Convert all images to grayscale (smaller output; discards colour). Worker-honored.",
+              "type": "boolean"
+            },
+            "image_dpi": {
+              "description": "Downsample images above this DPI (72\u2013600 inclusive). Omit to keep the worker's DPI analysis. Out-of-range is rejected as invalid_options.",
+              "max": 600,
+              "min": 72,
+              "type": "integer"
+            },
             "pages": {
               "availability": "planned",
               "description": "Page selection (e.g. '1-5,8,10-12'). Omit to keep all pages. `planned` \u2014 not yet read by the worker.",
               "type": "string"
             },
             "profile": {
-              "availability": "planned",
-              "default": "web",
-              "description": "Optimization profile. web = aggressive (downsample images, strip metadata), print = preserve quality, archive = PDF/A compliance, max = smallest file. `planned` \u2014 not yet read by the worker (use `quality`).",
+              "description": "Ghostscript optimization preset, pinned directly (overrides the quality\u2192preset mapping). screen = lowest-res / smallest, ebook = mid, printer = 300dpi, prepress = print-production. Optional \u2014 omit to let `quality` drive the preset.",
               "type": "enum",
               "values": [
-                "web",
-                "print",
-                "archive",
-                "max"
+                "screen",
+                "ebook",
+                "printer",
+                "prepress"
               ]
             },
             "quality": {
               "default": 50,
-              "description": "Compression quality (1 = smallest, 100 = best). Maps to a document compression preset (the only worker-honored document option today).",
+              "description": "Compression quality (1 = smallest, 100 = best). Maps to a Ghostscript preset. Overridden by `profile` when that is set.",
               "max": 100,
               "min": 1,
               "type": "integer"
@@ -3595,7 +3604,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.94.0",
+  "schema_version": "2.96.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

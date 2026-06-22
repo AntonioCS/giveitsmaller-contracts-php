@@ -709,32 +709,32 @@ final class CompressTest extends TestCase
         $this->assertInstanceOf(CompressVideoOptions::class, $obj);
     }
 
-    public function testCompressDocumentPdfProfileWebBackingValue(): void
+    public function testCompressDocumentPdfProfileScreenBackingValue(): void
     {
-        $enum = CompressDocumentPdfProfile::from('web');
-        $this->assertSame(CompressDocumentPdfProfile::Web, $enum);
-        $this->assertSame('web', $enum->value);
+        $enum = CompressDocumentPdfProfile::from('screen');
+        $this->assertSame(CompressDocumentPdfProfile::Screen, $enum);
+        $this->assertSame('screen', $enum->value);
     }
 
-    public function testCompressDocumentPdfProfilePrintBackingValue(): void
+    public function testCompressDocumentPdfProfileEbookBackingValue(): void
     {
-        $enum = CompressDocumentPdfProfile::from('print');
-        $this->assertSame(CompressDocumentPdfProfile::Print, $enum);
-        $this->assertSame('print', $enum->value);
+        $enum = CompressDocumentPdfProfile::from('ebook');
+        $this->assertSame(CompressDocumentPdfProfile::Ebook, $enum);
+        $this->assertSame('ebook', $enum->value);
     }
 
-    public function testCompressDocumentPdfProfileArchiveBackingValue(): void
+    public function testCompressDocumentPdfProfilePrinterBackingValue(): void
     {
-        $enum = CompressDocumentPdfProfile::from('archive');
-        $this->assertSame(CompressDocumentPdfProfile::Archive, $enum);
-        $this->assertSame('archive', $enum->value);
+        $enum = CompressDocumentPdfProfile::from('printer');
+        $this->assertSame(CompressDocumentPdfProfile::Printer, $enum);
+        $this->assertSame('printer', $enum->value);
     }
 
-    public function testCompressDocumentPdfProfileMaxBackingValue(): void
+    public function testCompressDocumentPdfProfilePrepressBackingValue(): void
     {
-        $enum = CompressDocumentPdfProfile::from('max');
-        $this->assertSame(CompressDocumentPdfProfile::Max, $enum);
-        $this->assertSame('max', $enum->value);
+        $enum = CompressDocumentPdfProfile::from('prepress');
+        $this->assertSame(CompressDocumentPdfProfile::Prepress, $enum);
+        $this->assertSame('prepress', $enum->value);
     }
 
     public function testCompressDocumentPdfProfileCaseCount(): void
@@ -780,9 +780,11 @@ final class CompressTest extends TestCase
         $obj = new CompressDocumentPdfOptions();
         $this->assertInstanceOf(CompressDocumentPdfOptions::class, $obj);
         $this->assertSame(50, $obj->quality);
-        $this->assertSame(CompressDocumentPdfProfile::Web, $obj->profile);
+        $this->assertSame(false, $obj->grayscale);
         $this->assertSame(CompressDocumentPdfColorspace::Unchanged, $obj->colorspace);
         $this->assertSame(false, $obj->flatten_forms);
+        $this->assertNull($obj->profile);
+        $this->assertNull($obj->image_dpi);
         $this->assertNull($obj->pages);
     }
 
@@ -790,7 +792,9 @@ final class CompressTest extends TestCase
     {
         $obj = new CompressDocumentPdfOptions(
             quality: 1,
-            profile: CompressDocumentPdfProfile::Web,
+            profile: CompressDocumentPdfProfile::Screen,
+            grayscale: true,
+            image_dpi: 72,
             colorspace: CompressDocumentPdfColorspace::Unchanged,
             pages: 'test_value',
             flatten_forms: true,

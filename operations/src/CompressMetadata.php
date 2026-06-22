@@ -207,7 +207,12 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'profile' => new OptionMetadata(
-                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
+                        'grayscale' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'image_dpi' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'colorspace' => new OptionMetadata(
