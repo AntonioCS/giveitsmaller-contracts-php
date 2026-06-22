@@ -1,0 +1,185 @@
+{
+  "media": {
+    "image": {
+      "facade_managed_outputs": [
+        "webp"
+      ],
+      "format_change": {
+        "avif": {
+          "honored_options": [
+            "output_format",
+            "quality"
+          ],
+          "planned_options": [],
+          "source_op": "convert"
+        },
+        "gif": {
+          "honored_options": [
+            "output_format"
+          ],
+          "planned_options": [],
+          "source_op": "convert"
+        },
+        "jpeg": {
+          "honored_options": [
+            "background",
+            "output_format",
+            "quality"
+          ],
+          "planned_options": [],
+          "source_op": "convert"
+        },
+        "png": {
+          "honored_options": [
+            "output_format"
+          ],
+          "planned_options": [],
+          "source_op": "convert"
+        },
+        "tiff": {
+          "honored_options": [
+            "output_format"
+          ],
+          "planned_options": [],
+          "source_op": "convert"
+        },
+        "webp": {
+          "honored_options": [
+            "output_format",
+            "quality"
+          ],
+          "planned_options": [],
+          "source_op": "convert"
+        }
+      },
+      "max_output_pixels": 16000000,
+      "mime_tokens": {
+        "image/avif": "avif",
+        "image/gif": "gif",
+        "image/jpeg": "jpeg",
+        "image/png": "png",
+        "image/svg+xml": "svg",
+        "image/tiff": "tiff",
+        "image/webp": "webp"
+      },
+      "same_format": {
+        "avif": {
+          "honored_options": [
+            "avif_speed",
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "input_mime": "image/avif",
+          "max_output_pixels": 16000000,
+          "planned_options": [],
+          "source_op": "compress"
+        },
+        "gif": {
+          "honored_options": [
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "input_mime": "image/gif",
+          "max_output_pixels": 16000000,
+          "planned_options": [],
+          "source_op": "compress"
+        },
+        "jpeg": {
+          "honored_options": [
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "progressive",
+            "quality",
+            "width"
+          ],
+          "input_mime": "image/jpeg",
+          "max_output_pixels": 16000000,
+          "planned_options": [
+            "lossless"
+          ],
+          "source_op": "compress"
+        },
+        "png": {
+          "honored_options": [
+            "fit",
+            "height",
+            "metadata",
+            "optimization_level",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "input_mime": "image/png",
+          "max_output_pixels": 16000000,
+          "planned_options": [
+            "lossy"
+          ],
+          "source_op": "compress"
+        },
+        "svg": {
+          "honored_options": [
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "input_mime": "image/svg+xml",
+          "planned_options": [],
+          "source_op": "compress"
+        },
+        "tiff": {
+          "honored_options": [
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "input_mime": "image/tiff",
+          "max_output_pixels": 16000000,
+          "planned_options": [],
+          "source_op": "compress"
+        },
+        "webp": {
+          "honored_options": [
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "input_mime": "image/webp",
+          "max_output_pixels": 16000000,
+          "planned_options": [
+            "lossless"
+          ],
+          "source_op": "compress"
+        }
+      }
+    }
+  },
+  "routes": {
+    "format_change": {
+      "description": "output_format != input format: the convert transcoder path (API compress->convert facade). Key = target format.",
+      "engine": "transcoder",
+      "source_op": "convert"
+    },
+    "same_format": {
+      "description": "output_format == input format (or `original`): the libcaesium optimiser path. Key = input format token.",
+      "engine": "optimiser",
+      "source_op": "compress"
+    }
+  },
+  "schema_version": "2.97.0"
+}

@@ -12,5 +12,8 @@ final class CompressImageOptions
         public readonly int $quality = 80,
         public readonly CompressImageMetadata $metadata = CompressImageMetadata::All,
         public readonly CompressImageOutputFormat $output_format = CompressImageOutputFormat::Original,
+        public readonly ?int $width = null,
+        public readonly ?int $height = null,
+        public readonly ?CompressImageFit $fit = null,
     ) {}
 }

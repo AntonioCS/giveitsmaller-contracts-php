@@ -9,4 +9,5 @@ namespace Gisl\Generated\Operations;
 enum CompressImageJpegMetadata: string
 {
     case All = 'all';
+    case Keep = 'keep';
 }

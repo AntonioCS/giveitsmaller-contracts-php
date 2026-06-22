@@ -21,12 +21,29 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'keep' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'progressive' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'lossless' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
+                        'width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'height' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'fit' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                     ],
@@ -40,12 +57,29 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'keep' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'optimization_level' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'lossy' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
+                        'width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'height' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'fit' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                     ],
@@ -60,10 +94,76 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'keep' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'avif_speed' => new OptionMetadata(
                             per_value_availability: [],
+                        ),
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'height' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'fit' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'image_webp' => new MimeGroupMetadata(
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'metadata' => new OptionMetadata(
+                            per_value_availability: [
+                                'keep' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
+                        ),
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'lossless' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
+                        'width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'height' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'fit' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'image_svg' => new MimeGroupMetadata(
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'metadata' => new OptionMetadata(
+                            per_value_availability: [
+                                'keep' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'output_format' => new OptionMetadata(
                             per_value_availability: [],
@@ -79,9 +179,22 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'keep' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'output_format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'height' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'fit' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                     ],

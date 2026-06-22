@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 115,
+  "capabilities_version": 116,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1114,19 +1114,56 @@
           }
         },
         "image": {
+          "max_output_pixels": 16000000,
           "mimes": [
-            "image/webp",
             "image/gif",
-            "image/svg+xml",
             "image/tiff"
           ],
           "options": {
-            "metadata": {
-              "default": "all",
-              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP \u2014 the only supported behaviour (the compress worker always strips; preservation is not currently available).",
+            "fit": {
+              "default": "max",
+              "depends_on": {
+                "height": "set",
+                "logic": "or",
+                "width": "set"
+              },
+              "description": "Resize mode. max = fit within bounds (preserves aspect ratio, no crop), crop/scale = exact dimensions. Applies only when width or height is set, on whichever Output route runs.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
               "type": "enum",
               "values": [
-                "all"
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "height": {
+              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Resize replaces the image (one output). Optional \u2014 see `width`.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            },
+            "metadata": {
+              "default": "all",
+              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (default, the only live behaviour \u2014 the compress worker hardcodes keep_metadata=false). `keep` = preserve metadata \u2014 `planned` (the worker cannot preserve it yet; un-hardcoding keep_metadata is the Phase 1 keep/strip toggle). Optimiser (same_format) route \u2014 the format-change transcoder has no metadata-preservation control today.",
+              "honored_on": [
+                "same_format"
+              ],
+              "per_value_availability": {
+                "keep": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "all",
+                "keep"
               ]
             },
             "output_format": {
@@ -1141,7 +1178,20 @@
             "quality": {
               "default": 80,
               "description": "Compression quality (1 = smallest file, 100 = best quality). For animated GIF the worker honours this but real-world size reduction is typically small.",
+              "honored_on": [
+                "same_format"
+              ],
               "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "width": {
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven image resize engine (Lanczos, shared with thumbnail-images) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "max": 16384,
               "min": 1,
               "type": "integer"
             }
@@ -1149,23 +1199,65 @@
         },
         "image_avif": {
           "availability": "beta",
+          "max_output_pixels": 16000000,
           "mimes": [
             "image/avif"
           ],
           "options": {
             "avif_speed": {
               "default": 4,
-              "description": "AVIF encode speed (1-10, ravif). Lower = smaller file, slower encode; higher = faster, larger. Default 4.",
+              "description": "AVIF encode speed (1-10, ravif). Lower = smaller file, slower encode; higher = faster, larger. Default 4. Optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
               "max": 10,
+              "min": 1,
+              "type": "integer"
+            },
+            "fit": {
+              "default": "max",
+              "depends_on": {
+                "height": "set",
+                "logic": "or",
+                "width": "set"
+              },
+              "description": "Resize mode. max = fit within bounds (preserves aspect ratio, no crop), crop/scale = exact dimensions. Applies only when width or height is set, on whichever Output route runs.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "height": {
+              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Resize replaces the image (one output). Optional \u2014 see `width`.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "max": 16384,
               "min": 1,
               "type": "integer"
             },
             "metadata": {
               "default": "all",
-              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP \u2014 the only supported behaviour (the compress worker always strips; preservation is not currently available).",
+              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (default, the only live behaviour \u2014 the compress worker hardcodes keep_metadata=false). `keep` = preserve metadata \u2014 `planned` (the worker cannot preserve it yet; un-hardcoding keep_metadata is the Phase 1 keep/strip toggle). Optimiser (same_format) route \u2014 the format-change transcoder has no metadata-preservation control today.",
+              "honored_on": [
+                "same_format"
+              ],
+              "per_value_availability": {
+                "keep": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
-                "all"
+                "all",
+                "keep"
               ]
             },
             "output_format": {
@@ -1180,23 +1272,84 @@
             "quality": {
               "default": 80,
               "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "honored_on": [
+                "same_format"
+              ],
               "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "width": {
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven image resize engine (Lanczos, shared with thumbnail-images) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "max": 16384,
               "min": 1,
               "type": "integer"
             }
           }
         },
         "image_jpeg": {
+          "max_output_pixels": 16000000,
           "mimes": [
             "image/jpeg"
           ],
           "options": {
-            "metadata": {
-              "default": "all",
-              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP \u2014 the only supported behaviour (the compress worker always strips; preservation is not currently available).",
+            "fit": {
+              "default": "max",
+              "depends_on": {
+                "height": "set",
+                "logic": "or",
+                "width": "set"
+              },
+              "description": "Resize mode. max = fit within bounds (preserves aspect ratio, no crop), crop/scale = exact dimensions. Applies only when width or height is set, on whichever Output route runs.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
               "type": "enum",
               "values": [
-                "all"
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "height": {
+              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Resize replaces the image (one output). Optional \u2014 see `width`.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            },
+            "lossless": {
+              "availability": "planned",
+              "default": false,
+              "description": "Encode losslessly (JPEG optimiser path). `planned` \u2014 the worker carries a `lossless` bool the API has never emitted (product-parked: a lossless output can be LARGER than lossy). Optimiser (same_format) route only.",
+              "honored_on": [
+                "same_format"
+              ],
+              "type": "boolean"
+            },
+            "metadata": {
+              "default": "all",
+              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (default, the only live behaviour \u2014 the compress worker hardcodes keep_metadata=false). `keep` = preserve metadata \u2014 `planned` (the worker cannot preserve it yet; un-hardcoding keep_metadata is the Phase 1 keep/strip toggle). Optimiser (same_format) route \u2014 the format-change transcoder has no metadata-preservation control today.",
+              "honored_on": [
+                "same_format"
+              ],
+              "per_value_availability": {
+                "keep": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "all",
+                "keep"
               ]
             },
             "output_format": {
@@ -1210,34 +1363,101 @@
             },
             "progressive": {
               "default": true,
-              "description": "Enable progressive JPEG rendering (a low-quality preview renders first, then refines). JPEG only.",
+              "description": "Enable progressive JPEG rendering (a low-quality preview renders first, then refines). JPEG only \u2014 the optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
               "type": "boolean"
             },
             "quality": {
               "default": 80,
               "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "honored_on": [
+                "same_format"
+              ],
               "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "width": {
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven image resize engine (Lanczos, shared with thumbnail-images) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "max": 16384,
               "min": 1,
               "type": "integer"
             }
           }
         },
         "image_png": {
+          "max_output_pixels": 16000000,
           "mimes": [
             "image/png"
           ],
           "options": {
-            "metadata": {
-              "default": "all",
-              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP \u2014 the only supported behaviour (the compress worker always strips; preservation is not currently available).",
+            "fit": {
+              "default": "max",
+              "depends_on": {
+                "height": "set",
+                "logic": "or",
+                "width": "set"
+              },
+              "description": "Resize mode. max = fit within bounds (preserves aspect ratio, no crop), crop/scale = exact dimensions. Applies only when width or height is set, on whichever Output route runs.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
               "type": "enum",
               "values": [
-                "all"
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "height": {
+              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Resize replaces the image (one output). Optional \u2014 see `width`.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            },
+            "lossy": {
+              "availability": "planned",
+              "default": false,
+              "description": "Lossy PNG palette quantization (pngquant/imagequant-class) \u2014 a large saving for flat-colour PNGs. `planned` AND LICENSING-GATED: do not stable-flip until the lambdas licensing spike confirms a permissive quantizer path (libimagequant/pngquant is GPL-or-commercial). Optimiser (same_format) route only.",
+              "honored_on": [
+                "same_format"
+              ],
+              "type": "boolean"
+            },
+            "metadata": {
+              "default": "all",
+              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (default, the only live behaviour \u2014 the compress worker hardcodes keep_metadata=false). `keep` = preserve metadata \u2014 `planned` (the worker cannot preserve it yet; un-hardcoding keep_metadata is the Phase 1 keep/strip toggle). Optimiser (same_format) route \u2014 the format-change transcoder has no metadata-preservation control today.",
+              "honored_on": [
+                "same_format"
+              ],
+              "per_value_availability": {
+                "keep": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "all",
+                "keep"
               ]
             },
             "optimization_level": {
               "default": 3,
-              "description": "PNG optimization effort (0-6, oxipng). Higher = smaller file, slower encode. Default 3.",
+              "description": "PNG optimization effort (0-6, oxipng). Higher = smaller file, slower encode. Default 3. Optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
               "max": 6,
               "min": 0,
               "type": "integer"
@@ -1254,7 +1474,155 @@
             "quality": {
               "default": 80,
               "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "honored_on": [
+                "same_format"
+              ],
               "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "width": {
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven image resize engine (Lanczos, shared with thumbnail-images) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            }
+          }
+        },
+        "image_svg": {
+          "mimes": [
+            "image/svg+xml"
+          ],
+          "options": {
+            "metadata": {
+              "default": "all",
+              "description": "Metadata handling. `all` = strip all metadata (default, live). `keep` = preserve metadata \u2014 `planned` (worker cannot preserve yet). Optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
+              "per_value_availability": {
+                "keep": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "all",
+                "keep"
+              ]
+            },
+            "output_format": {
+              "default": "original",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Other format changes are the convert operation's job. See FORMAT.md.",
+              "type": "enum",
+              "values": [
+                "original",
+                "webp"
+              ]
+            },
+            "quality": {
+              "default": 80,
+              "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "honored_on": [
+                "same_format"
+              ],
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            }
+          }
+        },
+        "image_webp": {
+          "max_output_pixels": 16000000,
+          "mimes": [
+            "image/webp"
+          ],
+          "options": {
+            "fit": {
+              "default": "max",
+              "depends_on": {
+                "height": "set",
+                "logic": "or",
+                "width": "set"
+              },
+              "description": "Resize mode. max = fit within bounds (preserves aspect ratio, no crop), crop/scale = exact dimensions. Applies only when width or height is set, on whichever Output route runs.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "height": {
+              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Resize replaces the image (one output). Optional \u2014 see `width`.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            },
+            "lossless": {
+              "availability": "planned",
+              "default": false,
+              "description": "Encode WebP losslessly (optimiser path). `planned` \u2014 the worker carries a `lossless` bool the API has never emitted (product-parked: lossless can be LARGER). Optimiser (same_format) route only.",
+              "honored_on": [
+                "same_format"
+              ],
+              "type": "boolean"
+            },
+            "metadata": {
+              "default": "all",
+              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (default, the only live behaviour \u2014 the compress worker hardcodes keep_metadata=false). `keep` = preserve metadata \u2014 `planned` (the worker cannot preserve it yet; un-hardcoding keep_metadata is the Phase 1 keep/strip toggle). Optimiser (same_format) route \u2014 the format-change transcoder has no metadata-preservation control today.",
+              "honored_on": [
+                "same_format"
+              ],
+              "per_value_availability": {
+                "keep": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "all",
+                "keep"
+              ]
+            },
+            "output_format": {
+              "default": "original",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Other format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. See FORMAT.md.",
+              "type": "enum",
+              "values": [
+                "original",
+                "webp"
+              ]
+            },
+            "quality": {
+              "default": 80,
+              "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "honored_on": [
+                "same_format"
+              ],
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "width": {
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven image resize engine (Lanczos, shared with thumbnail-images) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "max": 16384,
               "min": 1,
               "type": "integer"
             }
@@ -1552,7 +1920,10 @@
               "depends_on": {
                 "output_format": "jpeg"
               },
-              "description": "Background colour (hex, e.g. '#ffffff') for transparent images converted to JPEG",
+              "description": "Background colour (hex, e.g. '#ffffff') for transparent images converted to JPEG (the format-change\u2192JPEG alpha-flatten \u2014 Output's transparency fill control).",
+              "honored_on": [
+                "format_change"
+              ],
               "type": "string"
             },
             "output_format": {
@@ -1578,6 +1949,9 @@
                 ]
               },
               "description": "Output quality for lossy formats",
+              "honored_on": [
+                "format_change"
+              ],
               "max": 100,
               "min": 1,
               "type": "integer"
@@ -3604,7 +3978,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.96.0",
+  "schema_version": "2.97.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

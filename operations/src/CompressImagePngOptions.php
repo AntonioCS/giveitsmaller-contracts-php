@@ -13,5 +13,9 @@ final class CompressImagePngOptions
         public readonly CompressImagePngMetadata $metadata = CompressImagePngMetadata::All,
         public readonly int $optimization_level = 3,
         public readonly CompressImagePngOutputFormat $output_format = CompressImagePngOutputFormat::Original,
+        public readonly bool $lossy = false,
+        public readonly ?int $width = null,
+        public readonly ?int $height = null,
+        public readonly ?CompressImagePngFit $fit = null,
     ) {}
 }
