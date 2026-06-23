@@ -12,7 +12,9 @@ use Gisl\Generated\Operations\ConvertAudioOptions;
 use Gisl\Generated\Operations\ConvertAudioOutputFormat;
 use Gisl\Generated\Operations\ConvertDocumentPdfOptions;
 use Gisl\Generated\Operations\ConvertDocumentPdfOutputFormat;
+use Gisl\Generated\Operations\ConvertImageColorProfile;
 use Gisl\Generated\Operations\ConvertImageFit;
+use Gisl\Generated\Operations\ConvertImageGifColorProfile;
 use Gisl\Generated\Operations\ConvertImageGifFit;
 use Gisl\Generated\Operations\ConvertImageGifMetadata;
 use Gisl\Generated\Operations\ConvertImageGifOptions;
@@ -120,6 +122,32 @@ final class ConvertTest extends TestCase
         $this->assertCount(3, ConvertImageFit::cases());
     }
 
+    public function testConvertImageColorProfileKeepBackingValue(): void
+    {
+        $enum = ConvertImageColorProfile::from('keep');
+        $this->assertSame(ConvertImageColorProfile::Keep, $enum);
+        $this->assertSame('keep', $enum->value);
+    }
+
+    public function testConvertImageColorProfileSrgbBackingValue(): void
+    {
+        $enum = ConvertImageColorProfile::from('srgb');
+        $this->assertSame(ConvertImageColorProfile::Srgb, $enum);
+        $this->assertSame('srgb', $enum->value);
+    }
+
+    public function testConvertImageColorProfileStripBackingValue(): void
+    {
+        $enum = ConvertImageColorProfile::from('strip');
+        $this->assertSame(ConvertImageColorProfile::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
+    }
+
+    public function testConvertImageColorProfileCaseCount(): void
+    {
+        $this->assertCount(3, ConvertImageColorProfile::cases());
+    }
+
     public function testConvertImageOptionsDefaultConstruction(): void
     {
         $obj = new ConvertImageOptions(
@@ -127,6 +155,8 @@ final class ConvertTest extends TestCase
         );
         $this->assertInstanceOf(ConvertImageOptions::class, $obj);
         $this->assertSame(ConvertImageMetadata::Strip, $obj->metadata);
+        $this->assertSame(ConvertImageColorProfile::Keep, $obj->color_profile);
+        $this->assertSame(true, $obj->auto_orient);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->background);
         $this->assertNull($obj->width);
@@ -144,6 +174,8 @@ final class ConvertTest extends TestCase
             width: 1,
             height: 1,
             fit: ConvertImageFit::Max,
+            color_profile: ConvertImageColorProfile::Keep,
+            auto_orient: true,
         );
         $this->assertInstanceOf(ConvertImageOptions::class, $obj);
     }
@@ -321,6 +353,32 @@ final class ConvertTest extends TestCase
         $this->assertCount(3, ConvertImageGifFit::cases());
     }
 
+    public function testConvertImageGifColorProfileKeepBackingValue(): void
+    {
+        $enum = ConvertImageGifColorProfile::from('keep');
+        $this->assertSame(ConvertImageGifColorProfile::Keep, $enum);
+        $this->assertSame('keep', $enum->value);
+    }
+
+    public function testConvertImageGifColorProfileSrgbBackingValue(): void
+    {
+        $enum = ConvertImageGifColorProfile::from('srgb');
+        $this->assertSame(ConvertImageGifColorProfile::Srgb, $enum);
+        $this->assertSame('srgb', $enum->value);
+    }
+
+    public function testConvertImageGifColorProfileStripBackingValue(): void
+    {
+        $enum = ConvertImageGifColorProfile::from('strip');
+        $this->assertSame(ConvertImageGifColorProfile::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
+    }
+
+    public function testConvertImageGifColorProfileCaseCount(): void
+    {
+        $this->assertCount(3, ConvertImageGifColorProfile::cases());
+    }
+
     public function testConvertImageGifOptionsDefaultConstruction(): void
     {
         $obj = new ConvertImageGifOptions(
@@ -328,6 +386,8 @@ final class ConvertTest extends TestCase
         );
         $this->assertInstanceOf(ConvertImageGifOptions::class, $obj);
         $this->assertSame(ConvertImageGifMetadata::Strip, $obj->metadata);
+        $this->assertSame(ConvertImageGifColorProfile::Keep, $obj->color_profile);
+        $this->assertSame(true, $obj->auto_orient);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->background);
         $this->assertNull($obj->width);
@@ -345,6 +405,8 @@ final class ConvertTest extends TestCase
             width: 1,
             height: 1,
             fit: ConvertImageGifFit::Max,
+            color_profile: ConvertImageGifColorProfile::Keep,
+            auto_orient: true,
         );
         $this->assertInstanceOf(ConvertImageGifOptions::class, $obj);
     }

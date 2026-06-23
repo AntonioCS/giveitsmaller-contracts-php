@@ -214,6 +214,8 @@
       "image": {
         "accepted_options": {
           "auto": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "keep_metadata",
@@ -223,6 +225,8 @@
             "width"
           ],
           "original": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "keep_metadata",
@@ -232,6 +236,8 @@
             "width"
           ],
           "smallest": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "keep_metadata",
@@ -241,6 +247,8 @@
             "width"
           ],
           "webp": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "keep_metadata",
@@ -255,7 +263,9 @@
       "image_avif": {
         "accepted_options": {
           "auto": [
+            "auto_orient",
             "avif_speed",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -266,7 +276,9 @@
             "width"
           ],
           "original": [
+            "auto_orient",
             "avif_speed",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -277,7 +289,9 @@
             "width"
           ],
           "smallest": [
+            "auto_orient",
             "avif_speed",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -288,7 +302,9 @@
             "width"
           ],
           "webp": [
+            "auto_orient",
             "avif_speed",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -304,7 +320,9 @@
       "image_jpeg": {
         "accepted_options": {
           "auto": [
+            "auto_orient",
             "chroma_subsampling",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -318,7 +336,9 @@
             "width"
           ],
           "original": [
+            "auto_orient",
             "chroma_subsampling",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -332,7 +352,9 @@
             "width"
           ],
           "smallest": [
+            "auto_orient",
             "chroma_subsampling",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -346,7 +368,9 @@
             "width"
           ],
           "webp": [
+            "auto_orient",
             "chroma_subsampling",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -365,6 +389,8 @@
       "image_png": {
         "accepted_options": {
           "auto": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "keep_metadata",
@@ -376,6 +402,8 @@
             "width"
           ],
           "original": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "keep_metadata",
@@ -387,6 +415,8 @@
             "width"
           ],
           "smallest": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "keep_metadata",
@@ -398,6 +428,8 @@
             "width"
           ],
           "webp": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "keep_metadata",
@@ -439,6 +471,8 @@
       "image_webp": {
         "accepted_options": {
           "auto": [
+            "auto_orient",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -451,6 +485,8 @@
             "width"
           ],
           "original": [
+            "auto_orient",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -463,6 +499,8 @@
             "width"
           ],
           "smallest": [
+            "auto_orient",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -475,6 +513,8 @@
             "width"
           ],
           "webp": [
+            "auto_orient",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -609,6 +649,8 @@
       "image": {
         "accepted_options": {
           "avif": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -617,6 +659,8 @@
             "width"
           ],
           "gif": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -624,7 +668,9 @@
             "width"
           ],
           "jpeg": [
+            "auto_orient",
             "background",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -633,6 +679,8 @@
             "width"
           ],
           "png": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -640,6 +688,8 @@
             "width"
           ],
           "tiff": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -647,6 +697,8 @@
             "width"
           ],
           "webp": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -660,6 +712,8 @@
       "image_gif": {
         "accepted_options": {
           "avif": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -668,6 +722,8 @@
             "width"
           ],
           "gif": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -675,7 +731,9 @@
             "width"
           ],
           "jpeg": [
+            "auto_orient",
             "background",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -684,6 +742,8 @@
             "width"
           ],
           "mp4": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -691,6 +751,8 @@
             "width"
           ],
           "png": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -698,6 +760,8 @@
             "width"
           ],
           "tiff": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -705,6 +769,8 @@
             "width"
           ],
           "webm": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -712,6 +778,8 @@
             "width"
           ],
           "webp": [
+            "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -1049,5 +1117,5 @@
       }
     }
   },
-  "schema_version": "2.111.0"
+  "schema_version": "2.112.0"
 }

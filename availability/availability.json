@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 130,
+  "capabilities_version": 131,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1118,6 +1118,31 @@
             "image/tiff"
           ],
           "options": {
+            "auto_orient": {
+              "availability": "planned",
+              "default": true,
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. `planned` \u2014 a restored control (was removed): the worker must apply the EXIF-orientation transform before encode on both Output routes. Default `true` (a behaviour change, proven planned-first). No-op for inputs without an orientation tag.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "boolean"
+            },
+            "color_profile": {
+              "availability": "planned",
+              "default": "keep",
+              "description": "ICC colour-profile handling \u2014 its OWN control, DECOUPLED from `metadata` (stripping metadata must NOT silently shift colours; that coupling is the correctness bug this fixes). `keep` (default) = preserve the embedded profile; `srgb` = convert to sRGB (also handles CMYK\u2192sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 the worker does not yet honour it (today the default strips ICC during metadata-strip; the fix preserves it). Applies on BOTH Output routes (optimiser preserves; transcoder preserves/converts). Worker-proven flip.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "keep",
+                "srgb",
+                "strip"
+              ]
+            },
             "fit": {
               "default": "max",
               "depends_on": {
@@ -1228,6 +1253,16 @@
             "image/avif"
           ],
           "options": {
+            "auto_orient": {
+              "availability": "planned",
+              "default": true,
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. `planned` \u2014 a restored control (was removed): the worker must apply the EXIF-orientation transform before encode on both Output routes. Default `true` (a behaviour change, proven planned-first). No-op for inputs without an orientation tag.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "boolean"
+            },
             "avif_speed": {
               "default": 4,
               "description": "AVIF encode speed (1-10, ravif). Lower = smaller file, slower encode; higher = faster, larger. Default 4. Optimiser (same_format) route.",
@@ -1237,6 +1272,21 @@
               "max": 10,
               "min": 1,
               "type": "integer"
+            },
+            "color_profile": {
+              "availability": "planned",
+              "default": "keep",
+              "description": "ICC colour-profile handling \u2014 its OWN control, DECOUPLED from `metadata` (stripping metadata must NOT silently shift colours; that coupling is the correctness bug this fixes). `keep` (default) = preserve the embedded profile; `srgb` = convert to sRGB (also handles CMYK\u2192sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 the worker does not yet honour it (today the default strips ICC during metadata-strip; the fix preserves it). Applies on BOTH Output routes (optimiser preserves; transcoder preserves/converts). Worker-proven flip.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "keep",
+                "srgb",
+                "strip"
+              ]
             },
             "encoding_mode": {
               "default": "quality",
@@ -1357,6 +1407,16 @@
             "image/jpeg"
           ],
           "options": {
+            "auto_orient": {
+              "availability": "planned",
+              "default": true,
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. `planned` \u2014 a restored control (was removed): the worker must apply the EXIF-orientation transform before encode on both Output routes. Default `true` (a behaviour change, proven planned-first). No-op for inputs without an orientation tag.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "boolean"
+            },
             "chroma_subsampling": {
               "description": "JPEG chroma subsampling \u2014 the colour-resolution/size trade-off. `420` (4:2:0) = smallest, chroma at quarter resolution (default-ish for web photos); `422` (4:2:2) = half-horizontal; `444` (4:4:4) = full chroma (largest, best for sharp colour edges / text). JPEG ONLY (declared on image_jpeg only \u2014 ravif hardcodes 4:4:4, libwebp lossy locks 4:2:0). String values (the worker strict-matches strings). STABLE \u2014 worker-proven on staging (lambdas PR #264, deployed git-f2bef85: output JPEG SOF luma sampling bytes verified 0x22/0x21/0x11 for 420/422/444). INCOMPATIBLE with `lossless` (any chroma value): lossless JPEG is a DCT-coefficient copy and cannot resample chroma \u2014 see the chroma_subsampling.lossless_conflict constraint.",
               "honored_on": [
@@ -1367,6 +1427,21 @@
                 "420",
                 "422",
                 "444"
+              ]
+            },
+            "color_profile": {
+              "availability": "planned",
+              "default": "keep",
+              "description": "ICC colour-profile handling \u2014 its OWN control, DECOUPLED from `metadata` (stripping metadata must NOT silently shift colours; that coupling is the correctness bug this fixes). `keep` (default) = preserve the embedded profile; `srgb` = convert to sRGB (also handles CMYK\u2192sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 the worker does not yet honour it (today the default strips ICC during metadata-strip; the fix preserves it). Applies on BOTH Output routes (optimiser preserves; transcoder preserves/converts). Worker-proven flip.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "keep",
+                "srgb",
+                "strip"
               ]
             },
             "encoding_mode": {
@@ -1523,6 +1598,31 @@
             "image/png"
           ],
           "options": {
+            "auto_orient": {
+              "availability": "planned",
+              "default": true,
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. `planned` \u2014 a restored control (was removed): the worker must apply the EXIF-orientation transform before encode on both Output routes. Default `true` (a behaviour change, proven planned-first). No-op for inputs without an orientation tag.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "boolean"
+            },
+            "color_profile": {
+              "availability": "planned",
+              "default": "keep",
+              "description": "ICC colour-profile handling \u2014 its OWN control, DECOUPLED from `metadata` (stripping metadata must NOT silently shift colours; that coupling is the correctness bug this fixes). `keep` (default) = preserve the embedded profile; `srgb` = convert to sRGB (also handles CMYK\u2192sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 the worker does not yet honour it (today the default strips ICC during metadata-strip; the fix preserves it). Applies on BOTH Output routes (optimiser preserves; transcoder preserves/converts). Worker-proven flip.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "keep",
+                "srgb",
+                "strip"
+              ]
+            },
             "fit": {
               "default": "max",
               "depends_on": {
@@ -1704,6 +1804,31 @@
             "image/webp"
           ],
           "options": {
+            "auto_orient": {
+              "availability": "planned",
+              "default": true,
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. `planned` \u2014 a restored control (was removed): the worker must apply the EXIF-orientation transform before encode on both Output routes. Default `true` (a behaviour change, proven planned-first). No-op for inputs without an orientation tag.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "boolean"
+            },
+            "color_profile": {
+              "availability": "planned",
+              "default": "keep",
+              "description": "ICC colour-profile handling \u2014 its OWN control, DECOUPLED from `metadata` (stripping metadata must NOT silently shift colours; that coupling is the correctness bug this fixes). `keep` (default) = preserve the embedded profile; `srgb` = convert to sRGB (also handles CMYK\u2192sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 the worker does not yet honour it (today the default strips ICC during metadata-strip; the fix preserves it). Applies on BOTH Output routes (optimiser preserves; transcoder preserves/converts). Worker-proven flip.",
+              "honored_on": [
+                "same_format",
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "keep",
+                "srgb",
+                "strip"
+              ]
+            },
             "encoding_mode": {
               "default": "quality",
               "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default). `target_size` = hit a byte budget via the worker's encode-measure-binary-search loop \u2014 STABLE (worker-proven on staging, lambdas git-870a7c2: re-encode under target + best-effort below floor + original-wins, all proven). Optimiser (same_format) route.",
@@ -2129,6 +2254,15 @@
             "image/heic"
           ],
           "options": {
+            "auto_orient": {
+              "availability": "planned",
+              "default": true,
+              "description": "Bake EXIF orientation into the pixels on the transcoder (format-change) route \u2014 mirrors compress.image.auto_orient. `planned` \u2014 the convert worker does not yet apply the orientation transform. Declared HERE so the API re-validates the rewritten Output convert op.",
+              "honored_on": [
+                "format_change"
+              ],
+              "type": "boolean"
+            },
             "background": {
               "depends_on": {
                 "output_format": "jpeg"
@@ -2139,6 +2273,20 @@
               ],
               "pattern": "^#[0-9a-fA-F]{6}$",
               "type": "string"
+            },
+            "color_profile": {
+              "availability": "planned",
+              "default": "keep",
+              "description": "ICC colour-profile handling on the transcoder (format-change) route \u2014 mirrors compress.image.color_profile (its own control, decoupled from metadata). `keep` (default) = preserve; `srgb` = convert to sRGB (incl. CMYK\u2192sRGB); `strip` = drop. `planned` \u2014 the convert worker re-encodes from pixels and does not yet preserve/convert the profile. Declared HERE so the API re-validates the rewritten Output convert op.",
+              "honored_on": [
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "keep",
+                "srgb",
+                "strip"
+              ]
             },
             "fit": {
               "default": "max",
@@ -2235,6 +2383,15 @@
             "image/gif"
           ],
           "options": {
+            "auto_orient": {
+              "availability": "planned",
+              "default": true,
+              "description": "Bake EXIF orientation into the pixels (format-change route) \u2014 mirrors compress.image.auto_orient. `planned`. Declared HERE so the API re-validates the rewritten Output op.",
+              "honored_on": [
+                "format_change"
+              ],
+              "type": "boolean"
+            },
             "background": {
               "depends_on": {
                 "output_format": "jpeg"
@@ -2245,6 +2402,20 @@
               ],
               "pattern": "^#[0-9a-fA-F]{6}$",
               "type": "string"
+            },
+            "color_profile": {
+              "availability": "planned",
+              "default": "keep",
+              "description": "ICC colour-profile handling (format-change route) \u2014 mirrors compress.image.color_profile. `keep` (default)/`srgb`/`strip`. `planned` \u2014 applies to the still-image targets; the video targets (mp4/webm) carry no ICC. Declared HERE so the API re-validates the rewritten Output op.",
+              "honored_on": [
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "keep",
+                "srgb",
+                "strip"
+              ]
             },
             "fit": {
               "default": "max",
@@ -4397,7 +4568,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.111.0",
+  "schema_version": "2.112.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

@@ -46,6 +46,14 @@ final class ConvertMetadata
                         'fit' => new OptionMetadata(
                             per_value_availability: [],
                         ),
+                        'color_profile' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
+                        'auto_orient' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
                     ],
                     per_input_options: [],
                 ),
@@ -96,6 +104,14 @@ final class ConvertMetadata
                             per_value_availability: [],
                         ),
                         'fit' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'color_profile' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
+                        'auto_orient' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],

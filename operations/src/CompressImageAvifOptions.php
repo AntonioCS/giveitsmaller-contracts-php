@@ -13,6 +13,8 @@ final class CompressImageAvifOptions
         public readonly CompressImageAvifMetadata $metadata = CompressImageAvifMetadata::Strip,
         public readonly int $avif_speed = 4,
         public readonly CompressImageAvifOutputFormat $output_format = CompressImageAvifOutputFormat::Original,
+        public readonly CompressImageAvifColorProfile $color_profile = CompressImageAvifColorProfile::Keep,
+        public readonly bool $auto_orient = true,
         public readonly ?int $quality = null,
         public readonly ?int $target_size_bytes = null,
         public readonly ?int $width = null,

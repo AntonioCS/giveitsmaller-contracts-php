@@ -15,6 +15,8 @@ final class CompressImageOptions
         public readonly int $quality = 80,
         public readonly CompressImageMetadata $metadata = CompressImageMetadata::Strip,
         public readonly CompressImageOutputFormat $output_format = CompressImageOutputFormat::Original,
+        public readonly CompressImageColorProfile $color_profile = CompressImageColorProfile::Keep,
+        public readonly bool $auto_orient = true,
         public readonly ?array $keep_metadata = null,
         public readonly ?int $width = null,
         public readonly ?int $height = null,

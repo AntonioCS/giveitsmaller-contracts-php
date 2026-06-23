@@ -15,6 +15,8 @@ final class CompressImageWebpOptions
         public readonly CompressImageWebpEncodingMode $encoding_mode = CompressImageWebpEncodingMode::Quality,
         public readonly CompressImageWebpMetadata $metadata = CompressImageWebpMetadata::Strip,
         public readonly CompressImageWebpOutputFormat $output_format = CompressImageWebpOutputFormat::Original,
+        public readonly CompressImageWebpColorProfile $color_profile = CompressImageWebpColorProfile::Keep,
+        public readonly bool $auto_orient = true,
         public readonly ?int $quality = null,
         public readonly ?int $target_size_bytes = null,
         public readonly ?array $keep_metadata = null,

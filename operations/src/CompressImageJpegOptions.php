@@ -16,6 +16,8 @@ final class CompressImageJpegOptions
         public readonly CompressImageJpegMetadata $metadata = CompressImageJpegMetadata::Strip,
         public readonly bool $progressive = true,
         public readonly CompressImageJpegOutputFormat $output_format = CompressImageJpegOutputFormat::Original,
+        public readonly CompressImageJpegColorProfile $color_profile = CompressImageJpegColorProfile::Keep,
+        public readonly bool $auto_orient = true,
         public readonly ?int $quality = null,
         public readonly ?int $target_size_bytes = null,
         public readonly ?array $keep_metadata = null,

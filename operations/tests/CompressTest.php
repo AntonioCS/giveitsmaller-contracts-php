@@ -17,13 +17,16 @@ use Gisl\Generated\Operations\CompressDocumentOfficeOptions;
 use Gisl\Generated\Operations\CompressDocumentPdfColorspace;
 use Gisl\Generated\Operations\CompressDocumentPdfOptions;
 use Gisl\Generated\Operations\CompressDocumentPdfProfile;
+use Gisl\Generated\Operations\CompressImageAvifColorProfile;
 use Gisl\Generated\Operations\CompressImageAvifEncodingMode;
 use Gisl\Generated\Operations\CompressImageAvifFit;
 use Gisl\Generated\Operations\CompressImageAvifMetadata;
 use Gisl\Generated\Operations\CompressImageAvifOptions;
 use Gisl\Generated\Operations\CompressImageAvifOutputFormat;
+use Gisl\Generated\Operations\CompressImageColorProfile;
 use Gisl\Generated\Operations\CompressImageFit;
 use Gisl\Generated\Operations\CompressImageJpegChromaSubsampling;
+use Gisl\Generated\Operations\CompressImageJpegColorProfile;
 use Gisl\Generated\Operations\CompressImageJpegEncodingMode;
 use Gisl\Generated\Operations\CompressImageJpegFit;
 use Gisl\Generated\Operations\CompressImageJpegMetadata;
@@ -32,6 +35,7 @@ use Gisl\Generated\Operations\CompressImageJpegOutputFormat;
 use Gisl\Generated\Operations\CompressImageMetadata;
 use Gisl\Generated\Operations\CompressImageOptions;
 use Gisl\Generated\Operations\CompressImageOutputFormat;
+use Gisl\Generated\Operations\CompressImagePngColorProfile;
 use Gisl\Generated\Operations\CompressImagePngFit;
 use Gisl\Generated\Operations\CompressImagePngMetadata;
 use Gisl\Generated\Operations\CompressImagePngOptions;
@@ -39,6 +43,7 @@ use Gisl\Generated\Operations\CompressImagePngOutputFormat;
 use Gisl\Generated\Operations\CompressImageSvgMetadata;
 use Gisl\Generated\Operations\CompressImageSvgOptions;
 use Gisl\Generated\Operations\CompressImageSvgOutputFormat;
+use Gisl\Generated\Operations\CompressImageWebpColorProfile;
 use Gisl\Generated\Operations\CompressImageWebpEncodingMode;
 use Gisl\Generated\Operations\CompressImageWebpFit;
 use Gisl\Generated\Operations\CompressImageWebpMetadata;
@@ -185,6 +190,32 @@ final class CompressTest extends TestCase
         $this->assertCount(3, CompressImageJpegFit::cases());
     }
 
+    public function testCompressImageJpegColorProfileKeepBackingValue(): void
+    {
+        $enum = CompressImageJpegColorProfile::from('keep');
+        $this->assertSame(CompressImageJpegColorProfile::Keep, $enum);
+        $this->assertSame('keep', $enum->value);
+    }
+
+    public function testCompressImageJpegColorProfileSrgbBackingValue(): void
+    {
+        $enum = CompressImageJpegColorProfile::from('srgb');
+        $this->assertSame(CompressImageJpegColorProfile::Srgb, $enum);
+        $this->assertSame('srgb', $enum->value);
+    }
+
+    public function testCompressImageJpegColorProfileStripBackingValue(): void
+    {
+        $enum = CompressImageJpegColorProfile::from('strip');
+        $this->assertSame(CompressImageJpegColorProfile::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
+    }
+
+    public function testCompressImageJpegColorProfileCaseCount(): void
+    {
+        $this->assertCount(3, CompressImageJpegColorProfile::cases());
+    }
+
     public function testCompressImageJpegOptionsDefaultConstruction(): void
     {
         $obj = new CompressImageJpegOptions();
@@ -193,6 +224,8 @@ final class CompressTest extends TestCase
         $this->assertSame(CompressImageJpegMetadata::Strip, $obj->metadata);
         $this->assertSame(true, $obj->progressive);
         $this->assertSame(CompressImageJpegOutputFormat::Original, $obj->output_format);
+        $this->assertSame(CompressImageJpegColorProfile::Keep, $obj->color_profile);
+        $this->assertSame(true, $obj->auto_orient);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->target_size_bytes);
         $this->assertNull($obj->keep_metadata);
@@ -218,6 +251,8 @@ final class CompressTest extends TestCase
             width: 1,
             height: 1,
             fit: CompressImageJpegFit::Max,
+            color_profile: CompressImageJpegColorProfile::Keep,
+            auto_orient: true,
         );
         $this->assertInstanceOf(CompressImageJpegOptions::class, $obj);
     }
@@ -307,6 +342,32 @@ final class CompressTest extends TestCase
         $this->assertCount(3, CompressImagePngFit::cases());
     }
 
+    public function testCompressImagePngColorProfileKeepBackingValue(): void
+    {
+        $enum = CompressImagePngColorProfile::from('keep');
+        $this->assertSame(CompressImagePngColorProfile::Keep, $enum);
+        $this->assertSame('keep', $enum->value);
+    }
+
+    public function testCompressImagePngColorProfileSrgbBackingValue(): void
+    {
+        $enum = CompressImagePngColorProfile::from('srgb');
+        $this->assertSame(CompressImagePngColorProfile::Srgb, $enum);
+        $this->assertSame('srgb', $enum->value);
+    }
+
+    public function testCompressImagePngColorProfileStripBackingValue(): void
+    {
+        $enum = CompressImagePngColorProfile::from('strip');
+        $this->assertSame(CompressImagePngColorProfile::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
+    }
+
+    public function testCompressImagePngColorProfileCaseCount(): void
+    {
+        $this->assertCount(3, CompressImagePngColorProfile::cases());
+    }
+
     public function testCompressImagePngOptionsDefaultConstruction(): void
     {
         $obj = new CompressImagePngOptions();
@@ -316,6 +377,8 @@ final class CompressTest extends TestCase
         $this->assertSame(3, $obj->optimization_level);
         $this->assertSame(CompressImagePngOutputFormat::Original, $obj->output_format);
         $this->assertSame(false, $obj->lossy);
+        $this->assertSame(CompressImagePngColorProfile::Keep, $obj->color_profile);
+        $this->assertSame(true, $obj->auto_orient);
         $this->assertNull($obj->keep_metadata);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
@@ -334,6 +397,8 @@ final class CompressTest extends TestCase
             width: 1,
             height: 1,
             fit: CompressImagePngFit::Max,
+            color_profile: CompressImagePngColorProfile::Keep,
+            auto_orient: true,
         );
         $this->assertInstanceOf(CompressImagePngOptions::class, $obj);
     }
@@ -435,6 +500,32 @@ final class CompressTest extends TestCase
         $this->assertCount(3, CompressImageAvifFit::cases());
     }
 
+    public function testCompressImageAvifColorProfileKeepBackingValue(): void
+    {
+        $enum = CompressImageAvifColorProfile::from('keep');
+        $this->assertSame(CompressImageAvifColorProfile::Keep, $enum);
+        $this->assertSame('keep', $enum->value);
+    }
+
+    public function testCompressImageAvifColorProfileSrgbBackingValue(): void
+    {
+        $enum = CompressImageAvifColorProfile::from('srgb');
+        $this->assertSame(CompressImageAvifColorProfile::Srgb, $enum);
+        $this->assertSame('srgb', $enum->value);
+    }
+
+    public function testCompressImageAvifColorProfileStripBackingValue(): void
+    {
+        $enum = CompressImageAvifColorProfile::from('strip');
+        $this->assertSame(CompressImageAvifColorProfile::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
+    }
+
+    public function testCompressImageAvifColorProfileCaseCount(): void
+    {
+        $this->assertCount(3, CompressImageAvifColorProfile::cases());
+    }
+
     public function testCompressImageAvifOptionsDefaultConstruction(): void
     {
         $obj = new CompressImageAvifOptions();
@@ -443,6 +534,8 @@ final class CompressTest extends TestCase
         $this->assertSame(CompressImageAvifMetadata::Strip, $obj->metadata);
         $this->assertSame(4, $obj->avif_speed);
         $this->assertSame(CompressImageAvifOutputFormat::Original, $obj->output_format);
+        $this->assertSame(CompressImageAvifColorProfile::Keep, $obj->color_profile);
+        $this->assertSame(true, $obj->auto_orient);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->target_size_bytes);
         $this->assertNull($obj->width);
@@ -462,6 +555,8 @@ final class CompressTest extends TestCase
             width: 1,
             height: 1,
             fit: CompressImageAvifFit::Max,
+            color_profile: CompressImageAvifColorProfile::Keep,
+            auto_orient: true,
         );
         $this->assertInstanceOf(CompressImageAvifOptions::class, $obj);
     }
@@ -570,6 +665,32 @@ final class CompressTest extends TestCase
         $this->assertCount(3, CompressImageWebpFit::cases());
     }
 
+    public function testCompressImageWebpColorProfileKeepBackingValue(): void
+    {
+        $enum = CompressImageWebpColorProfile::from('keep');
+        $this->assertSame(CompressImageWebpColorProfile::Keep, $enum);
+        $this->assertSame('keep', $enum->value);
+    }
+
+    public function testCompressImageWebpColorProfileSrgbBackingValue(): void
+    {
+        $enum = CompressImageWebpColorProfile::from('srgb');
+        $this->assertSame(CompressImageWebpColorProfile::Srgb, $enum);
+        $this->assertSame('srgb', $enum->value);
+    }
+
+    public function testCompressImageWebpColorProfileStripBackingValue(): void
+    {
+        $enum = CompressImageWebpColorProfile::from('strip');
+        $this->assertSame(CompressImageWebpColorProfile::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
+    }
+
+    public function testCompressImageWebpColorProfileCaseCount(): void
+    {
+        $this->assertCount(3, CompressImageWebpColorProfile::cases());
+    }
+
     public function testCompressImageWebpOptionsDefaultConstruction(): void
     {
         $obj = new CompressImageWebpOptions();
@@ -577,6 +698,8 @@ final class CompressTest extends TestCase
         $this->assertSame(CompressImageWebpEncodingMode::Quality, $obj->encoding_mode);
         $this->assertSame(CompressImageWebpMetadata::Strip, $obj->metadata);
         $this->assertSame(CompressImageWebpOutputFormat::Original, $obj->output_format);
+        $this->assertSame(CompressImageWebpColorProfile::Keep, $obj->color_profile);
+        $this->assertSame(true, $obj->auto_orient);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->target_size_bytes);
         $this->assertNull($obj->keep_metadata);
@@ -599,6 +722,8 @@ final class CompressTest extends TestCase
             width: 1,
             height: 1,
             fit: CompressImageWebpFit::Max,
+            color_profile: CompressImageWebpColorProfile::Keep,
+            auto_orient: true,
         );
         $this->assertInstanceOf(CompressImageWebpOptions::class, $obj);
     }
@@ -759,6 +884,32 @@ final class CompressTest extends TestCase
         $this->assertCount(3, CompressImageFit::cases());
     }
 
+    public function testCompressImageColorProfileKeepBackingValue(): void
+    {
+        $enum = CompressImageColorProfile::from('keep');
+        $this->assertSame(CompressImageColorProfile::Keep, $enum);
+        $this->assertSame('keep', $enum->value);
+    }
+
+    public function testCompressImageColorProfileSrgbBackingValue(): void
+    {
+        $enum = CompressImageColorProfile::from('srgb');
+        $this->assertSame(CompressImageColorProfile::Srgb, $enum);
+        $this->assertSame('srgb', $enum->value);
+    }
+
+    public function testCompressImageColorProfileStripBackingValue(): void
+    {
+        $enum = CompressImageColorProfile::from('strip');
+        $this->assertSame(CompressImageColorProfile::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
+    }
+
+    public function testCompressImageColorProfileCaseCount(): void
+    {
+        $this->assertCount(3, CompressImageColorProfile::cases());
+    }
+
     public function testCompressImageOptionsDefaultConstruction(): void
     {
         $obj = new CompressImageOptions();
@@ -766,6 +917,8 @@ final class CompressTest extends TestCase
         $this->assertSame(80, $obj->quality);
         $this->assertSame(CompressImageMetadata::Strip, $obj->metadata);
         $this->assertSame(CompressImageOutputFormat::Original, $obj->output_format);
+        $this->assertSame(CompressImageColorProfile::Keep, $obj->color_profile);
+        $this->assertSame(true, $obj->auto_orient);
         $this->assertNull($obj->keep_metadata);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
@@ -782,6 +935,8 @@ final class CompressTest extends TestCase
             width: 1,
             height: 1,
             fit: CompressImageFit::Max,
+            color_profile: CompressImageColorProfile::Keep,
+            auto_orient: true,
         );
         $this->assertInstanceOf(CompressImageOptions::class, $obj);
     }
