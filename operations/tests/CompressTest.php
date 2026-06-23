@@ -244,16 +244,9 @@ final class CompressTest extends TestCase
         $this->assertSame('all', $enum->value);
     }
 
-    public function testCompressImageAvifMetadataKeepBackingValue(): void
-    {
-        $enum = CompressImageAvifMetadata::from('keep');
-        $this->assertSame(CompressImageAvifMetadata::Keep, $enum);
-        $this->assertSame('keep', $enum->value);
-    }
-
     public function testCompressImageAvifMetadataCaseCount(): void
     {
-        $this->assertCount(2, CompressImageAvifMetadata::cases());
+        $this->assertCount(1, CompressImageAvifMetadata::cases());
     }
 
     public function testCompressImageAvifOutputFormatOriginalBackingValue(): void
@@ -426,16 +419,9 @@ final class CompressTest extends TestCase
         $this->assertSame('all', $enum->value);
     }
 
-    public function testCompressImageSvgMetadataKeepBackingValue(): void
-    {
-        $enum = CompressImageSvgMetadata::from('keep');
-        $this->assertSame(CompressImageSvgMetadata::Keep, $enum);
-        $this->assertSame('keep', $enum->value);
-    }
-
     public function testCompressImageSvgMetadataCaseCount(): void
     {
-        $this->assertCount(2, CompressImageSvgMetadata::cases());
+        $this->assertCount(1, CompressImageSvgMetadata::cases());
     }
 
     public function testCompressImageSvgOutputFormatOriginalBackingValue(): void

@@ -9,5 +9,4 @@ namespace Gisl\Generated\Operations;
 enum CompressImageSvgMetadata: string
 {
     case All = 'all';
-    case Keep = 'keep';
 }

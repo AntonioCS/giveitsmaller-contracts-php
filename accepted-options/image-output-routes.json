@@ -96,6 +96,7 @@
           "honored_options": [
             "fit",
             "height",
+            "lossless",
             "metadata",
             "output_format",
             "progressive",
@@ -104,9 +105,7 @@
           ],
           "input_mime": "image/jpeg",
           "max_output_pixels": 16000000,
-          "planned_options": [
-            "lossless"
-          ],
+          "planned_options": [],
           "source_op": "compress"
         },
         "png": {
@@ -154,6 +153,7 @@
           "honored_options": [
             "fit",
             "height",
+            "lossless",
             "metadata",
             "output_format",
             "quality",
@@ -161,9 +161,7 @@
           ],
           "input_mime": "image/webp",
           "max_output_pixels": 16000000,
-          "planned_options": [
-            "lossless"
-          ],
+          "planned_options": [],
           "source_op": "compress"
         }
       }
@@ -181,5 +179,5 @@
       "source_op": "compress"
     }
   },
-  "schema_version": "2.97.0"
+  "schema_version": "2.102.0"
 }

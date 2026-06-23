@@ -21,11 +21,7 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [
-                                'keep' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'progressive' => new OptionMetadata(
                             per_value_availability: [],
@@ -34,7 +30,6 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'lossless' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'width' => new OptionMetadata(
@@ -57,11 +52,7 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [
-                                'keep' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'optimization_level' => new OptionMetadata(
                             per_value_availability: [],
@@ -94,11 +85,7 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [
-                                'keep' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'avif_speed' => new OptionMetadata(
                             per_value_availability: [],
@@ -126,17 +113,12 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [
-                                'keep' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'lossless' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'width' => new OptionMetadata(
@@ -159,11 +141,7 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [
-                                'keep' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
                             per_value_availability: [],
@@ -179,11 +157,7 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [
-                                'keep' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
                             per_value_availability: [],
@@ -220,11 +194,9 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'trim_start' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'trim_end' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
@@ -302,11 +274,9 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'trim_start' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'trim_end' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],

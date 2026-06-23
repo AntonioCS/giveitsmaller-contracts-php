@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 116,
+  "capabilities_version": 121,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -930,14 +930,12 @@
               ]
             },
             "trim_end": {
-              "availability": "planned",
-              "description": "Trim from end in seconds. Gated `planned` (qZI5EK9j) \u2014 see `trim_start`.",
+              "description": "Trim from end in seconds (absent = to the end). Removes this many seconds from the end; with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. STABLE \u2014 see `trim_start`.\n",
               "min": 0,
               "type": "float"
             },
             "trim_start": {
-              "availability": "planned",
-              "description": "Trim from beginning in seconds. Gated `planned` (qZI5EK9j): no compression worker implements per-clip trim yet, so the server returns `feature_not_available` rather than accepting and silently ignoring it. Flips to `stable` when a worker lands; to trim today, chain a `split` op.\n",
+              "description": "Trim from beginning in seconds (absent = from the start). STABLE (qZI5EK9j) \u2014 the compress-audio worker cuts the clip before encoding (input-side ffmpeg `-ss`/`-t`; lambdas PR #259), SAME FROM-END semantic as compress.video / convert / merge: the kept clip is [`trim_start`, input_duration \u2212 `trim_end`].\n",
               "min": 0,
               "type": "float"
             }
@@ -1151,15 +1149,10 @@
             },
             "metadata": {
               "default": "all",
-              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (default, the only live behaviour \u2014 the compress worker hardcodes keep_metadata=false). `keep` = preserve metadata \u2014 `planned` (the worker cannot preserve it yet; un-hardcoding keep_metadata is the Phase 1 keep/strip toggle). Optimiser (same_format) route \u2014 the format-change transcoder has no metadata-preservation control today.",
+              "description": "Metadata handling (optimiser/same_format route). `all` = strip all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). Any other value is rejected as invalid_options.",
               "honored_on": [
                 "same_format"
               ],
-              "per_value_availability": {
-                "keep": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
                 "all",
@@ -1245,19 +1238,13 @@
             },
             "metadata": {
               "default": "all",
-              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (default, the only live behaviour \u2014 the compress worker hardcodes keep_metadata=false). `keep` = preserve metadata \u2014 `planned` (the worker cannot preserve it yet; un-hardcoding keep_metadata is the Phase 1 keep/strip toggle). Optimiser (same_format) route \u2014 the format-change transcoder has no metadata-preservation control today.",
+              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (the only supported value). `keep` is NOT offered for AVIF \u2014 ravif re-encodes from pixels and cannot preserve metadata (the worker rejects `keep` as invalid_options).",
               "honored_on": [
                 "same_format"
               ],
-              "per_value_availability": {
-                "keep": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
-                "all",
-                "keep"
+                "all"
               ]
             },
             "output_format": {
@@ -1327,9 +1314,8 @@
               "type": "integer"
             },
             "lossless": {
-              "availability": "planned",
               "default": false,
-              "description": "Encode losslessly (JPEG optimiser path). `planned` \u2014 the worker carries a `lossless` bool the API has never emitted (product-parked: a lossless output can be LARGER than lossy). Optimiser (same_format) route only.",
+              "description": "Lossless JPEG re-optimisation (optimiser path): optimises the Huffman tables WITHOUT re-encoding pixels \u2014 bit-preserving on the pixel data, no quality loss (it cannot recover detail a lossy JPEG already lost). STABLE \u2014 the compress-image worker honours the `lossless` bool (un-parked 2026-06-23). Optimiser (same_format) route only.",
               "honored_on": [
                 "same_format"
               ],
@@ -1337,15 +1323,10 @@
             },
             "metadata": {
               "default": "all",
-              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (default, the only live behaviour \u2014 the compress worker hardcodes keep_metadata=false). `keep` = preserve metadata \u2014 `planned` (the worker cannot preserve it yet; un-hardcoding keep_metadata is the Phase 1 keep/strip toggle). Optimiser (same_format) route \u2014 the format-change transcoder has no metadata-preservation control today.",
+              "description": "Metadata handling (optimiser/same_format route). `all` = strip all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). Any other value is rejected as invalid_options.",
               "honored_on": [
                 "same_format"
               ],
-              "per_value_availability": {
-                "keep": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
                 "all",
@@ -1437,15 +1418,10 @@
             },
             "metadata": {
               "default": "all",
-              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (default, the only live behaviour \u2014 the compress worker hardcodes keep_metadata=false). `keep` = preserve metadata \u2014 `planned` (the worker cannot preserve it yet; un-hardcoding keep_metadata is the Phase 1 keep/strip toggle). Optimiser (same_format) route \u2014 the format-change transcoder has no metadata-preservation control today.",
+              "description": "Metadata handling (optimiser/same_format route). `all` = strip all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). Any other value is rejected as invalid_options.",
               "honored_on": [
                 "same_format"
               ],
-              "per_value_availability": {
-                "keep": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
                 "all",
@@ -1500,19 +1476,13 @@
           "options": {
             "metadata": {
               "default": "all",
-              "description": "Metadata handling. `all` = strip all metadata (default, live). `keep` = preserve metadata \u2014 `planned` (worker cannot preserve yet). Optimiser (same_format) route.",
+              "description": "Metadata handling. `all` = strip all metadata (the only supported value). `keep` is NOT offered for SVG \u2014 SVGO optimises the markup and cannot preserve a metadata block (the worker rejects `keep` as invalid_options).",
               "honored_on": [
                 "same_format"
               ],
-              "per_value_availability": {
-                "keep": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
-                "all",
-                "keep"
+                "all"
               ]
             },
             "output_format": {
@@ -1572,9 +1542,8 @@
               "type": "integer"
             },
             "lossless": {
-              "availability": "planned",
               "default": false,
-              "description": "Encode WebP losslessly (optimiser path). `planned` \u2014 the worker carries a `lossless` bool the API has never emitted (product-parked: lossless can be LARGER). Optimiser (same_format) route only.",
+              "description": "Encode WebP losslessly (optimiser path): a genuine lossless WebP encode. STABLE \u2014 the compress-image worker honours the `lossless` bool (un-parked 2026-06-23). Note a lossless encode can be LARGER than a lossy one at the same visual quality. Optimiser (same_format) route only.",
               "honored_on": [
                 "same_format"
               ],
@@ -1582,15 +1551,10 @@
             },
             "metadata": {
               "default": "all",
-              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (default, the only live behaviour \u2014 the compress worker hardcodes keep_metadata=false). `keep` = preserve metadata \u2014 `planned` (the worker cannot preserve it yet; un-hardcoding keep_metadata is the Phase 1 keep/strip toggle). Optimiser (same_format) route \u2014 the format-change transcoder has no metadata-preservation control today.",
+              "description": "Metadata handling (optimiser/same_format route). `all` = strip all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). Any other value is rejected as invalid_options.",
               "honored_on": [
                 "same_format"
               ],
-              "per_value_availability": {
-                "keep": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
                 "all",
@@ -1776,14 +1740,12 @@
               "type": "integer"
             },
             "trim_end": {
-              "availability": "planned",
-              "description": "Trim from end in seconds. Gated `planned` (qZI5EK9j) \u2014 see `trim_start`.",
+              "description": "Trim from end in seconds (absent = to the end). Removes this many seconds from the end; with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. STABLE \u2014 see `trim_start` (short-form only; long-form \u2192 `feature_not_available`).\n",
               "min": 0,
               "type": "float"
             },
             "trim_start": {
-              "availability": "planned",
-              "description": "Trim from beginning in seconds. Gated `planned` (qZI5EK9j): no compression worker implements per-clip trim yet, so the server returns `feature_not_available` rather than accepting and silently ignoring it. Flips to `stable` when a worker lands; to trim today, chain a `split` op.\n",
+              "description": "Trim from beginning in seconds (absent = from the start). STABLE (qZI5EK9j) \u2014 the compress-video worker cuts the clip before encoding (input-side ffmpeg `-ss`/`-t`; lambdas PR #258), SAME FROM-END semantic as convert/merge: the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. SHORT-FORM only \u2014 for long-form video the server returns `feature_not_available` (trim a short clip, or chain a `split`); see the compress.video.trim.longform constraint.\n",
               "min": 0,
               "type": "float"
             },
@@ -1920,10 +1882,11 @@
               "depends_on": {
                 "output_format": "jpeg"
               },
-              "description": "Background colour (hex, e.g. '#ffffff') for transparent images converted to JPEG (the format-change\u2192JPEG alpha-flatten \u2014 Output's transparency fill control).",
+              "description": "Background colour as a 6-digit hex (`#RRGGBB`, e.g. `#ffffff`) for transparent images converted to JPEG (the format-change\u2192JPEG alpha-flatten \u2014 Output's transparency fill control). HEX ONLY: the worker honours only `#RRGGBB` and silently drops a CSS named colour (e.g. `magenta`) to the white default, so the `pattern` rejects a non-hex value as `invalid_options` rather than advertising an inert free-form string (e2e staging-verified 2026-06-22).",
               "honored_on": [
                 "format_change"
               ],
+              "pattern": "^#[0-9a-fA-F]{6}$",
               "type": "string"
             },
             "output_format": {
@@ -3978,7 +3941,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.97.0",
+  "schema_version": "2.102.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

@@ -140,6 +140,33 @@
             ]
           },
           "wire_code": "feature_not_available"
+        },
+        {
+          "availability": "stable",
+          "constraint_id": "compress.video.trim.longform",
+          "eval_scope": "api",
+          "message": "Trimming is not yet available for long-form video. Trim a short-form clip, or chain a split op.",
+          "when": {
+            "all": [
+              {
+                "equals": "long_form",
+                "field": "processing_class"
+              },
+              {
+                "any": [
+                  {
+                    "field": "compress.trim_start",
+                    "isSet": true
+                  },
+                  {
+                    "field": "compress.trim_end",
+                    "isSet": true
+                  }
+                ]
+              }
+            ]
+          },
+          "wire_code": "feature_not_available"
         }
       ],
       "input": {
@@ -471,5 +498,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.97.0"
+  "schema_version": "2.102.0"
 }
