@@ -236,20 +236,24 @@
         "accepted_options": {
           "original": [
             "avif_speed",
+            "encoding_mode",
             "fit",
             "height",
             "metadata",
             "output_format",
             "quality",
+            "target_size_bytes",
             "width"
           ],
           "webp": [
             "avif_speed",
+            "encoding_mode",
             "fit",
             "height",
             "metadata",
             "output_format",
             "quality",
+            "target_size_bytes",
             "width"
           ]
         },
@@ -258,6 +262,7 @@
       "image_jpeg": {
         "accepted_options": {
           "original": [
+            "encoding_mode",
             "fit",
             "height",
             "lossless",
@@ -265,9 +270,11 @@
             "output_format",
             "progressive",
             "quality",
+            "target_size_bytes",
             "width"
           ],
           "webp": [
+            "encoding_mode",
             "fit",
             "height",
             "lossless",
@@ -275,6 +282,7 @@
             "output_format",
             "progressive",
             "quality",
+            "target_size_bytes",
             "width"
           ]
         },
@@ -323,21 +331,25 @@
       "image_webp": {
         "accepted_options": {
           "original": [
+            "encoding_mode",
             "fit",
             "height",
             "lossless",
             "metadata",
             "output_format",
             "quality",
+            "target_size_bytes",
             "width"
           ],
           "webp": [
+            "encoding_mode",
             "fit",
             "height",
             "lossless",
             "metadata",
             "output_format",
             "quality",
+            "target_size_bytes",
             "width"
           ]
         },
@@ -461,6 +473,51 @@
         "output_format_option": "output_format"
       },
       "image": {
+        "accepted_options": {
+          "avif": [
+            "fit",
+            "height",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "gif": [
+            "fit",
+            "height",
+            "output_format",
+            "width"
+          ],
+          "jpeg": [
+            "background",
+            "fit",
+            "height",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "png": [
+            "fit",
+            "height",
+            "output_format",
+            "width"
+          ],
+          "tiff": [
+            "fit",
+            "height",
+            "output_format",
+            "width"
+          ],
+          "webp": [
+            "fit",
+            "height",
+            "output_format",
+            "quality",
+            "width"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "image_svg": {
         "accepted_options": {
           "avif": [
             "output_format",
@@ -787,5 +844,5 @@
       }
     }
   },
-  "schema_version": "2.102.0"
+  "schema_version": "2.104.0"
 }

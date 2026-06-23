@@ -12,8 +12,11 @@ use Gisl\Generated\Operations\ConvertAudioOptions;
 use Gisl\Generated\Operations\ConvertAudioOutputFormat;
 use Gisl\Generated\Operations\ConvertDocumentPdfOptions;
 use Gisl\Generated\Operations\ConvertDocumentPdfOutputFormat;
+use Gisl\Generated\Operations\ConvertImageFit;
 use Gisl\Generated\Operations\ConvertImageOptions;
 use Gisl\Generated\Operations\ConvertImageOutputFormat;
+use Gisl\Generated\Operations\ConvertImageSvgOptions;
+use Gisl\Generated\Operations\ConvertImageSvgOutputFormat;
 use Gisl\Generated\Operations\ConvertVideoDither;
 use Gisl\Generated\Operations\ConvertVideoOptions;
 use Gisl\Generated\Operations\ConvertVideoOutputFormat;
@@ -67,6 +70,32 @@ final class ConvertTest extends TestCase
         $this->assertCount(6, ConvertImageOutputFormat::cases());
     }
 
+    public function testConvertImageFitMaxBackingValue(): void
+    {
+        $enum = ConvertImageFit::from('max');
+        $this->assertSame(ConvertImageFit::Max, $enum);
+        $this->assertSame('max', $enum->value);
+    }
+
+    public function testConvertImageFitCropBackingValue(): void
+    {
+        $enum = ConvertImageFit::from('crop');
+        $this->assertSame(ConvertImageFit::Crop, $enum);
+        $this->assertSame('crop', $enum->value);
+    }
+
+    public function testConvertImageFitScaleBackingValue(): void
+    {
+        $enum = ConvertImageFit::from('scale');
+        $this->assertSame(ConvertImageFit::Scale, $enum);
+        $this->assertSame('scale', $enum->value);
+    }
+
+    public function testConvertImageFitCaseCount(): void
+    {
+        $this->assertCount(3, ConvertImageFit::cases());
+    }
+
     public function testConvertImageOptionsDefaultConstruction(): void
     {
         $obj = new ConvertImageOptions(
@@ -75,6 +104,9 @@ final class ConvertTest extends TestCase
         $this->assertInstanceOf(ConvertImageOptions::class, $obj);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->background);
+        $this->assertNull($obj->width);
+        $this->assertNull($obj->height);
+        $this->assertNull($obj->fit);
     }
 
     public function testConvertImageOptionsFullConstruction(): void
@@ -83,8 +115,78 @@ final class ConvertTest extends TestCase
             output_format: ConvertImageOutputFormat::Jpeg,
             quality: 1,
             background: 'test_value',
+            width: 1,
+            height: 1,
+            fit: ConvertImageFit::Max,
         );
         $this->assertInstanceOf(ConvertImageOptions::class, $obj);
+    }
+
+    public function testConvertImageSvgOutputFormatJpegBackingValue(): void
+    {
+        $enum = ConvertImageSvgOutputFormat::from('jpeg');
+        $this->assertSame(ConvertImageSvgOutputFormat::Jpeg, $enum);
+        $this->assertSame('jpeg', $enum->value);
+    }
+
+    public function testConvertImageSvgOutputFormatPngBackingValue(): void
+    {
+        $enum = ConvertImageSvgOutputFormat::from('png');
+        $this->assertSame(ConvertImageSvgOutputFormat::Png, $enum);
+        $this->assertSame('png', $enum->value);
+    }
+
+    public function testConvertImageSvgOutputFormatWebpBackingValue(): void
+    {
+        $enum = ConvertImageSvgOutputFormat::from('webp');
+        $this->assertSame(ConvertImageSvgOutputFormat::Webp, $enum);
+        $this->assertSame('webp', $enum->value);
+    }
+
+    public function testConvertImageSvgOutputFormatAvifBackingValue(): void
+    {
+        $enum = ConvertImageSvgOutputFormat::from('avif');
+        $this->assertSame(ConvertImageSvgOutputFormat::Avif, $enum);
+        $this->assertSame('avif', $enum->value);
+    }
+
+    public function testConvertImageSvgOutputFormatGifBackingValue(): void
+    {
+        $enum = ConvertImageSvgOutputFormat::from('gif');
+        $this->assertSame(ConvertImageSvgOutputFormat::Gif, $enum);
+        $this->assertSame('gif', $enum->value);
+    }
+
+    public function testConvertImageSvgOutputFormatTiffBackingValue(): void
+    {
+        $enum = ConvertImageSvgOutputFormat::from('tiff');
+        $this->assertSame(ConvertImageSvgOutputFormat::Tiff, $enum);
+        $this->assertSame('tiff', $enum->value);
+    }
+
+    public function testConvertImageSvgOutputFormatCaseCount(): void
+    {
+        $this->assertCount(6, ConvertImageSvgOutputFormat::cases());
+    }
+
+    public function testConvertImageSvgOptionsDefaultConstruction(): void
+    {
+        $obj = new ConvertImageSvgOptions(
+            output_format: ConvertImageSvgOutputFormat::Jpeg,
+        );
+        $this->assertInstanceOf(ConvertImageSvgOptions::class, $obj);
+        $this->assertNull($obj->quality);
+        $this->assertNull($obj->background);
+    }
+
+    public function testConvertImageSvgOptionsFullConstruction(): void
+    {
+        $obj = new ConvertImageSvgOptions(
+            output_format: ConvertImageSvgOutputFormat::Jpeg,
+            quality: 1,
+            background: 'test_value',
+        );
+        $this->assertInstanceOf(ConvertImageSvgOptions::class, $obj);
     }
 
     public function testConvertVideoOutputFormatMp4BackingValue(): void

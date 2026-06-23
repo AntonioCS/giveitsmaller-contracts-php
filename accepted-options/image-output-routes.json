@@ -7,47 +7,71 @@
       "format_change": {
         "avif": {
           "honored_options": [
+            "fit",
+            "height",
             "output_format",
-            "quality"
+            "quality",
+            "width"
           ],
+          "max_output_pixels": 16000000,
           "planned_options": [],
           "source_op": "convert"
         },
         "gif": {
           "honored_options": [
-            "output_format"
+            "fit",
+            "height",
+            "output_format",
+            "width"
           ],
+          "max_output_pixels": 16000000,
           "planned_options": [],
           "source_op": "convert"
         },
         "jpeg": {
           "honored_options": [
             "background",
+            "fit",
+            "height",
             "output_format",
-            "quality"
+            "quality",
+            "width"
           ],
+          "max_output_pixels": 16000000,
           "planned_options": [],
           "source_op": "convert"
         },
         "png": {
           "honored_options": [
-            "output_format"
+            "fit",
+            "height",
+            "output_format",
+            "width"
           ],
+          "max_output_pixels": 16000000,
           "planned_options": [],
           "source_op": "convert"
         },
         "tiff": {
           "honored_options": [
-            "output_format"
+            "fit",
+            "height",
+            "output_format",
+            "width"
           ],
+          "max_output_pixels": 16000000,
           "planned_options": [],
           "source_op": "convert"
         },
         "webp": {
           "honored_options": [
+            "fit",
+            "height",
             "output_format",
-            "quality"
+            "quality",
+            "width"
           ],
+          "max_output_pixels": 16000000,
           "planned_options": [],
           "source_op": "convert"
         }
@@ -66,6 +90,7 @@
         "avif": {
           "honored_options": [
             "avif_speed",
+            "encoding_mode",
             "fit",
             "height",
             "metadata",
@@ -75,7 +100,9 @@
           ],
           "input_mime": "image/avif",
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "target_size_bytes"
+          ],
           "source_op": "compress"
         },
         "gif": {
@@ -94,6 +121,7 @@
         },
         "jpeg": {
           "honored_options": [
+            "encoding_mode",
             "fit",
             "height",
             "lossless",
@@ -105,7 +133,9 @@
           ],
           "input_mime": "image/jpeg",
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "target_size_bytes"
+          ],
           "source_op": "compress"
         },
         "png": {
@@ -151,6 +181,7 @@
         },
         "webp": {
           "honored_options": [
+            "encoding_mode",
             "fit",
             "height",
             "lossless",
@@ -161,7 +192,9 @@
           ],
           "input_mime": "image/webp",
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "target_size_bytes"
+          ],
           "source_op": "compress"
         }
       }
@@ -179,5 +212,5 @@
       "source_op": "compress"
     }
   },
-  "schema_version": "2.102.0"
+  "schema_version": "2.104.0"
 }

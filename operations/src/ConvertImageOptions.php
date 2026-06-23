@@ -12,5 +12,8 @@ final class ConvertImageOptions
         public readonly ConvertImageOutputFormat $output_format,
         public readonly ?int $quality = null,
         public readonly ?string $background = null,
+        public readonly ?int $width = null,
+        public readonly ?int $height = null,
+        public readonly ?ConvertImageFit $fit = null,
     ) {}
 }

@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 121,
+  "capabilities_version": 123,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1125,7 +1125,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. max = fit within bounds (preserves aspect ratio, no crop), crop/scale = exact dimensions. Applies only when width or height is set, on whichever Output route runs.",
+              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set, on whichever Output route runs.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1179,7 +1179,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven image resize engine (Lanczos, shared with thumbnail-images) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven convert resize engine (Lanczos; the API routes Output resize through the convert worker, BOTH routes \u2014 the compress optimiser has no resize) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1207,6 +1207,23 @@
               "min": 1,
               "type": "integer"
             },
+            "encoding_mode": {
+              "default": "quality",
+              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default, live). `target_size` = `planned` \u2014 hit a byte budget via the worker's encode-measure-binary-search loop (lambdas building; jpeg/webp/avif only). AVIF encodes are slow, so the loop caps iterations. Optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
+              "per_value_availability": {
+                "target_size": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "quality",
+                "target_size"
+              ]
+            },
             "fit": {
               "default": "max",
               "depends_on": {
@@ -1214,7 +1231,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. max = fit within bounds (preserves aspect ratio, no crop), crop/scale = exact dimensions. Applies only when width or height is set, on whichever Output route runs.",
+              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set, on whichever Output route runs.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1258,7 +1275,10 @@
             },
             "quality": {
               "default": 80,
-              "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "depends_on": {
+                "encoding_mode": "quality"
+              },
+              "description": "Compression quality (1 = smallest file, 100 = best quality). Active in `quality` mode (default); in `target_size` mode the encode-measure loop owns quality, so this option is inactive.",
               "honored_on": [
                 "same_format"
               ],
@@ -1266,8 +1286,20 @@
               "min": 1,
               "type": "integer"
             },
+            "target_size_bytes": {
+              "availability": "planned",
+              "depends_on": {
+                "encoding_mode": "target_size"
+              },
+              "description": "Target output size in bytes (min 1024 = 1 KiB). `planned` \u2014 the image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). Optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
+              "min": 1024,
+              "type": "integer"
+            },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven image resize engine (Lanczos, shared with thumbnail-images) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven convert resize engine (Lanczos; the API routes Output resize through the convert worker, BOTH routes \u2014 the compress optimiser has no resize) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1284,6 +1316,23 @@
             "image/jpeg"
           ],
           "options": {
+            "encoding_mode": {
+              "default": "quality",
+              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default, live). `target_size` = `planned` \u2014 hit a byte budget via the worker's encode-measure-binary-search loop (lambdas building; jpeg/webp/avif only). Optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
+              "per_value_availability": {
+                "target_size": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "quality",
+                "target_size"
+              ]
+            },
             "fit": {
               "default": "max",
               "depends_on": {
@@ -1291,7 +1340,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. max = fit within bounds (preserves aspect ratio, no crop), crop/scale = exact dimensions. Applies only when width or height is set, on whichever Output route runs.",
+              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set, on whichever Output route runs.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1315,7 +1364,10 @@
             },
             "lossless": {
               "default": false,
-              "description": "Lossless JPEG re-optimisation (optimiser path): optimises the Huffman tables WITHOUT re-encoding pixels \u2014 bit-preserving on the pixel data, no quality loss (it cannot recover detail a lossy JPEG already lost). STABLE \u2014 the compress-image worker honours the `lossless` bool (un-parked 2026-06-23). Optimiser (same_format) route only.",
+              "depends_on": {
+                "encoding_mode": "quality"
+              },
+              "description": "Lossless JPEG re-optimisation (optimiser path): optimises the Huffman tables WITHOUT re-encoding pixels \u2014 bit-preserving on the pixel data, no quality loss (it cannot recover detail a lossy JPEG already lost). STABLE \u2014 the compress-image worker honours the `lossless` bool (un-parked 2026-06-23). Only in `quality` mode \u2014 incompatible with `target_size` (the byte-budget loop is inherently lossy). Optimiser (same_format) route only.",
               "honored_on": [
                 "same_format"
               ],
@@ -1352,7 +1404,10 @@
             },
             "quality": {
               "default": 80,
-              "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "depends_on": {
+                "encoding_mode": "quality"
+              },
+              "description": "Compression quality (1 = smallest file, 100 = best quality). Active in `quality` mode (default); in `target_size` mode the encode-measure loop owns quality, so this option is inactive.",
               "honored_on": [
                 "same_format"
               ],
@@ -1360,8 +1415,20 @@
               "min": 1,
               "type": "integer"
             },
+            "target_size_bytes": {
+              "availability": "planned",
+              "depends_on": {
+                "encoding_mode": "target_size"
+              },
+              "description": "Target output size in bytes (min 1024 = 1 KiB). `planned` \u2014 the image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). Optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
+              "min": 1024,
+              "type": "integer"
+            },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven image resize engine (Lanczos, shared with thumbnail-images) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven convert resize engine (Lanczos; the API routes Output resize through the convert worker, BOTH routes \u2014 the compress optimiser has no resize) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1385,7 +1452,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. max = fit within bounds (preserves aspect ratio, no crop), crop/scale = exact dimensions. Applies only when width or height is set, on whichever Output route runs.",
+              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set, on whichever Output route runs.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1458,7 +1525,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven image resize engine (Lanczos, shared with thumbnail-images) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven convert resize engine (Lanczos; the API routes Output resize through the convert worker, BOTH routes \u2014 the compress optimiser has no resize) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1512,6 +1579,23 @@
             "image/webp"
           ],
           "options": {
+            "encoding_mode": {
+              "default": "quality",
+              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default, live). `target_size` = `planned` \u2014 hit a byte budget via the worker's encode-measure-binary-search loop (lambdas building; jpeg/webp/avif only). Optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
+              "per_value_availability": {
+                "target_size": {
+                  "availability": "planned"
+                }
+              },
+              "type": "enum",
+              "values": [
+                "quality",
+                "target_size"
+              ]
+            },
             "fit": {
               "default": "max",
               "depends_on": {
@@ -1519,7 +1603,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. max = fit within bounds (preserves aspect ratio, no crop), crop/scale = exact dimensions. Applies only when width or height is set, on whichever Output route runs.",
+              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set, on whichever Output route runs.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1543,7 +1627,10 @@
             },
             "lossless": {
               "default": false,
-              "description": "Encode WebP losslessly (optimiser path): a genuine lossless WebP encode. STABLE \u2014 the compress-image worker honours the `lossless` bool (un-parked 2026-06-23). Note a lossless encode can be LARGER than a lossy one at the same visual quality. Optimiser (same_format) route only.",
+              "depends_on": {
+                "encoding_mode": "quality"
+              },
+              "description": "Encode WebP losslessly (optimiser path): a genuine lossless WebP encode. STABLE \u2014 the compress-image worker honours the `lossless` bool (un-parked 2026-06-23). Note a lossless encode can be LARGER than a lossy one at the same visual quality. Only in `quality` mode \u2014 incompatible with `target_size` (the byte-budget loop is inherently lossy). Optimiser (same_format) route only.",
               "honored_on": [
                 "same_format"
               ],
@@ -1572,7 +1659,10 @@
             },
             "quality": {
               "default": 80,
-              "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "depends_on": {
+                "encoding_mode": "quality"
+              },
+              "description": "Compression quality (1 = smallest file, 100 = best quality). Active in `quality` mode (default); in `target_size` mode the encode-measure loop owns quality, so this option is inactive.",
               "honored_on": [
                 "same_format"
               ],
@@ -1580,8 +1670,20 @@
               "min": 1,
               "type": "integer"
             },
+            "target_size_bytes": {
+              "availability": "planned",
+              "depends_on": {
+                "encoding_mode": "target_size"
+              },
+              "description": "Target output size in bytes (min 1024 = 1 KiB). `planned` \u2014 the image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). Optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
+              "min": 1024,
+              "type": "integer"
+            },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven image resize engine (Lanczos, shared with thumbnail-images) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven convert resize engine (Lanczos; the API routes Output resize through the convert worker, BOTH routes \u2014 the compress optimiser has no resize) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1865,12 +1967,12 @@
           }
         },
         "image": {
+          "max_output_pixels": 16000000,
           "mimes": [
             "image/jpeg",
             "image/png",
             "image/gif",
             "image/webp",
-            "image/svg+xml",
             "image/tiff",
             "image/bmp",
             "image/vnd.microsoft.icon",
@@ -1888,6 +1990,33 @@
               ],
               "pattern": "^#[0-9a-fA-F]{6}$",
               "type": "string"
+            },
+            "fit": {
+              "default": "max",
+              "depends_on": {
+                "height": "set",
+                "logic": "or",
+                "width": "set"
+              },
+              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set.",
+              "honored_on": [
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "height": {
+              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Not honored for SVG input. See `width`.",
+              "honored_on": [
+                "format_change"
+              ],
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
             },
             "output_format": {
               "description": "Target format",
@@ -1918,6 +2047,15 @@
               "max": 100,
               "min": 1,
               "type": "integer"
+            },
+            "width": {
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). The convert worker resizes (Lanczos) before encode; single transformed output. NOT honored for SVG input (the worker rejects svg resize). Input-gated \u2014 see the resize comment above.",
+              "honored_on": [
+                "format_change"
+              ],
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
             }
           },
           "per_mime_availability": {
@@ -1926,6 +2064,54 @@
             },
             "image/heic": {
               "availability": "beta"
+            }
+          }
+        },
+        "image_svg": {
+          "mimes": [
+            "image/svg+xml"
+          ],
+          "options": {
+            "background": {
+              "depends_on": {
+                "output_format": "jpeg"
+              },
+              "description": "Background colour as a 6-digit hex (`#RRGGBB`) for transparent SVG rasterised to JPEG (alpha-flatten). HEX ONLY \u2014 non-hex is rejected as `invalid_options` (see convert.image.background).",
+              "honored_on": [
+                "format_change"
+              ],
+              "pattern": "^#[0-9a-fA-F]{6}$",
+              "type": "string"
+            },
+            "output_format": {
+              "description": "Target raster format (SVG is rasterised, then encoded).",
+              "required": true,
+              "type": "enum",
+              "values": [
+                "jpeg",
+                "png",
+                "webp",
+                "avif",
+                "gif",
+                "tiff"
+              ]
+            },
+            "quality": {
+              "default": 85,
+              "depends_on": {
+                "output_format": [
+                  "jpeg",
+                  "webp",
+                  "avif"
+                ]
+              },
+              "description": "Output quality for lossy formats",
+              "honored_on": [
+                "format_change"
+              ],
+              "max": 100,
+              "min": 1,
+              "type": "integer"
             }
           }
         },
@@ -3941,7 +4127,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.102.0",
+  "schema_version": "2.104.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

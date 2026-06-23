@@ -20,6 +20,17 @@ final class CompressMetadata
                         'quality' => new OptionMetadata(
                             per_value_availability: [],
                         ),
+                        'encoding_mode' => new OptionMetadata(
+                            per_value_availability: [
+                                'target_size' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
+                        ),
+                        'target_size_bytes' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
                         'metadata' => new OptionMetadata(
                             per_value_availability: [],
                         ),
@@ -84,6 +95,17 @@ final class CompressMetadata
                         'quality' => new OptionMetadata(
                             per_value_availability: [],
                         ),
+                        'encoding_mode' => new OptionMetadata(
+                            per_value_availability: [
+                                'target_size' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
+                        ),
+                        'target_size_bytes' => new OptionMetadata(
+                            availability: 'planned',
+                            per_value_availability: [],
+                        ),
                         'metadata' => new OptionMetadata(
                             per_value_availability: [],
                         ),
@@ -110,6 +132,17 @@ final class CompressMetadata
                     per_mime_availability: [],
                     options: [
                         'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'encoding_mode' => new OptionMetadata(
+                            per_value_availability: [
+                                'target_size' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
+                        ),
+                        'target_size_bytes' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
