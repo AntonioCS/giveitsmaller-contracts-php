@@ -10,4 +10,6 @@ enum CompressImageAvifOutputFormat: string
 {
     case Original = 'original';
     case Webp = 'webp';
+    case Auto = 'auto';
+    case Smallest = 'smallest';
 }

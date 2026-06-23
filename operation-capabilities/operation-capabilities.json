@@ -197,6 +197,23 @@
             ]
           },
           "wire_code": "invalid_options"
+        },
+        {
+          "constraint_id": "compress.chroma_subsampling.lossless_conflict",
+          "message": "chroma_subsampling cannot be combined with lossless: lossless JPEG copies DCT coefficients and cannot resample chroma.",
+          "when": {
+            "all": [
+              {
+                "field": "compress.chroma_subsampling",
+                "isSet": true
+              },
+              {
+                "equals": true,
+                "field": "compress.lossless"
+              }
+            ]
+          },
+          "wire_code": "invalid_options"
         }
       ],
       "produces": {
@@ -204,7 +221,7 @@
       },
       "requires": [
         {
-          "constraint_id": "compress.video.target_size.bytes_required",
+          "constraint_id": "compress.target_size.bytes_required",
           "message": "target_size_bytes is required when encoding_mode is target_size.",
           "requires_field": "compress.target_size_bytes",
           "when": {
@@ -498,5 +515,5 @@
       "isAnimated": "maybe"
     }
   },
-  "schema_version": "2.104.0"
+  "schema_version": "2.111.0"
 }

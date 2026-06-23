@@ -213,9 +213,28 @@
       },
       "image": {
         "accepted_options": {
+          "auto": [
+            "fit",
+            "height",
+            "keep_metadata",
+            "metadata",
+            "output_format",
+            "quality",
+            "width"
+          ],
           "original": [
             "fit",
             "height",
+            "keep_metadata",
+            "metadata",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "smallest": [
+            "fit",
+            "height",
+            "keep_metadata",
             "metadata",
             "output_format",
             "quality",
@@ -224,6 +243,7 @@
           "webp": [
             "fit",
             "height",
+            "keep_metadata",
             "metadata",
             "output_format",
             "quality",
@@ -234,7 +254,29 @@
       },
       "image_avif": {
         "accepted_options": {
+          "auto": [
+            "avif_speed",
+            "encoding_mode",
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "quality",
+            "target_size_bytes",
+            "width"
+          ],
           "original": [
+            "avif_speed",
+            "encoding_mode",
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "quality",
+            "target_size_bytes",
+            "width"
+          ],
+          "smallest": [
             "avif_speed",
             "encoding_mode",
             "fit",
@@ -261,10 +303,40 @@
       },
       "image_jpeg": {
         "accepted_options": {
-          "original": [
+          "auto": [
+            "chroma_subsampling",
             "encoding_mode",
             "fit",
             "height",
+            "keep_metadata",
+            "lossless",
+            "metadata",
+            "output_format",
+            "progressive",
+            "quality",
+            "target_size_bytes",
+            "width"
+          ],
+          "original": [
+            "chroma_subsampling",
+            "encoding_mode",
+            "fit",
+            "height",
+            "keep_metadata",
+            "lossless",
+            "metadata",
+            "output_format",
+            "progressive",
+            "quality",
+            "target_size_bytes",
+            "width"
+          ],
+          "smallest": [
+            "chroma_subsampling",
+            "encoding_mode",
+            "fit",
+            "height",
+            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
@@ -274,9 +346,11 @@
             "width"
           ],
           "webp": [
+            "chroma_subsampling",
             "encoding_mode",
             "fit",
             "height",
+            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
@@ -290,9 +364,32 @@
       },
       "image_png": {
         "accepted_options": {
+          "auto": [
+            "fit",
+            "height",
+            "keep_metadata",
+            "lossy",
+            "metadata",
+            "optimization_level",
+            "output_format",
+            "quality",
+            "width"
+          ],
           "original": [
             "fit",
             "height",
+            "keep_metadata",
+            "lossy",
+            "metadata",
+            "optimization_level",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "smallest": [
+            "fit",
+            "height",
+            "keep_metadata",
             "lossy",
             "metadata",
             "optimization_level",
@@ -303,6 +400,7 @@
           "webp": [
             "fit",
             "height",
+            "keep_metadata",
             "lossy",
             "metadata",
             "optimization_level",
@@ -315,7 +413,17 @@
       },
       "image_svg": {
         "accepted_options": {
+          "auto": [
+            "metadata",
+            "output_format",
+            "quality"
+          ],
           "original": [
+            "metadata",
+            "output_format",
+            "quality"
+          ],
+          "smallest": [
             "metadata",
             "output_format",
             "quality"
@@ -330,10 +438,35 @@
       },
       "image_webp": {
         "accepted_options": {
+          "auto": [
+            "encoding_mode",
+            "fit",
+            "height",
+            "keep_metadata",
+            "lossless",
+            "metadata",
+            "output_format",
+            "quality",
+            "target_size_bytes",
+            "width"
+          ],
           "original": [
             "encoding_mode",
             "fit",
             "height",
+            "keep_metadata",
+            "lossless",
+            "metadata",
+            "output_format",
+            "quality",
+            "target_size_bytes",
+            "width"
+          ],
+          "smallest": [
+            "encoding_mode",
+            "fit",
+            "height",
+            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
@@ -345,6 +478,7 @@
             "encoding_mode",
             "fit",
             "height",
+            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
@@ -477,6 +611,7 @@
           "avif": [
             "fit",
             "height",
+            "metadata",
             "output_format",
             "quality",
             "width"
@@ -484,6 +619,7 @@
           "gif": [
             "fit",
             "height",
+            "metadata",
             "output_format",
             "width"
           ],
@@ -491,6 +627,7 @@
             "background",
             "fit",
             "height",
+            "metadata",
             "output_format",
             "quality",
             "width"
@@ -498,18 +635,86 @@
           "png": [
             "fit",
             "height",
+            "metadata",
             "output_format",
             "width"
           ],
           "tiff": [
             "fit",
             "height",
+            "metadata",
             "output_format",
             "width"
           ],
           "webp": [
             "fit",
             "height",
+            "metadata",
+            "output_format",
+            "quality",
+            "width"
+          ]
+        },
+        "output_format_option": "output_format"
+      },
+      "image_gif": {
+        "accepted_options": {
+          "avif": [
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "gif": [
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "width"
+          ],
+          "jpeg": [
+            "background",
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "quality",
+            "width"
+          ],
+          "mp4": [
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "width"
+          ],
+          "png": [
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "width"
+          ],
+          "tiff": [
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "width"
+          ],
+          "webm": [
+            "fit",
+            "height",
+            "metadata",
+            "output_format",
+            "width"
+          ],
+          "webp": [
+            "fit",
+            "height",
+            "metadata",
             "output_format",
             "quality",
             "width"
@@ -844,5 +1049,5 @@
       }
     }
   },
-  "schema_version": "2.104.0"
+  "schema_version": "2.111.0"
 }

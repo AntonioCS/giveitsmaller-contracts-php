@@ -8,10 +8,14 @@ namespace Gisl\Generated\Operations;
 
 final class CompressImageOptions
 {
+    /**
+     * @param list<string>|null $keep_metadata
+     */
     public function __construct(
         public readonly int $quality = 80,
-        public readonly CompressImageMetadata $metadata = CompressImageMetadata::All,
+        public readonly CompressImageMetadata $metadata = CompressImageMetadata::Strip,
         public readonly CompressImageOutputFormat $output_format = CompressImageOutputFormat::Original,
+        public readonly ?array $keep_metadata = null,
         public readonly ?int $width = null,
         public readonly ?int $height = null,
         public readonly ?CompressImageFit $fit = null,

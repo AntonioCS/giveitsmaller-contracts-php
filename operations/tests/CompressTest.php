@@ -23,6 +23,7 @@ use Gisl\Generated\Operations\CompressImageAvifMetadata;
 use Gisl\Generated\Operations\CompressImageAvifOptions;
 use Gisl\Generated\Operations\CompressImageAvifOutputFormat;
 use Gisl\Generated\Operations\CompressImageFit;
+use Gisl\Generated\Operations\CompressImageJpegChromaSubsampling;
 use Gisl\Generated\Operations\CompressImageJpegEncodingMode;
 use Gisl\Generated\Operations\CompressImageJpegFit;
 use Gisl\Generated\Operations\CompressImageJpegMetadata;
@@ -73,11 +74,11 @@ final class CompressTest extends TestCase
         $this->assertCount(2, CompressImageJpegEncodingMode::cases());
     }
 
-    public function testCompressImageJpegMetadataAllBackingValue(): void
+    public function testCompressImageJpegMetadataStripBackingValue(): void
     {
-        $enum = CompressImageJpegMetadata::from('all');
-        $this->assertSame(CompressImageJpegMetadata::All, $enum);
-        $this->assertSame('all', $enum->value);
+        $enum = CompressImageJpegMetadata::from('strip');
+        $this->assertSame(CompressImageJpegMetadata::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
     }
 
     public function testCompressImageJpegMetadataKeepBackingValue(): void
@@ -87,9 +88,42 @@ final class CompressTest extends TestCase
         $this->assertSame('keep', $enum->value);
     }
 
+    public function testCompressImageJpegMetadataAllBackingValue(): void
+    {
+        $enum = CompressImageJpegMetadata::from('all');
+        $this->assertSame(CompressImageJpegMetadata::All, $enum);
+        $this->assertSame('all', $enum->value);
+    }
+
     public function testCompressImageJpegMetadataCaseCount(): void
     {
-        $this->assertCount(2, CompressImageJpegMetadata::cases());
+        $this->assertCount(3, CompressImageJpegMetadata::cases());
+    }
+
+    public function testCompressImageJpegChromaSubsampling_420BackingValue(): void
+    {
+        $enum = CompressImageJpegChromaSubsampling::from('420');
+        $this->assertSame(CompressImageJpegChromaSubsampling::_420, $enum);
+        $this->assertSame('420', $enum->value);
+    }
+
+    public function testCompressImageJpegChromaSubsampling_422BackingValue(): void
+    {
+        $enum = CompressImageJpegChromaSubsampling::from('422');
+        $this->assertSame(CompressImageJpegChromaSubsampling::_422, $enum);
+        $this->assertSame('422', $enum->value);
+    }
+
+    public function testCompressImageJpegChromaSubsampling_444BackingValue(): void
+    {
+        $enum = CompressImageJpegChromaSubsampling::from('444');
+        $this->assertSame(CompressImageJpegChromaSubsampling::_444, $enum);
+        $this->assertSame('444', $enum->value);
+    }
+
+    public function testCompressImageJpegChromaSubsamplingCaseCount(): void
+    {
+        $this->assertCount(3, CompressImageJpegChromaSubsampling::cases());
     }
 
     public function testCompressImageJpegOutputFormatOriginalBackingValue(): void
@@ -106,9 +140,23 @@ final class CompressTest extends TestCase
         $this->assertSame('webp', $enum->value);
     }
 
+    public function testCompressImageJpegOutputFormatAutoBackingValue(): void
+    {
+        $enum = CompressImageJpegOutputFormat::from('auto');
+        $this->assertSame(CompressImageJpegOutputFormat::Auto, $enum);
+        $this->assertSame('auto', $enum->value);
+    }
+
+    public function testCompressImageJpegOutputFormatSmallestBackingValue(): void
+    {
+        $enum = CompressImageJpegOutputFormat::from('smallest');
+        $this->assertSame(CompressImageJpegOutputFormat::Smallest, $enum);
+        $this->assertSame('smallest', $enum->value);
+    }
+
     public function testCompressImageJpegOutputFormatCaseCount(): void
     {
-        $this->assertCount(2, CompressImageJpegOutputFormat::cases());
+        $this->assertCount(4, CompressImageJpegOutputFormat::cases());
     }
 
     public function testCompressImageJpegFitMaxBackingValue(): void
@@ -142,11 +190,13 @@ final class CompressTest extends TestCase
         $obj = new CompressImageJpegOptions();
         $this->assertInstanceOf(CompressImageJpegOptions::class, $obj);
         $this->assertSame(CompressImageJpegEncodingMode::Quality, $obj->encoding_mode);
-        $this->assertSame(CompressImageJpegMetadata::All, $obj->metadata);
+        $this->assertSame(CompressImageJpegMetadata::Strip, $obj->metadata);
         $this->assertSame(true, $obj->progressive);
         $this->assertSame(CompressImageJpegOutputFormat::Original, $obj->output_format);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->target_size_bytes);
+        $this->assertNull($obj->keep_metadata);
+        $this->assertNull($obj->chroma_subsampling);
         $this->assertNull($obj->lossless);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
@@ -159,8 +209,10 @@ final class CompressTest extends TestCase
             quality: 1,
             encoding_mode: CompressImageJpegEncodingMode::Quality,
             target_size_bytes: 1024,
-            metadata: CompressImageJpegMetadata::All,
+            metadata: CompressImageJpegMetadata::Strip,
+            keep_metadata: ['x'],
             progressive: true,
+            chroma_subsampling: CompressImageJpegChromaSubsampling::_420,
             output_format: CompressImageJpegOutputFormat::Original,
             lossless: true,
             width: 1,
@@ -170,11 +222,11 @@ final class CompressTest extends TestCase
         $this->assertInstanceOf(CompressImageJpegOptions::class, $obj);
     }
 
-    public function testCompressImagePngMetadataAllBackingValue(): void
+    public function testCompressImagePngMetadataStripBackingValue(): void
     {
-        $enum = CompressImagePngMetadata::from('all');
-        $this->assertSame(CompressImagePngMetadata::All, $enum);
-        $this->assertSame('all', $enum->value);
+        $enum = CompressImagePngMetadata::from('strip');
+        $this->assertSame(CompressImagePngMetadata::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
     }
 
     public function testCompressImagePngMetadataKeepBackingValue(): void
@@ -184,9 +236,16 @@ final class CompressTest extends TestCase
         $this->assertSame('keep', $enum->value);
     }
 
+    public function testCompressImagePngMetadataAllBackingValue(): void
+    {
+        $enum = CompressImagePngMetadata::from('all');
+        $this->assertSame(CompressImagePngMetadata::All, $enum);
+        $this->assertSame('all', $enum->value);
+    }
+
     public function testCompressImagePngMetadataCaseCount(): void
     {
-        $this->assertCount(2, CompressImagePngMetadata::cases());
+        $this->assertCount(3, CompressImagePngMetadata::cases());
     }
 
     public function testCompressImagePngOutputFormatOriginalBackingValue(): void
@@ -203,9 +262,23 @@ final class CompressTest extends TestCase
         $this->assertSame('webp', $enum->value);
     }
 
+    public function testCompressImagePngOutputFormatAutoBackingValue(): void
+    {
+        $enum = CompressImagePngOutputFormat::from('auto');
+        $this->assertSame(CompressImagePngOutputFormat::Auto, $enum);
+        $this->assertSame('auto', $enum->value);
+    }
+
+    public function testCompressImagePngOutputFormatSmallestBackingValue(): void
+    {
+        $enum = CompressImagePngOutputFormat::from('smallest');
+        $this->assertSame(CompressImagePngOutputFormat::Smallest, $enum);
+        $this->assertSame('smallest', $enum->value);
+    }
+
     public function testCompressImagePngOutputFormatCaseCount(): void
     {
-        $this->assertCount(2, CompressImagePngOutputFormat::cases());
+        $this->assertCount(4, CompressImagePngOutputFormat::cases());
     }
 
     public function testCompressImagePngFitMaxBackingValue(): void
@@ -239,10 +312,11 @@ final class CompressTest extends TestCase
         $obj = new CompressImagePngOptions();
         $this->assertInstanceOf(CompressImagePngOptions::class, $obj);
         $this->assertSame(80, $obj->quality);
-        $this->assertSame(CompressImagePngMetadata::All, $obj->metadata);
+        $this->assertSame(CompressImagePngMetadata::Strip, $obj->metadata);
         $this->assertSame(3, $obj->optimization_level);
         $this->assertSame(CompressImagePngOutputFormat::Original, $obj->output_format);
         $this->assertSame(false, $obj->lossy);
+        $this->assertNull($obj->keep_metadata);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
         $this->assertNull($obj->fit);
@@ -252,7 +326,8 @@ final class CompressTest extends TestCase
     {
         $obj = new CompressImagePngOptions(
             quality: 1,
-            metadata: CompressImagePngMetadata::All,
+            metadata: CompressImagePngMetadata::Strip,
+            keep_metadata: ['x'],
             optimization_level: 0,
             output_format: CompressImagePngOutputFormat::Original,
             lossy: true,
@@ -282,6 +357,13 @@ final class CompressTest extends TestCase
         $this->assertCount(2, CompressImageAvifEncodingMode::cases());
     }
 
+    public function testCompressImageAvifMetadataStripBackingValue(): void
+    {
+        $enum = CompressImageAvifMetadata::from('strip');
+        $this->assertSame(CompressImageAvifMetadata::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
+    }
+
     public function testCompressImageAvifMetadataAllBackingValue(): void
     {
         $enum = CompressImageAvifMetadata::from('all');
@@ -291,7 +373,7 @@ final class CompressTest extends TestCase
 
     public function testCompressImageAvifMetadataCaseCount(): void
     {
-        $this->assertCount(1, CompressImageAvifMetadata::cases());
+        $this->assertCount(2, CompressImageAvifMetadata::cases());
     }
 
     public function testCompressImageAvifOutputFormatOriginalBackingValue(): void
@@ -308,9 +390,23 @@ final class CompressTest extends TestCase
         $this->assertSame('webp', $enum->value);
     }
 
+    public function testCompressImageAvifOutputFormatAutoBackingValue(): void
+    {
+        $enum = CompressImageAvifOutputFormat::from('auto');
+        $this->assertSame(CompressImageAvifOutputFormat::Auto, $enum);
+        $this->assertSame('auto', $enum->value);
+    }
+
+    public function testCompressImageAvifOutputFormatSmallestBackingValue(): void
+    {
+        $enum = CompressImageAvifOutputFormat::from('smallest');
+        $this->assertSame(CompressImageAvifOutputFormat::Smallest, $enum);
+        $this->assertSame('smallest', $enum->value);
+    }
+
     public function testCompressImageAvifOutputFormatCaseCount(): void
     {
-        $this->assertCount(2, CompressImageAvifOutputFormat::cases());
+        $this->assertCount(4, CompressImageAvifOutputFormat::cases());
     }
 
     public function testCompressImageAvifFitMaxBackingValue(): void
@@ -344,7 +440,7 @@ final class CompressTest extends TestCase
         $obj = new CompressImageAvifOptions();
         $this->assertInstanceOf(CompressImageAvifOptions::class, $obj);
         $this->assertSame(CompressImageAvifEncodingMode::Quality, $obj->encoding_mode);
-        $this->assertSame(CompressImageAvifMetadata::All, $obj->metadata);
+        $this->assertSame(CompressImageAvifMetadata::Strip, $obj->metadata);
         $this->assertSame(4, $obj->avif_speed);
         $this->assertSame(CompressImageAvifOutputFormat::Original, $obj->output_format);
         $this->assertNull($obj->quality);
@@ -360,7 +456,7 @@ final class CompressTest extends TestCase
             quality: 1,
             encoding_mode: CompressImageAvifEncodingMode::Quality,
             target_size_bytes: 1024,
-            metadata: CompressImageAvifMetadata::All,
+            metadata: CompressImageAvifMetadata::Strip,
             avif_speed: 1,
             output_format: CompressImageAvifOutputFormat::Original,
             width: 1,
@@ -389,11 +485,11 @@ final class CompressTest extends TestCase
         $this->assertCount(2, CompressImageWebpEncodingMode::cases());
     }
 
-    public function testCompressImageWebpMetadataAllBackingValue(): void
+    public function testCompressImageWebpMetadataStripBackingValue(): void
     {
-        $enum = CompressImageWebpMetadata::from('all');
-        $this->assertSame(CompressImageWebpMetadata::All, $enum);
-        $this->assertSame('all', $enum->value);
+        $enum = CompressImageWebpMetadata::from('strip');
+        $this->assertSame(CompressImageWebpMetadata::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
     }
 
     public function testCompressImageWebpMetadataKeepBackingValue(): void
@@ -403,9 +499,16 @@ final class CompressTest extends TestCase
         $this->assertSame('keep', $enum->value);
     }
 
+    public function testCompressImageWebpMetadataAllBackingValue(): void
+    {
+        $enum = CompressImageWebpMetadata::from('all');
+        $this->assertSame(CompressImageWebpMetadata::All, $enum);
+        $this->assertSame('all', $enum->value);
+    }
+
     public function testCompressImageWebpMetadataCaseCount(): void
     {
-        $this->assertCount(2, CompressImageWebpMetadata::cases());
+        $this->assertCount(3, CompressImageWebpMetadata::cases());
     }
 
     public function testCompressImageWebpOutputFormatOriginalBackingValue(): void
@@ -422,9 +525,23 @@ final class CompressTest extends TestCase
         $this->assertSame('webp', $enum->value);
     }
 
+    public function testCompressImageWebpOutputFormatAutoBackingValue(): void
+    {
+        $enum = CompressImageWebpOutputFormat::from('auto');
+        $this->assertSame(CompressImageWebpOutputFormat::Auto, $enum);
+        $this->assertSame('auto', $enum->value);
+    }
+
+    public function testCompressImageWebpOutputFormatSmallestBackingValue(): void
+    {
+        $enum = CompressImageWebpOutputFormat::from('smallest');
+        $this->assertSame(CompressImageWebpOutputFormat::Smallest, $enum);
+        $this->assertSame('smallest', $enum->value);
+    }
+
     public function testCompressImageWebpOutputFormatCaseCount(): void
     {
-        $this->assertCount(2, CompressImageWebpOutputFormat::cases());
+        $this->assertCount(4, CompressImageWebpOutputFormat::cases());
     }
 
     public function testCompressImageWebpFitMaxBackingValue(): void
@@ -458,10 +575,11 @@ final class CompressTest extends TestCase
         $obj = new CompressImageWebpOptions();
         $this->assertInstanceOf(CompressImageWebpOptions::class, $obj);
         $this->assertSame(CompressImageWebpEncodingMode::Quality, $obj->encoding_mode);
-        $this->assertSame(CompressImageWebpMetadata::All, $obj->metadata);
+        $this->assertSame(CompressImageWebpMetadata::Strip, $obj->metadata);
         $this->assertSame(CompressImageWebpOutputFormat::Original, $obj->output_format);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->target_size_bytes);
+        $this->assertNull($obj->keep_metadata);
         $this->assertNull($obj->lossless);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
@@ -474,7 +592,8 @@ final class CompressTest extends TestCase
             quality: 1,
             encoding_mode: CompressImageWebpEncodingMode::Quality,
             target_size_bytes: 1024,
-            metadata: CompressImageWebpMetadata::All,
+            metadata: CompressImageWebpMetadata::Strip,
+            keep_metadata: ['x'],
             output_format: CompressImageWebpOutputFormat::Original,
             lossless: true,
             width: 1,
@@ -482,6 +601,13 @@ final class CompressTest extends TestCase
             fit: CompressImageWebpFit::Max,
         );
         $this->assertInstanceOf(CompressImageWebpOptions::class, $obj);
+    }
+
+    public function testCompressImageSvgMetadataStripBackingValue(): void
+    {
+        $enum = CompressImageSvgMetadata::from('strip');
+        $this->assertSame(CompressImageSvgMetadata::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
     }
 
     public function testCompressImageSvgMetadataAllBackingValue(): void
@@ -493,7 +619,7 @@ final class CompressTest extends TestCase
 
     public function testCompressImageSvgMetadataCaseCount(): void
     {
-        $this->assertCount(1, CompressImageSvgMetadata::cases());
+        $this->assertCount(2, CompressImageSvgMetadata::cases());
     }
 
     public function testCompressImageSvgOutputFormatOriginalBackingValue(): void
@@ -510,9 +636,23 @@ final class CompressTest extends TestCase
         $this->assertSame('webp', $enum->value);
     }
 
+    public function testCompressImageSvgOutputFormatAutoBackingValue(): void
+    {
+        $enum = CompressImageSvgOutputFormat::from('auto');
+        $this->assertSame(CompressImageSvgOutputFormat::Auto, $enum);
+        $this->assertSame('auto', $enum->value);
+    }
+
+    public function testCompressImageSvgOutputFormatSmallestBackingValue(): void
+    {
+        $enum = CompressImageSvgOutputFormat::from('smallest');
+        $this->assertSame(CompressImageSvgOutputFormat::Smallest, $enum);
+        $this->assertSame('smallest', $enum->value);
+    }
+
     public function testCompressImageSvgOutputFormatCaseCount(): void
     {
-        $this->assertCount(2, CompressImageSvgOutputFormat::cases());
+        $this->assertCount(4, CompressImageSvgOutputFormat::cases());
     }
 
     public function testCompressImageSvgOptionsDefaultConstruction(): void
@@ -520,7 +660,7 @@ final class CompressTest extends TestCase
         $obj = new CompressImageSvgOptions();
         $this->assertInstanceOf(CompressImageSvgOptions::class, $obj);
         $this->assertSame(80, $obj->quality);
-        $this->assertSame(CompressImageSvgMetadata::All, $obj->metadata);
+        $this->assertSame(CompressImageSvgMetadata::Strip, $obj->metadata);
         $this->assertSame(CompressImageSvgOutputFormat::Original, $obj->output_format);
     }
 
@@ -528,17 +668,17 @@ final class CompressTest extends TestCase
     {
         $obj = new CompressImageSvgOptions(
             quality: 1,
-            metadata: CompressImageSvgMetadata::All,
+            metadata: CompressImageSvgMetadata::Strip,
             output_format: CompressImageSvgOutputFormat::Original,
         );
         $this->assertInstanceOf(CompressImageSvgOptions::class, $obj);
     }
 
-    public function testCompressImageMetadataAllBackingValue(): void
+    public function testCompressImageMetadataStripBackingValue(): void
     {
-        $enum = CompressImageMetadata::from('all');
-        $this->assertSame(CompressImageMetadata::All, $enum);
-        $this->assertSame('all', $enum->value);
+        $enum = CompressImageMetadata::from('strip');
+        $this->assertSame(CompressImageMetadata::Strip, $enum);
+        $this->assertSame('strip', $enum->value);
     }
 
     public function testCompressImageMetadataKeepBackingValue(): void
@@ -548,9 +688,16 @@ final class CompressTest extends TestCase
         $this->assertSame('keep', $enum->value);
     }
 
+    public function testCompressImageMetadataAllBackingValue(): void
+    {
+        $enum = CompressImageMetadata::from('all');
+        $this->assertSame(CompressImageMetadata::All, $enum);
+        $this->assertSame('all', $enum->value);
+    }
+
     public function testCompressImageMetadataCaseCount(): void
     {
-        $this->assertCount(2, CompressImageMetadata::cases());
+        $this->assertCount(3, CompressImageMetadata::cases());
     }
 
     public function testCompressImageOutputFormatOriginalBackingValue(): void
@@ -567,9 +714,23 @@ final class CompressTest extends TestCase
         $this->assertSame('webp', $enum->value);
     }
 
+    public function testCompressImageOutputFormatAutoBackingValue(): void
+    {
+        $enum = CompressImageOutputFormat::from('auto');
+        $this->assertSame(CompressImageOutputFormat::Auto, $enum);
+        $this->assertSame('auto', $enum->value);
+    }
+
+    public function testCompressImageOutputFormatSmallestBackingValue(): void
+    {
+        $enum = CompressImageOutputFormat::from('smallest');
+        $this->assertSame(CompressImageOutputFormat::Smallest, $enum);
+        $this->assertSame('smallest', $enum->value);
+    }
+
     public function testCompressImageOutputFormatCaseCount(): void
     {
-        $this->assertCount(2, CompressImageOutputFormat::cases());
+        $this->assertCount(4, CompressImageOutputFormat::cases());
     }
 
     public function testCompressImageFitMaxBackingValue(): void
@@ -603,8 +764,9 @@ final class CompressTest extends TestCase
         $obj = new CompressImageOptions();
         $this->assertInstanceOf(CompressImageOptions::class, $obj);
         $this->assertSame(80, $obj->quality);
-        $this->assertSame(CompressImageMetadata::All, $obj->metadata);
+        $this->assertSame(CompressImageMetadata::Strip, $obj->metadata);
         $this->assertSame(CompressImageOutputFormat::Original, $obj->output_format);
+        $this->assertNull($obj->keep_metadata);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
         $this->assertNull($obj->fit);
@@ -614,7 +776,8 @@ final class CompressTest extends TestCase
     {
         $obj = new CompressImageOptions(
             quality: 1,
-            metadata: CompressImageMetadata::All,
+            metadata: CompressImageMetadata::Strip,
+            keep_metadata: ['x'],
             output_format: CompressImageOutputFormat::Original,
             width: 1,
             height: 1,

@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 123,
+  "capabilities_version": 130,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1147,25 +1147,56 @@
               "min": 1,
               "type": "integer"
             },
-            "metadata": {
-              "default": "all",
-              "description": "Metadata handling (optimiser/same_format route). `all` = strip all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). Any other value is rejected as invalid_options.",
+            "keep_metadata": {
+              "availability": "planned",
+              "depends_on": {
+                "metadata": "strip"
+              },
+              "description": "Selective per-category metadata keep (optimiser/same_format route): preserve ONLY these categories and strip the rest \u2014 refines the strip path (`metadata: strip`). Valid categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 the worker does not yet do selective keep (use `metadata: keep` to preserve everything), so the API returns feature_not_available until lambdas proves it.",
               "honored_on": [
                 "same_format"
               ],
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
+            "metadata": {
+              "default": "strip",
+              "description": "Metadata handling (optimiser/same_format route). `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). `all` is a DEPRECATED alias of `strip` (the pre-2026-06-23 token; `all` reading as \"strip all\" was counterintuitive) \u2014 still accepted, emits Deprecation/Sunset, migrate to `strip`. The API lowers `strip`\u2192`all` at the worker boundary. Any other value is rejected as invalid_options.",
+              "honored_on": [
+                "same_format"
+              ],
+              "per_value_availability": {
+                "all": {
+                  "availability": "deprecated"
+                }
+              },
               "type": "enum",
               "values": [
-                "all",
-                "keep"
+                "strip",
+                "keep",
+                "all"
               ]
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Other format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Concrete format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are SELECTION STRATEGIES, not concrete targets (convert cannot express \"pick the smallest\"), so they live here and stay `planned` until the API try-all-return-smallest logic + worker proof land. See FORMAT.md.",
+              "per_value_availability": {
+                "auto": {
+                  "availability": "planned"
+                },
+                "smallest": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
                 "original",
-                "webp"
+                "webp",
+                "auto",
+                "smallest"
               ]
             },
             "quality": {
@@ -1209,15 +1240,10 @@
             },
             "encoding_mode": {
               "default": "quality",
-              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default, live). `target_size` = `planned` \u2014 hit a byte budget via the worker's encode-measure-binary-search loop (lambdas building; jpeg/webp/avif only). AVIF encodes are slow, so the loop caps iterations. Optimiser (same_format) route.",
+              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default). `target_size` = hit a byte budget via the worker's encode-measure-binary-search loop \u2014 STABLE (worker-proven on staging, lambdas git-870a7c2: re-encode under target + best-effort + original-wins). AVIF encodes are slow, so the loop caps iterations (a 6-iteration cap, ~18s worst case). Optimiser (same_format) route.",
               "honored_on": [
                 "same_format"
               ],
-              "per_value_availability": {
-                "target_size": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
                 "quality",
@@ -1254,23 +1280,39 @@
               "type": "integer"
             },
             "metadata": {
-              "default": "all",
-              "description": "Metadata handling. `all` = strip all EXIF/IPTC/XMP (the only supported value). `keep` is NOT offered for AVIF \u2014 ravif re-encodes from pixels and cannot preserve metadata (the worker rejects `keep` as invalid_options).",
+              "default": "strip",
+              "description": "Metadata handling. `strip` = remove all EXIF/IPTC/XMP (default, the only supported behaviour). `all` is a DEPRECATED alias of `strip` (migrate to `strip`; the API lowers it at the worker boundary). `keep` is NOT offered for AVIF \u2014 ravif re-encodes from pixels and cannot preserve metadata (the worker rejects `keep` as invalid_options).",
               "honored_on": [
                 "same_format"
               ],
+              "per_value_availability": {
+                "all": {
+                  "availability": "deprecated"
+                }
+              },
               "type": "enum",
               "values": [
+                "strip",
                 "all"
               ]
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Other format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Concrete format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are SELECTION STRATEGIES, not concrete targets (convert cannot express \"pick the smallest\"), so they live here and stay `planned` until the API try-all-return-smallest logic + worker proof land. See FORMAT.md.",
+              "per_value_availability": {
+                "auto": {
+                  "availability": "planned"
+                },
+                "smallest": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
                 "original",
-                "webp"
+                "webp",
+                "auto",
+                "smallest"
               ]
             },
             "quality": {
@@ -1287,11 +1329,10 @@
               "type": "integer"
             },
             "target_size_bytes": {
-              "availability": "planned",
               "depends_on": {
                 "encoding_mode": "target_size"
               },
-              "description": "Target output size in bytes (min 1024 = 1 KiB). `planned` \u2014 the image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). Optimiser (same_format) route.",
+              "description": "Target output size in bytes (min 1024 = 1 KiB). The image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). STABLE (worker-proven, lambdas git-870a7c2). Optimiser (same_format) route.",
               "honored_on": [
                 "same_format"
               ],
@@ -1316,17 +1357,24 @@
             "image/jpeg"
           ],
           "options": {
-            "encoding_mode": {
-              "default": "quality",
-              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default, live). `target_size` = `planned` \u2014 hit a byte budget via the worker's encode-measure-binary-search loop (lambdas building; jpeg/webp/avif only). Optimiser (same_format) route.",
+            "chroma_subsampling": {
+              "description": "JPEG chroma subsampling \u2014 the colour-resolution/size trade-off. `420` (4:2:0) = smallest, chroma at quarter resolution (default-ish for web photos); `422` (4:2:2) = half-horizontal; `444` (4:4:4) = full chroma (largest, best for sharp colour edges / text). JPEG ONLY (declared on image_jpeg only \u2014 ravif hardcodes 4:4:4, libwebp lossy locks 4:2:0). String values (the worker strict-matches strings). STABLE \u2014 worker-proven on staging (lambdas PR #264, deployed git-f2bef85: output JPEG SOF luma sampling bytes verified 0x22/0x21/0x11 for 420/422/444). INCOMPATIBLE with `lossless` (any chroma value): lossless JPEG is a DCT-coefficient copy and cannot resample chroma \u2014 see the chroma_subsampling.lossless_conflict constraint.",
               "honored_on": [
                 "same_format"
               ],
-              "per_value_availability": {
-                "target_size": {
-                  "availability": "planned"
-                }
-              },
+              "type": "enum",
+              "values": [
+                "420",
+                "422",
+                "444"
+              ]
+            },
+            "encoding_mode": {
+              "default": "quality",
+              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default). `target_size` = hit a byte budget via the worker's encode-measure-binary-search loop \u2014 STABLE (worker-proven on staging, lambdas git-870a7c2: re-encode under target + best-effort below floor + original-wins, all proven). Optimiser (same_format) route.",
+              "honored_on": [
+                "same_format"
+              ],
               "type": "enum",
               "values": [
                 "quality",
@@ -1362,6 +1410,21 @@
               "min": 1,
               "type": "integer"
             },
+            "keep_metadata": {
+              "availability": "planned",
+              "depends_on": {
+                "metadata": "strip"
+              },
+              "description": "Selective per-category metadata keep (optimiser/same_format route): preserve ONLY these categories and strip the rest \u2014 refines the strip path (`metadata: strip`). Valid categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 the worker does not yet do selective keep (use `metadata: keep` to preserve everything), so the API returns feature_not_available until lambdas proves it.",
+              "honored_on": [
+                "same_format"
+              ],
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
             "lossless": {
               "default": false,
               "depends_on": {
@@ -1374,24 +1437,40 @@
               "type": "boolean"
             },
             "metadata": {
-              "default": "all",
-              "description": "Metadata handling (optimiser/same_format route). `all` = strip all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). Any other value is rejected as invalid_options.",
+              "default": "strip",
+              "description": "Metadata handling (optimiser/same_format route). `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). `all` is a DEPRECATED alias of `strip` (the pre-2026-06-23 token; `all` reading as \"strip all\" was counterintuitive) \u2014 still accepted, emits Deprecation/Sunset, migrate to `strip`. The API lowers `strip`\u2192`all` at the worker boundary. Any other value is rejected as invalid_options.",
               "honored_on": [
                 "same_format"
               ],
+              "per_value_availability": {
+                "all": {
+                  "availability": "deprecated"
+                }
+              },
               "type": "enum",
               "values": [
-                "all",
-                "keep"
+                "strip",
+                "keep",
+                "all"
               ]
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Other format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Concrete format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are SELECTION STRATEGIES, not concrete targets (convert cannot express \"pick the smallest\"), so they live here and stay `planned` until the API try-all-return-smallest logic + worker proof land. See FORMAT.md.",
+              "per_value_availability": {
+                "auto": {
+                  "availability": "planned"
+                },
+                "smallest": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
                 "original",
-                "webp"
+                "webp",
+                "auto",
+                "smallest"
               ]
             },
             "progressive": {
@@ -1416,11 +1495,10 @@
               "type": "integer"
             },
             "target_size_bytes": {
-              "availability": "planned",
               "depends_on": {
                 "encoding_mode": "target_size"
               },
-              "description": "Target output size in bytes (min 1024 = 1 KiB). `planned` \u2014 the image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). Optimiser (same_format) route.",
+              "description": "Target output size in bytes (min 1024 = 1 KiB). The image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). STABLE (worker-proven, lambdas git-870a7c2). Optimiser (same_format) route.",
               "honored_on": [
                 "same_format"
               ],
@@ -1474,6 +1552,21 @@
               "min": 1,
               "type": "integer"
             },
+            "keep_metadata": {
+              "availability": "planned",
+              "depends_on": {
+                "metadata": "strip"
+              },
+              "description": "Selective per-category metadata keep (optimiser/same_format route): preserve ONLY these categories and strip the rest \u2014 refines the strip path (`metadata: strip`). Valid categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 the worker does not yet do selective keep (use `metadata: keep` to preserve everything), so the API returns feature_not_available until lambdas proves it.",
+              "honored_on": [
+                "same_format"
+              ],
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
             "lossy": {
               "availability": "planned",
               "default": false,
@@ -1484,15 +1577,21 @@
               "type": "boolean"
             },
             "metadata": {
-              "default": "all",
-              "description": "Metadata handling (optimiser/same_format route). `all` = strip all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). Any other value is rejected as invalid_options.",
+              "default": "strip",
+              "description": "Metadata handling (optimiser/same_format route). `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). `all` is a DEPRECATED alias of `strip` (the pre-2026-06-23 token; `all` reading as \"strip all\" was counterintuitive) \u2014 still accepted, emits Deprecation/Sunset, migrate to `strip`. The API lowers `strip`\u2192`all` at the worker boundary. Any other value is rejected as invalid_options.",
               "honored_on": [
                 "same_format"
               ],
+              "per_value_availability": {
+                "all": {
+                  "availability": "deprecated"
+                }
+              },
               "type": "enum",
               "values": [
-                "all",
-                "keep"
+                "strip",
+                "keep",
+                "all"
               ]
             },
             "optimization_level": {
@@ -1507,11 +1606,21 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Other format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Concrete format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are SELECTION STRATEGIES, not concrete targets (convert cannot express \"pick the smallest\"), so they live here and stay `planned` until the API try-all-return-smallest logic + worker proof land. See FORMAT.md.",
+              "per_value_availability": {
+                "auto": {
+                  "availability": "planned"
+                },
+                "smallest": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
                 "original",
-                "webp"
+                "webp",
+                "auto",
+                "smallest"
               ]
             },
             "quality": {
@@ -1542,23 +1651,39 @@
           ],
           "options": {
             "metadata": {
-              "default": "all",
-              "description": "Metadata handling. `all` = strip all metadata (the only supported value). `keep` is NOT offered for SVG \u2014 SVGO optimises the markup and cannot preserve a metadata block (the worker rejects `keep` as invalid_options).",
+              "default": "strip",
+              "description": "Metadata handling. `strip` = remove all metadata (default, the only supported behaviour). `all` is a DEPRECATED alias of `strip` (migrate to `strip`; the API lowers it at the worker boundary). `keep` is NOT offered for SVG \u2014 SVGO optimises the markup and cannot preserve a metadata block (the worker rejects `keep` as invalid_options).",
               "honored_on": [
                 "same_format"
               ],
+              "per_value_availability": {
+                "all": {
+                  "availability": "deprecated"
+                }
+              },
               "type": "enum",
               "values": [
+                "strip",
                 "all"
               ]
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Other format changes are the convert operation's job. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes are the convert operation's job. `auto` / `smallest` are PLANNED auto-format directives (server picks the best/smallest candidate format, reported via the result `mime_type`) \u2014 selection strategies, not concrete targets, planned until the API logic + worker proof land. See FORMAT.md.",
+              "per_value_availability": {
+                "auto": {
+                  "availability": "planned"
+                },
+                "smallest": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
                 "original",
-                "webp"
+                "webp",
+                "auto",
+                "smallest"
               ]
             },
             "quality": {
@@ -1581,15 +1706,10 @@
           "options": {
             "encoding_mode": {
               "default": "quality",
-              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default, live). `target_size` = `planned` \u2014 hit a byte budget via the worker's encode-measure-binary-search loop (lambdas building; jpeg/webp/avif only). Optimiser (same_format) route.",
+              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default). `target_size` = hit a byte budget via the worker's encode-measure-binary-search loop \u2014 STABLE (worker-proven on staging, lambdas git-870a7c2: re-encode under target + best-effort below floor + original-wins, all proven). Optimiser (same_format) route.",
               "honored_on": [
                 "same_format"
               ],
-              "per_value_availability": {
-                "target_size": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
                 "quality",
@@ -1625,6 +1745,21 @@
               "min": 1,
               "type": "integer"
             },
+            "keep_metadata": {
+              "availability": "planned",
+              "depends_on": {
+                "metadata": "strip"
+              },
+              "description": "Selective per-category metadata keep (optimiser/same_format route): preserve ONLY these categories and strip the rest \u2014 refines the strip path (`metadata: strip`). Valid categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 the worker does not yet do selective keep (use `metadata: keep` to preserve everything), so the API returns feature_not_available until lambdas proves it.",
+              "honored_on": [
+                "same_format"
+              ],
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
             "lossless": {
               "default": false,
               "depends_on": {
@@ -1637,24 +1772,40 @@
               "type": "boolean"
             },
             "metadata": {
-              "default": "all",
-              "description": "Metadata handling (optimiser/same_format route). `all` = strip all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). Any other value is rejected as invalid_options.",
+              "default": "strip",
+              "description": "Metadata handling (optimiser/same_format route). `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). `all` is a DEPRECATED alias of `strip` (the pre-2026-06-23 token; `all` reading as \"strip all\" was counterintuitive) \u2014 still accepted, emits Deprecation/Sunset, migrate to `strip`. The API lowers `strip`\u2192`all` at the worker boundary. Any other value is rejected as invalid_options.",
               "honored_on": [
                 "same_format"
               ],
+              "per_value_availability": {
+                "all": {
+                  "availability": "deprecated"
+                }
+              },
               "type": "enum",
               "values": [
-                "all",
-                "keep"
+                "strip",
+                "keep",
+                "all"
               ]
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Other format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Concrete format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are SELECTION STRATEGIES, not concrete targets (convert cannot express \"pick the smallest\"), so they live here and stay `planned` until the API try-all-return-smallest logic + worker proof land. See FORMAT.md.",
+              "per_value_availability": {
+                "auto": {
+                  "availability": "planned"
+                },
+                "smallest": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
                 "original",
-                "webp"
+                "webp",
+                "auto",
+                "smallest"
               ]
             },
             "quality": {
@@ -1671,11 +1822,10 @@
               "type": "integer"
             },
             "target_size_bytes": {
-              "availability": "planned",
               "depends_on": {
                 "encoding_mode": "target_size"
               },
-              "description": "Target output size in bytes (min 1024 = 1 KiB). `planned` \u2014 the image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). Optimiser (same_format) route.",
+              "description": "Target output size in bytes (min 1024 = 1 KiB). The image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). STABLE (worker-proven, lambdas git-870a7c2). Optimiser (same_format) route.",
               "honored_on": [
                 "same_format"
               ],
@@ -1971,7 +2121,6 @@
           "mimes": [
             "image/jpeg",
             "image/png",
-            "image/gif",
             "image/webp",
             "image/tiff",
             "image/bmp",
@@ -2017,6 +2166,19 @@
               "max": 16384,
               "min": 1,
               "type": "integer"
+            },
+            "metadata": {
+              "availability": "planned",
+              "default": "strip",
+              "description": "Metadata handling on the format-change (convert/transcoder) route. `strip` = remove all EXIF/IPTC/XMP (default), `keep` = preserve. `planned` \u2014 the convert worker re-encodes from pixels and does not yet preserve metadata across a format change, so the API returns feature_not_available (rather than \"Unknown option\" on a format-change request \u2014 e2e/api flagged 2026-06-23). This is a new (planned) surface, so it carries no deprecated `all` alias \u2014 unlike compress.image.metadata, which keeps `all` for its existing callers. Stable-flip gated on lambdas proving convert-route metadata preservation; the honoured target subset may narrow (avif/heic targets re-encode and cannot keep).",
+              "honored_on": [
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "strip",
+                "keep"
+              ]
             },
             "output_format": {
               "description": "Target format",
@@ -2064,6 +2226,114 @@
             },
             "image/heic": {
               "availability": "beta"
+            }
+          }
+        },
+        "image_gif": {
+          "max_output_pixels": 16000000,
+          "mimes": [
+            "image/gif"
+          ],
+          "options": {
+            "background": {
+              "depends_on": {
+                "output_format": "jpeg"
+              },
+              "description": "Background colour as a 6-digit hex (`#RRGGBB`) for a transparent GIF flattened to JPEG (alpha-flatten). HEX ONLY \u2014 non-hex is rejected as `invalid_options` (see convert.image.background).",
+              "honored_on": [
+                "format_change"
+              ],
+              "pattern": "^#[0-9a-fA-F]{6}$",
+              "type": "string"
+            },
+            "fit": {
+              "default": "max",
+              "depends_on": {
+                "height": "set",
+                "logic": "or",
+                "width": "set"
+              },
+              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and never upscaling; `crop`/`scale` = exact dimensions. Applies only when width or height is set.",
+              "honored_on": [
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "height": {
+              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). See `width`.",
+              "honored_on": [
+                "format_change"
+              ],
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
+            },
+            "metadata": {
+              "availability": "planned",
+              "default": "strip",
+              "description": "Metadata handling on the format-change route (still-image targets). `planned` \u2014 mirrors convert.image.metadata (the convert worker does not yet preserve metadata across a format change). The video targets carry no EXIF/IPTC/XMP.",
+              "honored_on": [
+                "format_change"
+              ],
+              "type": "enum",
+              "values": [
+                "strip",
+                "keep"
+              ]
+            },
+            "output_format": {
+              "description": "Target format. The still-image targets (jpeg/png/webp/avif/gif/tiff) take the first frame / rasterise (stable, today's gif-convert behaviour). `mp4` / `webm` are the NEW (planned) GIF\u2192VIDEO transcode targets \u2014 the animated GIF becomes a muted, play-once video (`mp4` = H.264 / yuv420p / +faststart, plays everywhere; `webm` = VP9, smaller). GIFs are silent (no audio stream); the GIF infinite-loop becomes a playback attribute (`<video loop>`) the player sets, NOT baked into the file. mp4 and webm flip planned\u2192stable independently on worker proof.",
+              "per_value_availability": {
+                "mp4": {
+                  "availability": "planned"
+                },
+                "webm": {
+                  "availability": "planned"
+                }
+              },
+              "required": true,
+              "type": "enum",
+              "values": [
+                "jpeg",
+                "png",
+                "webp",
+                "avif",
+                "gif",
+                "tiff",
+                "mp4",
+                "webm"
+              ]
+            },
+            "quality": {
+              "default": 85,
+              "depends_on": {
+                "output_format": [
+                  "jpeg",
+                  "webp",
+                  "avif"
+                ]
+              },
+              "description": "Output quality for the lossy STILL-IMAGE targets (jpeg/webp/avif). The video targets (mp4/webm) use a sensible default encode quality in v1 \u2014 there is no exposed CRF knob yet (planned-first; may be added later).",
+              "honored_on": [
+                "format_change"
+              ],
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "width": {
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Applies to the still-image targets; for the planned mp4/webm video targets, resize applicability is settled at the worker flip.",
+              "honored_on": [
+                "format_change"
+              ],
+              "max": 16384,
+              "min": 1,
+              "type": "integer"
             }
           }
         },
@@ -4127,7 +4397,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.104.0",
+  "schema_version": "2.111.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

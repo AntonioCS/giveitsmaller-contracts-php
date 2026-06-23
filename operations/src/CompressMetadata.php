@@ -21,24 +21,37 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'encoding_mode' => new OptionMetadata(
-                            per_value_availability: [
-                                'target_size' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'target_size_bytes' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
+                            per_value_availability: [
+                                'all' => new AvailabilityEntry(
+                                    availability: 'deprecated',
+                                ),
+                            ],
+                        ),
+                        'keep_metadata' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'progressive' => new OptionMetadata(
                             per_value_availability: [],
                         ),
-                        'output_format' => new OptionMetadata(
+                        'chroma_subsampling' => new OptionMetadata(
                             per_value_availability: [],
+                        ),
+                        'output_format' => new OptionMetadata(
+                            per_value_availability: [
+                                'auto' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'smallest' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'lossless' => new OptionMetadata(
                             per_value_availability: [],
@@ -63,13 +76,28 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
+                            per_value_availability: [
+                                'all' => new AvailabilityEntry(
+                                    availability: 'deprecated',
+                                ),
+                            ],
+                        ),
+                        'keep_metadata' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'optimization_level' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'auto' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'smallest' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'lossy' => new OptionMetadata(
                             availability: 'planned',
@@ -96,24 +124,30 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'encoding_mode' => new OptionMetadata(
-                            per_value_availability: [
-                                'target_size' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'target_size_bytes' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'all' => new AvailabilityEntry(
+                                    availability: 'deprecated',
+                                ),
+                            ],
                         ),
                         'avif_speed' => new OptionMetadata(
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'auto' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'smallest' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'width' => new OptionMetadata(
                             per_value_availability: [],
@@ -135,21 +169,31 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'encoding_mode' => new OptionMetadata(
-                            per_value_availability: [
-                                'target_size' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'target_size_bytes' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
+                            per_value_availability: [
+                                'all' => new AvailabilityEntry(
+                                    availability: 'deprecated',
+                                ),
+                            ],
+                        ),
+                        'keep_metadata' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'auto' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'smallest' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'lossless' => new OptionMetadata(
                             per_value_availability: [],
@@ -174,10 +218,21 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'all' => new AvailabilityEntry(
+                                    availability: 'deprecated',
+                                ),
+                            ],
                         ),
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'auto' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'smallest' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                     ],
                     per_input_options: [],
@@ -190,10 +245,25 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'metadata' => new OptionMetadata(
+                            per_value_availability: [
+                                'all' => new AvailabilityEntry(
+                                    availability: 'deprecated',
+                                ),
+                            ],
+                        ),
+                        'keep_metadata' => new OptionMetadata(
+                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'auto' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                                'smallest' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'width' => new OptionMetadata(
                             per_value_availability: [],

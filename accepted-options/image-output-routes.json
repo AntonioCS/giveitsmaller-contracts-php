@@ -14,7 +14,9 @@
             "width"
           ],
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "metadata"
+          ],
           "source_op": "convert"
         },
         "gif": {
@@ -25,7 +27,9 @@
             "width"
           ],
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "metadata"
+          ],
           "source_op": "convert"
         },
         "jpeg": {
@@ -38,7 +42,9 @@
             "width"
           ],
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "metadata"
+          ],
           "source_op": "convert"
         },
         "png": {
@@ -49,7 +55,9 @@
             "width"
           ],
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "metadata"
+          ],
           "source_op": "convert"
         },
         "tiff": {
@@ -60,7 +68,9 @@
             "width"
           ],
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "metadata"
+          ],
           "source_op": "convert"
         },
         "webp": {
@@ -72,7 +82,9 @@
             "width"
           ],
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "metadata"
+          ],
           "source_op": "convert"
         }
       },
@@ -96,13 +108,12 @@
             "metadata",
             "output_format",
             "quality",
+            "target_size_bytes",
             "width"
           ],
           "input_mime": "image/avif",
           "max_output_pixels": 16000000,
-          "planned_options": [
-            "target_size_bytes"
-          ],
+          "planned_options": [],
           "source_op": "compress"
         },
         "gif": {
@@ -116,11 +127,14 @@
           ],
           "input_mime": "image/gif",
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "keep_metadata"
+          ],
           "source_op": "compress"
         },
         "jpeg": {
           "honored_options": [
+            "chroma_subsampling",
             "encoding_mode",
             "fit",
             "height",
@@ -129,12 +143,13 @@
             "output_format",
             "progressive",
             "quality",
+            "target_size_bytes",
             "width"
           ],
           "input_mime": "image/jpeg",
           "max_output_pixels": 16000000,
           "planned_options": [
-            "target_size_bytes"
+            "keep_metadata"
           ],
           "source_op": "compress"
         },
@@ -151,6 +166,7 @@
           "input_mime": "image/png",
           "max_output_pixels": 16000000,
           "planned_options": [
+            "keep_metadata",
             "lossy"
           ],
           "source_op": "compress"
@@ -176,7 +192,9 @@
           ],
           "input_mime": "image/tiff",
           "max_output_pixels": 16000000,
-          "planned_options": [],
+          "planned_options": [
+            "keep_metadata"
+          ],
           "source_op": "compress"
         },
         "webp": {
@@ -188,12 +206,13 @@
             "metadata",
             "output_format",
             "quality",
+            "target_size_bytes",
             "width"
           ],
           "input_mime": "image/webp",
           "max_output_pixels": 16000000,
           "planned_options": [
-            "target_size_bytes"
+            "keep_metadata"
           ],
           "source_op": "compress"
         }
@@ -212,5 +231,5 @@
       "source_op": "compress"
     }
   },
-  "schema_version": "2.104.0"
+  "schema_version": "2.111.0"
 }

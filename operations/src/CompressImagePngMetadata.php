@@ -8,6 +8,7 @@ namespace Gisl\Generated\Operations;
 
 enum CompressImagePngMetadata: string
 {
-    case All = 'all';
+    case Strip = 'strip';
     case Keep = 'keep';
+    case All = 'all';
 }

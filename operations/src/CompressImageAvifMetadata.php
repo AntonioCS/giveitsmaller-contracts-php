@@ -8,5 +8,6 @@ namespace Gisl\Generated\Operations;
 
 enum CompressImageAvifMetadata: string
 {
+    case Strip = 'strip';
     case All = 'all';
 }
