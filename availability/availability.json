@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 134,
+  "capabilities_version": 136,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -2448,7 +2448,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and never upscaling; `crop`/`scale` = exact dimensions. Applies only when width or height is set.",
+              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and never upscaling; `crop`/`scale` = exact dimensions. Applies only when width or height is set \u2014 and width/height are still-image-only here, so fit is transitively unreachable for the mp4/webm video targets.",
               "honored_on": [
                 "format_change"
               ],
@@ -2460,7 +2460,17 @@
               ]
             },
             "height": {
-              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). See `width`.",
+              "depends_on": {
+                "output_format": [
+                  "jpeg",
+                  "png",
+                  "webp",
+                  "avif",
+                  "gif",
+                  "tiff"
+                ]
+              },
+              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Scoped to the still-image targets \u2014 resized gif\u2192video unproven, see `width`.",
               "honored_on": [
                 "format_change"
               ],
@@ -2514,7 +2524,17 @@
               "type": "integer"
             },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Applies to the still-image targets; for the planned mp4/webm video targets, resize applicability is settled at the worker flip.",
+              "depends_on": {
+                "output_format": [
+                  "jpeg",
+                  "png",
+                  "webp",
+                  "avif",
+                  "gif",
+                  "tiff"
+                ]
+              },
+              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). SCOPED via depends_on to the STILL-IMAGE targets \u2014 the bare gif\u2192video transcode proof (#268) did NOT prove resize-while-transcoding, so width/height are not accepted for the mp4/webm video targets (prove-before- flip; else the API would accept+route+bill a resized gif\u2192video the worker may not honour). Un-scope per-target when lambdas proves resized gif\u2192video.",
               "honored_on": [
                 "format_change"
               ],
@@ -4584,7 +4604,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.115.0",
+  "schema_version": "2.117.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

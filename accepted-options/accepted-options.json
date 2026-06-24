@@ -743,10 +743,8 @@
           ],
           "mp4": [
             "fit",
-            "height",
             "metadata",
-            "output_format",
-            "width"
+            "output_format"
           ],
           "png": [
             "auto_orient",
@@ -768,10 +766,8 @@
           ],
           "webm": [
             "fit",
-            "height",
             "metadata",
-            "output_format",
-            "width"
+            "output_format"
           ],
           "webp": [
             "auto_orient",
@@ -1113,5 +1109,5 @@
       }
     }
   },
-  "schema_version": "2.115.0"
+  "schema_version": "2.117.0"
 }
