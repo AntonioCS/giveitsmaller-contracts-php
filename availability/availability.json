@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 132,
+  "capabilities_version": 134,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -2251,7 +2251,8 @@
             "image/bmp",
             "image/vnd.microsoft.icon",
             "image/avif",
-            "image/heic"
+            "image/heic",
+            "image/heif"
           ],
           "options": {
             "auto_orient": {
@@ -2374,6 +2375,9 @@
             },
             "image/heic": {
               "availability": "beta"
+            },
+            "image/heif": {
+              "availability": "beta"
             }
           }
         },
@@ -2386,7 +2390,17 @@
             "auto_orient": {
               "availability": "planned",
               "default": true,
-              "description": "Bake EXIF orientation into the pixels (format-change route) \u2014 mirrors compress.image.auto_orient. `planned`. Declared HERE so the API re-validates the rewritten Output op.",
+              "depends_on": {
+                "output_format": [
+                  "jpeg",
+                  "png",
+                  "webp",
+                  "avif",
+                  "gif",
+                  "tiff"
+                ]
+              },
+              "description": "Bake EXIF orientation into the pixels (format-change route) \u2014 mirrors compress.image.auto_orient. `planned`. SCOPED via depends_on to the STILL-IMAGE targets only \u2014 the video targets (mp4/webm) carry no EXIF orientation. Declared HERE so the API re-validates the rewritten Output op.",
               "honored_on": [
                 "format_change"
               ],
@@ -2406,7 +2420,17 @@
             "color_profile": {
               "availability": "planned",
               "default": "keep",
-              "description": "ICC colour-profile handling (format-change route) \u2014 mirrors compress.image.color_profile. `keep` (default)/`srgb`/`strip`. `planned` \u2014 applies to the still-image targets; the video targets (mp4/webm) carry no ICC. Declared HERE so the API re-validates the rewritten Output op.",
+              "depends_on": {
+                "output_format": [
+                  "jpeg",
+                  "png",
+                  "webp",
+                  "avif",
+                  "gif",
+                  "tiff"
+                ]
+              },
+              "description": "ICC colour-profile handling (format-change route) \u2014 mirrors compress.image.color_profile. `keep` (default)/`srgb`/`strip`. `planned`. SCOPED via depends_on to the STILL-IMAGE targets only \u2014 the video targets (mp4/webm) carry no ICC, so color_profile is not accepted for a gif\u2192video output (it would be inert). Declared HERE so the API re-validates the rewritten Output op.",
               "honored_on": [
                 "format_change"
               ],
@@ -2458,15 +2482,7 @@
               ]
             },
             "output_format": {
-              "description": "Target format. The still-image targets (jpeg/png/webp/avif/gif/tiff) take the first frame / rasterise (stable, today's gif-convert behaviour). `mp4` / `webm` are the NEW (planned) GIF\u2192VIDEO transcode targets \u2014 the animated GIF becomes a muted, play-once video (`mp4` = H.264 / yuv420p / +faststart, plays everywhere; `webm` = VP9, smaller). GIFs are silent (no audio stream); the GIF infinite-loop becomes a playback attribute (`<video loop>`) the player sets, NOT baked into the file. mp4 and webm flip planned\u2192stable independently on worker proof.",
-              "per_value_availability": {
-                "mp4": {
-                  "availability": "planned"
-                },
-                "webm": {
-                  "availability": "planned"
-                }
-              },
+              "description": "Target format. The still-image targets (jpeg/png/webp/avif/gif/tiff) take the first frame / rasterise. `mp4` / `webm` are the GIF\u2192VIDEO transcode targets \u2014 the animated GIF becomes a muted, play-once video (`mp4` = H.264 / yuv420p / +faststart, plays everywhere; `webm` = VP9, smaller). STABLE \u2014 worker-proven on staging (lambdas PR #268, deployed git-6783cb9: gif\u2192mp4 ~70% smaller / gif\u2192webm ~84% smaller, valid containers + worker-set Content-Type, real decode-every-frame transcode). GIFs are silent (no audio stream); the GIF infinite-loop becomes a playback attribute (`<video loop>`) the player sets, NOT baked into the file.",
               "required": true,
               "type": "enum",
               "values": [
@@ -4568,7 +4584,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.113.0",
+  "schema_version": "2.115.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

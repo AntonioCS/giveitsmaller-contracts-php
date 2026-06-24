@@ -742,8 +742,6 @@
             "width"
           ],
           "mp4": [
-            "auto_orient",
-            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -769,8 +767,6 @@
             "width"
           ],
           "webm": [
-            "auto_orient",
-            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -1117,5 +1113,5 @@
       }
     }
   },
-  "schema_version": "2.113.0"
+  "schema_version": "2.115.0"
 }

@@ -11,12 +11,12 @@ final class ConvertImageGifOptions
     public function __construct(
         public readonly ConvertImageGifOutputFormat $output_format,
         public readonly ConvertImageGifMetadata $metadata = ConvertImageGifMetadata::Strip,
-        public readonly ConvertImageGifColorProfile $color_profile = ConvertImageGifColorProfile::Keep,
-        public readonly bool $auto_orient = true,
         public readonly ?int $quality = null,
         public readonly ?string $background = null,
         public readonly ?int $width = null,
         public readonly ?int $height = null,
         public readonly ?ConvertImageGifFit $fit = null,
+        public readonly ?ConvertImageGifColorProfile $color_profile = null,
+        public readonly ?bool $auto_orient = null,
     ) {}
 }

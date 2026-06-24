@@ -22,6 +22,9 @@ final class ConvertMetadata
                         'image/heic' => new AvailabilityEntry(
                             availability: 'beta',
                         ),
+                        'image/heif' => new AvailabilityEntry(
+                            availability: 'beta',
+                        ),
                     ],
                     options: [
                         'output_format' => new OptionMetadata(
@@ -78,14 +81,7 @@ final class ConvertMetadata
                     per_mime_availability: [],
                     options: [
                         'output_format' => new OptionMetadata(
-                            per_value_availability: [
-                                'mp4' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                                'webm' => new AvailabilityEntry(
-                                    availability: 'planned',
-                                ),
-                            ],
+                            per_value_availability: [],
                         ),
                         'quality' => new OptionMetadata(
                             per_value_availability: [],

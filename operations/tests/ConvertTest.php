@@ -386,13 +386,13 @@ final class ConvertTest extends TestCase
         );
         $this->assertInstanceOf(ConvertImageGifOptions::class, $obj);
         $this->assertSame(ConvertImageGifMetadata::Strip, $obj->metadata);
-        $this->assertSame(ConvertImageGifColorProfile::Keep, $obj->color_profile);
-        $this->assertSame(true, $obj->auto_orient);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->background);
         $this->assertNull($obj->width);
         $this->assertNull($obj->height);
         $this->assertNull($obj->fit);
+        $this->assertNull($obj->color_profile);
+        $this->assertNull($obj->auto_orient);
     }
 
     public function testConvertImageGifOptionsFullConstruction(): void
