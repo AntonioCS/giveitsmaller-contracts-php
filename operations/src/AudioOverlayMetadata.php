@@ -15,11 +15,11 @@ final class AudioOverlayMetadata
             features: [
                 'multi_overlay_stack' => new FeatureEntry(
                     availability: 'planned',
-                    description: 'Allow up to 8 overlay inputs per job (currently capped at 1 overlay). Per-overlay placement via `JobInputV2.per_input_options`. Lambda-side support not yet confirmed; tagged `planned` per ADR-0001 §1.4. Mirrors the same-named feature on `image_watermark`. ',
+                    description: 'Allow up to 8 overlay inputs per job (currently capped at 1 overlay). Per-overlay placement via per-input placement options. Backend support not yet confirmed; tagged `planned`. Mirrors the same-named feature on `image_watermark`. ',
                 ),
                 'sync_to_silence' => new FeatureEntry(
                     availability: 'planned',
-                    description: 'Anchor overlay placement to detected silence regions in the base track (e.g. drop a podcast jingle into the natural breath after the host says "back in a sec"). Server-side silence detection runs at workflow-create time; the actual overlay start position is reported on `OperationMetrics.overlay_anchor_ms`. Gates two extra options: `silence_threshold_db` and `min_silence_ms`. Lambda support not yet shipped. ',
+                    description: 'Anchor overlay placement to detected silence regions in the base track (e.g. drop a podcast jingle into the natural breath after the host says "back in a sec"). Server-side silence detection runs at workflow-create time; the actual overlay start position is reported on `OperationMetrics.overlay_anchor_ms`. Gates two extra options: `silence_threshold_db` and `min_silence_ms`. backend support not yet shipped. ',
                 ),
             ],
             mime_groups: [

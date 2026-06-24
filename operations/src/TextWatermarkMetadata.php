@@ -53,6 +53,88 @@ final class TextWatermarkMetadata
                     ],
                     per_input_options: [],
                 ),
+                'image_tiff' => new MimeGroupMetadata(
+                    availability: 'planned',
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'text' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'font_size' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'color' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'font_family' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'rotation' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'watermark_mode' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'tile_spacing' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'anchor' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_x' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_y' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'opacity' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'image_bmp' => new MimeGroupMetadata(
+                    availability: 'planned',
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'text' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'font_size' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'color' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'font_family' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'rotation' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'watermark_mode' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'tile_spacing' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'anchor' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_x' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_y' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'opacity' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
             ],
         );
     }

@@ -39,6 +39,35 @@ final class ThumbnailMetadata
                         'quality' => new OptionMetadata(
                             per_value_availability: [],
                         ),
+                        'background' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'image_svg' => new MimeGroupMetadata(
+                    availability: 'planned',
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'height' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'fit' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'format' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'quality' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'background' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
                     ],
                     per_input_options: [],
                 ),

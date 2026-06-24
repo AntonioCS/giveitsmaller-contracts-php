@@ -70,7 +70,6 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'auto_orient' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
@@ -125,7 +124,6 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'auto_orient' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
@@ -179,7 +177,6 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'auto_orient' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
@@ -236,7 +233,6 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'auto_orient' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],
@@ -311,7 +307,6 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'auto_orient' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                     ],

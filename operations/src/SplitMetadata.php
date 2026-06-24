@@ -15,7 +15,7 @@ final class SplitMetadata
             features: [
                 'silence_mode_audio' => new FeatureEntry(
                     availability: 'beta',
-                    description: 'Silence-detect cut mode for audio (`mode: silence` — server-side silence detection in the audio split worker). `beta`: shape-stable + opt-in. The worker is built; the mode ships dark until the API regenerates enum validation to accept `mode: silence`. The `silence` enum value carries a matching `per_value_availability: beta` on `audio.mode`. ',
+                    description: 'Silence-detect cut mode for audio (`mode: silence` — server-side silence detection). `beta`: shape-stable + opt-in. The mode ships dark until the API regenerates enum validation to accept `mode: silence`. The `silence` enum value carries a matching `per_value_availability: beta` on `audio.mode`. ',
                 ),
             ],
             mime_groups: [

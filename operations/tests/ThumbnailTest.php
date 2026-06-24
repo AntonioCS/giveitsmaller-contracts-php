@@ -14,6 +14,9 @@ use Gisl\Generated\Operations\ThumbnailDocumentSource;
 use Gisl\Generated\Operations\ThumbnailImageFit;
 use Gisl\Generated\Operations\ThumbnailImageFormat;
 use Gisl\Generated\Operations\ThumbnailImageOptions;
+use Gisl\Generated\Operations\ThumbnailImageSvgFit;
+use Gisl\Generated\Operations\ThumbnailImageSvgFormat;
+use Gisl\Generated\Operations\ThumbnailImageSvgOptions;
 use Gisl\Generated\Operations\ThumbnailVideoFit;
 use Gisl\Generated\Operations\ThumbnailVideoFormat;
 use Gisl\Generated\Operations\ThumbnailVideoOptions;
@@ -82,6 +85,7 @@ final class ThumbnailTest extends TestCase
         $this->assertSame(ThumbnailImageFit::Crop, $obj->fit);
         $this->assertSame(ThumbnailImageFormat::Jpg, $obj->format);
         $this->assertNull($obj->quality);
+        $this->assertNull($obj->background);
     }
 
     public function testThumbnailImageOptionsFullConstruction(): void
@@ -92,8 +96,87 @@ final class ThumbnailTest extends TestCase
             fit: ThumbnailImageFit::Max,
             format: ThumbnailImageFormat::Jpg,
             quality: 1,
+            background: 'test_value',
         );
         $this->assertInstanceOf(ThumbnailImageOptions::class, $obj);
+    }
+
+    public function testThumbnailImageSvgFitMaxBackingValue(): void
+    {
+        $enum = ThumbnailImageSvgFit::from('max');
+        $this->assertSame(ThumbnailImageSvgFit::Max, $enum);
+        $this->assertSame('max', $enum->value);
+    }
+
+    public function testThumbnailImageSvgFitCropBackingValue(): void
+    {
+        $enum = ThumbnailImageSvgFit::from('crop');
+        $this->assertSame(ThumbnailImageSvgFit::Crop, $enum);
+        $this->assertSame('crop', $enum->value);
+    }
+
+    public function testThumbnailImageSvgFitScaleBackingValue(): void
+    {
+        $enum = ThumbnailImageSvgFit::from('scale');
+        $this->assertSame(ThumbnailImageSvgFit::Scale, $enum);
+        $this->assertSame('scale', $enum->value);
+    }
+
+    public function testThumbnailImageSvgFitCaseCount(): void
+    {
+        $this->assertCount(3, ThumbnailImageSvgFit::cases());
+    }
+
+    public function testThumbnailImageSvgFormatJpgBackingValue(): void
+    {
+        $enum = ThumbnailImageSvgFormat::from('jpg');
+        $this->assertSame(ThumbnailImageSvgFormat::Jpg, $enum);
+        $this->assertSame('jpg', $enum->value);
+    }
+
+    public function testThumbnailImageSvgFormatPngBackingValue(): void
+    {
+        $enum = ThumbnailImageSvgFormat::from('png');
+        $this->assertSame(ThumbnailImageSvgFormat::Png, $enum);
+        $this->assertSame('png', $enum->value);
+    }
+
+    public function testThumbnailImageSvgFormatWebpBackingValue(): void
+    {
+        $enum = ThumbnailImageSvgFormat::from('webp');
+        $this->assertSame(ThumbnailImageSvgFormat::Webp, $enum);
+        $this->assertSame('webp', $enum->value);
+    }
+
+    public function testThumbnailImageSvgFormatCaseCount(): void
+    {
+        $this->assertCount(3, ThumbnailImageSvgFormat::cases());
+    }
+
+    public function testThumbnailImageSvgOptionsDefaultConstruction(): void
+    {
+        $obj = new ThumbnailImageSvgOptions(
+            width: 1,
+            height: 1,
+        );
+        $this->assertInstanceOf(ThumbnailImageSvgOptions::class, $obj);
+        $this->assertSame(ThumbnailImageSvgFit::Crop, $obj->fit);
+        $this->assertSame(ThumbnailImageSvgFormat::Jpg, $obj->format);
+        $this->assertNull($obj->quality);
+        $this->assertNull($obj->background);
+    }
+
+    public function testThumbnailImageSvgOptionsFullConstruction(): void
+    {
+        $obj = new ThumbnailImageSvgOptions(
+            width: 1,
+            height: 1,
+            fit: ThumbnailImageSvgFit::Max,
+            format: ThumbnailImageSvgFormat::Jpg,
+            quality: 1,
+            background: 'test_value',
+        );
+        $this->assertInstanceOf(ThumbnailImageSvgOptions::class, $obj);
     }
 
     public function testThumbnailVideoFitMaxBackingValue(): void

@@ -14,7 +14,7 @@ final class ImageWatermarkMetadata
             features: [
                 'multi_overlay_stack' => new FeatureEntry(
                     availability: 'planned',
-                    description: 'Allow up to 8 overlay inputs per job (currently capped at 1 overlay). Per-overlay placement via JobInputV2.per_input_options. Lambda-side support not yet confirmed; tagged planned per ADR-0001 §1.4. Scope is image-base only at the time this feature was specified; extension to GIF / video bases tracks alongside the corresponding mime_group `planned` → `stable` flips. ',
+                    description: 'Allow up to 8 overlay inputs per job (currently capped at 1 overlay). Per-overlay placement via per-input placement options. Backend support not yet confirmed; tagged planned. Scope is image-base only at the time this feature was specified; extension to GIF / video bases tracks alongside the corresponding mime_group `planned` → `stable` flips. ',
                 ),
             ],
             mime_groups: [
@@ -41,6 +41,52 @@ final class ImageWatermarkMetadata
                     per_input_options: [],
                 ),
                 'image_gif' => new MimeGroupMetadata(
+                    availability: 'planned',
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'anchor' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_x' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_y' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'opacity' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'overlay_width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'image_tiff' => new MimeGroupMetadata(
+                    availability: 'planned',
+                    processing_class: [],
+                    per_mime_availability: [],
+                    options: [
+                        'anchor' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_x' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'margin_y' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'opacity' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                        'overlay_width' => new OptionMetadata(
+                            per_value_availability: [],
+                        ),
+                    ],
+                    per_input_options: [],
+                ),
+                'image_bmp' => new MimeGroupMetadata(
                     availability: 'planned',
                     processing_class: [],
                     per_mime_availability: [],

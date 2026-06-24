@@ -870,7 +870,31 @@
         },
         "output_format_option": null
       },
+      "image_bmp": {
+        "accepted_options": {
+          "*": [
+            "anchor",
+            "margin_x",
+            "margin_y",
+            "opacity",
+            "overlay_width"
+          ]
+        },
+        "output_format_option": null
+      },
       "image_gif": {
+        "accepted_options": {
+          "*": [
+            "anchor",
+            "margin_x",
+            "margin_y",
+            "opacity",
+            "overlay_width"
+          ]
+        },
+        "output_format_option": null
+      },
+      "image_tiff": {
         "accepted_options": {
           "*": [
             "anchor",
@@ -1031,6 +1055,42 @@
           ]
         },
         "output_format_option": null
+      },
+      "image_bmp": {
+        "accepted_options": {
+          "*": [
+            "anchor",
+            "color",
+            "font_family",
+            "font_size",
+            "margin_x",
+            "margin_y",
+            "opacity",
+            "rotation",
+            "text",
+            "tile_spacing",
+            "watermark_mode"
+          ]
+        },
+        "output_format_option": null
+      },
+      "image_tiff": {
+        "accepted_options": {
+          "*": [
+            "anchor",
+            "color",
+            "font_family",
+            "font_size",
+            "margin_x",
+            "margin_y",
+            "opacity",
+            "rotation",
+            "text",
+            "tile_spacing",
+            "watermark_mode"
+          ]
+        },
+        "output_format_option": null
       }
     },
     "thumbnail": {
@@ -1051,6 +1111,20 @@
       "image": {
         "accepted_options": {
           "*": [
+            "background",
+            "fit",
+            "format",
+            "height",
+            "quality",
+            "width"
+          ]
+        },
+        "output_format_option": null
+      },
+      "image_svg": {
+        "accepted_options": {
+          "*": [
+            "background",
             "fit",
             "format",
             "height",
@@ -1109,5 +1183,5 @@
       }
     }
   },
-  "schema_version": "2.117.0"
+  "schema_version": "2.123.0"
 }

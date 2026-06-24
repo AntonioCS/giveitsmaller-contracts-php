@@ -8,9 +8,13 @@ namespace Gisl\Generated\Operations\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Gisl\Generated\Operations\ImageWatermarkImageAnchor;
+use Gisl\Generated\Operations\ImageWatermarkImageBmpAnchor;
+use Gisl\Generated\Operations\ImageWatermarkImageBmpOptions;
 use Gisl\Generated\Operations\ImageWatermarkImageGifAnchor;
 use Gisl\Generated\Operations\ImageWatermarkImageGifOptions;
 use Gisl\Generated\Operations\ImageWatermarkImageOptions;
+use Gisl\Generated\Operations\ImageWatermarkImageTiffAnchor;
+use Gisl\Generated\Operations\ImageWatermarkImageTiffOptions;
 
 final class ImageWatermarkTest extends TestCase
 {
@@ -194,6 +198,188 @@ final class ImageWatermarkTest extends TestCase
             overlay_width: 'test_value',
         );
         $this->assertInstanceOf(ImageWatermarkImageGifOptions::class, $obj);
+    }
+
+    public function testImageWatermarkImageTiffAnchorTopLeftBackingValue(): void
+    {
+        $enum = ImageWatermarkImageTiffAnchor::from('top_left');
+        $this->assertSame(ImageWatermarkImageTiffAnchor::TopLeft, $enum);
+        $this->assertSame('top_left', $enum->value);
+    }
+
+    public function testImageWatermarkImageTiffAnchorTopCenterBackingValue(): void
+    {
+        $enum = ImageWatermarkImageTiffAnchor::from('top_center');
+        $this->assertSame(ImageWatermarkImageTiffAnchor::TopCenter, $enum);
+        $this->assertSame('top_center', $enum->value);
+    }
+
+    public function testImageWatermarkImageTiffAnchorTopRightBackingValue(): void
+    {
+        $enum = ImageWatermarkImageTiffAnchor::from('top_right');
+        $this->assertSame(ImageWatermarkImageTiffAnchor::TopRight, $enum);
+        $this->assertSame('top_right', $enum->value);
+    }
+
+    public function testImageWatermarkImageTiffAnchorCenterLeftBackingValue(): void
+    {
+        $enum = ImageWatermarkImageTiffAnchor::from('center_left');
+        $this->assertSame(ImageWatermarkImageTiffAnchor::CenterLeft, $enum);
+        $this->assertSame('center_left', $enum->value);
+    }
+
+    public function testImageWatermarkImageTiffAnchorCenterBackingValue(): void
+    {
+        $enum = ImageWatermarkImageTiffAnchor::from('center');
+        $this->assertSame(ImageWatermarkImageTiffAnchor::Center, $enum);
+        $this->assertSame('center', $enum->value);
+    }
+
+    public function testImageWatermarkImageTiffAnchorCenterRightBackingValue(): void
+    {
+        $enum = ImageWatermarkImageTiffAnchor::from('center_right');
+        $this->assertSame(ImageWatermarkImageTiffAnchor::CenterRight, $enum);
+        $this->assertSame('center_right', $enum->value);
+    }
+
+    public function testImageWatermarkImageTiffAnchorBottomLeftBackingValue(): void
+    {
+        $enum = ImageWatermarkImageTiffAnchor::from('bottom_left');
+        $this->assertSame(ImageWatermarkImageTiffAnchor::BottomLeft, $enum);
+        $this->assertSame('bottom_left', $enum->value);
+    }
+
+    public function testImageWatermarkImageTiffAnchorBottomCenterBackingValue(): void
+    {
+        $enum = ImageWatermarkImageTiffAnchor::from('bottom_center');
+        $this->assertSame(ImageWatermarkImageTiffAnchor::BottomCenter, $enum);
+        $this->assertSame('bottom_center', $enum->value);
+    }
+
+    public function testImageWatermarkImageTiffAnchorBottomRightBackingValue(): void
+    {
+        $enum = ImageWatermarkImageTiffAnchor::from('bottom_right');
+        $this->assertSame(ImageWatermarkImageTiffAnchor::BottomRight, $enum);
+        $this->assertSame('bottom_right', $enum->value);
+    }
+
+    public function testImageWatermarkImageTiffAnchorCaseCount(): void
+    {
+        $this->assertCount(9, ImageWatermarkImageTiffAnchor::cases());
+    }
+
+    public function testImageWatermarkImageTiffOptionsDefaultConstruction(): void
+    {
+        $obj = new ImageWatermarkImageTiffOptions();
+        $this->assertInstanceOf(ImageWatermarkImageTiffOptions::class, $obj);
+        $this->assertSame(ImageWatermarkImageTiffAnchor::BottomRight, $obj->anchor);
+        $this->assertSame('0px', $obj->margin_x);
+        $this->assertSame('0px', $obj->margin_y);
+        $this->assertSame(0.5, $obj->opacity);
+        $this->assertNull($obj->overlay_width);
+    }
+
+    public function testImageWatermarkImageTiffOptionsFullConstruction(): void
+    {
+        $obj = new ImageWatermarkImageTiffOptions(
+            anchor: ImageWatermarkImageTiffAnchor::TopLeft,
+            margin_x: 'test_value',
+            margin_y: 'test_value',
+            opacity: 0.0,
+            overlay_width: 'test_value',
+        );
+        $this->assertInstanceOf(ImageWatermarkImageTiffOptions::class, $obj);
+    }
+
+    public function testImageWatermarkImageBmpAnchorTopLeftBackingValue(): void
+    {
+        $enum = ImageWatermarkImageBmpAnchor::from('top_left');
+        $this->assertSame(ImageWatermarkImageBmpAnchor::TopLeft, $enum);
+        $this->assertSame('top_left', $enum->value);
+    }
+
+    public function testImageWatermarkImageBmpAnchorTopCenterBackingValue(): void
+    {
+        $enum = ImageWatermarkImageBmpAnchor::from('top_center');
+        $this->assertSame(ImageWatermarkImageBmpAnchor::TopCenter, $enum);
+        $this->assertSame('top_center', $enum->value);
+    }
+
+    public function testImageWatermarkImageBmpAnchorTopRightBackingValue(): void
+    {
+        $enum = ImageWatermarkImageBmpAnchor::from('top_right');
+        $this->assertSame(ImageWatermarkImageBmpAnchor::TopRight, $enum);
+        $this->assertSame('top_right', $enum->value);
+    }
+
+    public function testImageWatermarkImageBmpAnchorCenterLeftBackingValue(): void
+    {
+        $enum = ImageWatermarkImageBmpAnchor::from('center_left');
+        $this->assertSame(ImageWatermarkImageBmpAnchor::CenterLeft, $enum);
+        $this->assertSame('center_left', $enum->value);
+    }
+
+    public function testImageWatermarkImageBmpAnchorCenterBackingValue(): void
+    {
+        $enum = ImageWatermarkImageBmpAnchor::from('center');
+        $this->assertSame(ImageWatermarkImageBmpAnchor::Center, $enum);
+        $this->assertSame('center', $enum->value);
+    }
+
+    public function testImageWatermarkImageBmpAnchorCenterRightBackingValue(): void
+    {
+        $enum = ImageWatermarkImageBmpAnchor::from('center_right');
+        $this->assertSame(ImageWatermarkImageBmpAnchor::CenterRight, $enum);
+        $this->assertSame('center_right', $enum->value);
+    }
+
+    public function testImageWatermarkImageBmpAnchorBottomLeftBackingValue(): void
+    {
+        $enum = ImageWatermarkImageBmpAnchor::from('bottom_left');
+        $this->assertSame(ImageWatermarkImageBmpAnchor::BottomLeft, $enum);
+        $this->assertSame('bottom_left', $enum->value);
+    }
+
+    public function testImageWatermarkImageBmpAnchorBottomCenterBackingValue(): void
+    {
+        $enum = ImageWatermarkImageBmpAnchor::from('bottom_center');
+        $this->assertSame(ImageWatermarkImageBmpAnchor::BottomCenter, $enum);
+        $this->assertSame('bottom_center', $enum->value);
+    }
+
+    public function testImageWatermarkImageBmpAnchorBottomRightBackingValue(): void
+    {
+        $enum = ImageWatermarkImageBmpAnchor::from('bottom_right');
+        $this->assertSame(ImageWatermarkImageBmpAnchor::BottomRight, $enum);
+        $this->assertSame('bottom_right', $enum->value);
+    }
+
+    public function testImageWatermarkImageBmpAnchorCaseCount(): void
+    {
+        $this->assertCount(9, ImageWatermarkImageBmpAnchor::cases());
+    }
+
+    public function testImageWatermarkImageBmpOptionsDefaultConstruction(): void
+    {
+        $obj = new ImageWatermarkImageBmpOptions();
+        $this->assertInstanceOf(ImageWatermarkImageBmpOptions::class, $obj);
+        $this->assertSame(ImageWatermarkImageBmpAnchor::BottomRight, $obj->anchor);
+        $this->assertSame('0px', $obj->margin_x);
+        $this->assertSame('0px', $obj->margin_y);
+        $this->assertSame(0.5, $obj->opacity);
+        $this->assertNull($obj->overlay_width);
+    }
+
+    public function testImageWatermarkImageBmpOptionsFullConstruction(): void
+    {
+        $obj = new ImageWatermarkImageBmpOptions(
+            anchor: ImageWatermarkImageBmpAnchor::TopLeft,
+            margin_x: 'test_value',
+            margin_y: 'test_value',
+            opacity: 0.0,
+            overlay_width: 'test_value',
+        );
+        $this->assertInstanceOf(ImageWatermarkImageBmpOptions::class, $obj);
     }
 
 }

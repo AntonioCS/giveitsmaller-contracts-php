@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 136,
+  "capabilities_version": 142,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -267,7 +267,7 @@
       "options": {
         "folder_structure": {
           "default": "flat",
-          "description": "flat = all files together at the top level (default); by_job = a separate subfolder for each source (planned \u2014 not yet honored by the worker)",
+          "description": "flat = all files together at the top level (default); by_job = a separate subfolder for each source (planned \u2014 not yet supported)",
           "per_value_availability": {
             "by_job": {
               "availability": "planned"
@@ -294,15 +294,15 @@
     "audio_overlay": {
       "availability": "planned",
       "default": false,
-      "description": "Mix a secondary audio asset (overlay) over a primary audio or\nvideo base. Use cases: DJ tags, podcast intros/outros, station\nIDs, jingles, branded mid-rolls.\n\n**Industry naming.** This is \"audio overlay\" or \"audio branding\"\n\u2014 NOT \"audio watermark\". Audio watermarking is steganographic\n(imperceptible identifier embedded in audio for ownership /\nforensic tracking) and is owned by the separate `audio_watermark`\noperation (planned per ticket I20).\n\nMulti-input (Path B with `role: base` + `role: overlay` per\n`JobInputV2.role`). `min_inputs: 2 = max_inputs: 2` for V2.0;\nmulti-overlay support is advertised as a planned feature\n(`features.multi_overlay_stack`) but Lambda-side implementation\ndeferred.\n\nEach input is a `MultiInputSource` \u2014 imported externally,\nreferenced from a vault connection, or an upstream `job_output`\n(uploads are NOT referenced directly inside inputs[]). An uploaded\noverlay or base enters via a `passthrough` source job referenced by\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh). The base\nis whatever single-asset source the workflow\nupstream has \u2014 for `mime_groups.audio`, the base is the primary\naudio track; for `mime_groups.video`, the overlay is mixed into\nthe video's audio track and the visual track passes through\nuntouched.\n\nPer ADR-0001 \u00a71.3 (Tension 1 \u2014 `planned` operations return\n`feature_not_available` 422 until Lambda support ships). Per\nADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1 round 6.\n",
+      "description": "Mix a secondary audio asset (overlay) over a primary audio or\nvideo base. Use cases: DJ tags, podcast intros/outros, station\nIDs, jingles, branded mid-rolls.\n\n**Industry naming.** This is \"audio overlay\" or \"audio branding\"\n\u2014 NOT \"audio watermark\". Audio watermarking is steganographic\n(imperceptible identifier embedded in audio for ownership /\nforensic tracking) and is owned by the separate `audio_watermark`\noperation (planned per ticket I20).\n\nMulti-input (Path B with `role: base` + `role: overlay` per\nthe input role). `min_inputs: 2 = max_inputs: 2` for V2.0;\nmulti-overlay support is advertised as a planned feature\n(`features.multi_overlay_stack`) but Backend implementation\ndeferred.\n\nEach input is imported externally,\nreferenced from a vault connection, or an upstream `job_output`\n(uploads are NOT referenced directly inside inputs[]). An uploaded\noverlay or base enters via a `passthrough` source job referenced by\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh). The base\nis whatever single-asset source the workflow\nupstream has \u2014 for `mime_groups.audio`, the base is the primary\naudio track; for `mime_groups.video`, the overlay is mixed into\nthe video's audio track and the visual track passes through\nuntouched.\n\n`planned` \u2014 not yet supported.\n",
       "features": {
         "multi_overlay_stack": {
           "availability": "planned",
-          "description": "Allow up to 8 overlay inputs per job (currently capped at 1\noverlay). Per-overlay placement via\n`JobInputV2.per_input_options`. Lambda-side support not yet\nconfirmed; tagged `planned` per ADR-0001 \u00a71.4. Mirrors the\nsame-named feature on `image_watermark`.\n"
+          "description": "Allow up to 8 overlay inputs per job (currently capped at 1\noverlay). Per-overlay placement via\nper-input placement options. Backend support not yet\nconfirmed; tagged `planned`. Mirrors the same-named feature on\n`image_watermark`.\n"
         },
         "sync_to_silence": {
           "availability": "planned",
-          "description": "Anchor overlay placement to detected silence regions in the\nbase track (e.g. drop a podcast jingle into the natural\nbreath after the host says \"back in a sec\"). Server-side\nsilence detection runs at workflow-create time; the actual\noverlay start position is reported on\n`OperationMetrics.overlay_anchor_ms`. Gates two extra\noptions: `silence_threshold_db` and `min_silence_ms`. Lambda\nsupport not yet shipped.\n"
+          "description": "Anchor overlay placement to detected silence regions in the\nbase track (e.g. drop a podcast jingle into the natural\nbreath after the host says \"back in a sec\"). Server-side\nsilence detection runs at workflow-create time; the actual\noverlay start position is reported on\n`OperationMetrics.overlay_anchor_ms`. Gates two extra\noptions: `silence_threshold_db` and `min_silence_ms`. backend\nsupport not yet shipped.\n"
         }
       },
       "input_model": "multi",
@@ -569,7 +569,7 @@
             },
             "no_audio_track_behaviour": {
               "default": "reject",
-              "description": "Controls behaviour when the base video has no audio\ntrack:\n- `reject`: workflow-create returns 422 (default \u2014 surfaces\n  the problem at the API edge rather than producing a\n  surprising silent-base output).\n- `create_silent`: synthesise a silent base track at the\n  video's framerate and mix the overlay into that.\n- `replace`: same as `create_silent` but signals intent\n  (\"the overlay IS the audio track\"), letting Lambda\n  skip the base-track synthesis when the overlay covers\n  the full video duration.\n",
+              "description": "Controls behaviour when the base video has no audio\ntrack:\n- `reject`: workflow-create returns 422 (default \u2014 surfaces\n  the problem at the API edge rather than producing a\n  surprising silent-base output).\n- `create_silent`: synthesise a silent base track at the\n  video's framerate and mix the overlay into that.\n- `replace`: same as `create_silent` but signals intent\n  (\"the overlay IS the audio track\"), letting backend\n  skip the base-track synthesis when the overlay covers\n  the full video duration.\n",
               "type": "enum",
               "values": [
                 "reject",
@@ -642,7 +642,7 @@
     "audio_to_video": {
       "availability": "beta",
       "default": false,
-      "description": "Produce a video from an audio input plus an OPTIONAL still image\noverlay. Use cases: podcast \u2192 YouTube uploads, audio-only tracks\nthat need a video container for platforms requiring it, branded\naudio releases with a static cover image.\n\n**Role asymmetry.** First role-based operation on the contract\nwith an OPTIONAL role \u2014 REQUIRED `base` (audio source) +\nOPTIONAL `overlay` (still image, 0..1). When `overlay` is\nomitted, the video uses a solid `background_color`. The\nmachine-readable cardinality lives in `per_role_cardinality`\non this schema (per ADR-0015). API consumption site:\n`OperationInputRoleValidator` (rule table) consumed by\n`SchemaValidationService.php` in `compression_api`.\n\n**Input vs output asymmetry.** The single `mime_groups.audio`\nblock keys the INPUT MIME family (the `base` role input is\naudio). The OUTPUT is always video \u2014 `output_format` controls\nthe container; `mime_groups` is NOT the output type. Mirrors\nthe `audio_overlay.video` group pattern (input-keyed).\n\nRe-encode required (audio \u2192 video composition always re-encodes).\nLower framerate + FFmpeg `-tune stillimage` keeps file size\ntiny when the overlay is a still image (the common case).\n\nPer ticket [`SlluxMBN`](https://trello.com/c/SlluxMBN) +\nADR-0015. Activated to `availability: beta` (Wave A, ticket\n[`c3uthIP4`](https://trello.com/c/c3uthIP4)): the cross-repo\nLambda backend is live (API accepts + publishes), so this is\nshape-stable + opt-in for callers and MUST NOT return\n`feature_not_available` \u2014 it may still change with notice while beta.\n",
+      "description": "Produce a video from an audio input plus an OPTIONAL still image\noverlay. Use cases: podcast \u2192 YouTube uploads, audio-only tracks\nthat need a video container for platforms requiring it, branded\naudio releases with a static cover image.\n\n**Role asymmetry.** First role-based operation on the contract\nwith an OPTIONAL role \u2014 REQUIRED `base` (audio source) +\nOPTIONAL `overlay` (still image, 0..1). When `overlay` is\nomitted, the video uses a solid `background_color`. The\nmachine-readable cardinality lives in `per_role_cardinality`\non this schema.\n\n**Input vs output asymmetry.** The single `mime_groups.audio`\nblock keys the INPUT MIME family (the `base` role input is\naudio). The OUTPUT is always video \u2014 `output_format` controls\nthe container; `mime_groups` is NOT the output type. Mirrors\nthe `audio_overlay.video` group pattern (input-keyed).\n\nRe-encode required (audio \u2192 video composition always re-encodes).\nA lower framerate plus still-image tuning keeps file size tiny\nwhen the overlay is a still image (the common case).\n\nActivated to `availability: beta`: the backend is live (API\naccepts + publishes), so this is shape-stable + opt-in for callers\nand MUST NOT return `feature_not_available` \u2014 it may still change\nwith notice while beta.\n",
       "input_model": "multi",
       "max_inputs": 2,
       "mime_groups": {
@@ -718,7 +718,7 @@
     "audio_watermark": {
       "availability": "planned",
       "default": false,
-      "description": "Embed a steganographic forensic watermark into an audio asset (or\na video's audio track). The watermark is psychoacoustically masked\nto be inaudible and engineered to survive lossy compression,\ntranscoding, broadcast chains, and analog-hole capture (Cinavia /\nResemble PerTh territory).\n\n**Industry naming.** This is *audio watermarking* (steganographic;\nused for ownership, forensic tracking, content provenance) \u2014 NOT\n*audio overlay* (audible mixing of secondary audio for branding).\nAudio overlay is owned by the separate `audio_overlay` operation\n(per ticket I19).\n\nSingle-input. Watermark embedding takes the base asset and writes\nout an indistinguishable-to-the-ear copy with the encoded payload.\n\n**Decode endpoint.** A paired `POST /api/audio-watermark/decode`\nendpoint extracts the embedded watermark from a previously-marked\nasset, returning `{watermark_id, payload?, confidence, method,\ndetected_at}`. Decode is **own-watermarks-only** (rate-limited\n+ audited; the decoder will refuse to extract from media the\ncaller did not mark themselves) \u2014 pin per spike S11 acceptance.\n\nPer ADR-0001 \u00a71.3 (Tension 1 \u2014 `planned` operations return\n`feature_not_available` 422 until Lambda support ships).\nPer plan v5 \u00a7F1 round 6 (codex narrowed methods enum from 5 to 3,\ndropping `spread_spectrum` / `echo_hiding` / `phase_coding` \u2014\ntextbook families, not product choices).\n",
+      "description": "Embed a steganographic forensic watermark into an audio asset (or\na video's audio track). The watermark is psychoacoustically masked\nto be inaudible and engineered to survive lossy compression,\ntranscoding, broadcast chains, and analog-hole capture (Cinavia /\nResemble PerTh territory).\n\n**Industry naming.** This is *audio watermarking* (steganographic;\nused for ownership, forensic tracking, content provenance) \u2014 NOT\n*audio overlay* (audible mixing of secondary audio for branding).\nAudio overlay is owned by the separate `audio_overlay` operation\n(per ticket I19).\n\nSingle-input. Watermark embedding takes the base asset and writes\nout an indistinguishable-to-the-ear copy with the encoded payload.\n\n**Decode endpoint.** A paired `POST /api/audio-watermark/decode`\nendpoint extracts the embedded watermark from a previously-marked\nasset, returning `{watermark_id, payload?, confidence, method,\ndetected_at}`. Decode is **own-watermarks-only** (rate-limited\n+ audited; the decoder will refuse to extract from media the\ncaller did not mark themselves) \u2014 pin per spike S11 acceptance.\n\n`planned` \u2014 not yet supported.\n",
       "input_model": "single",
       "mime_groups": {
         "audio": {
@@ -882,7 +882,7 @@
           "options": {
             "bitrate": {
               "default": 128,
-              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. Only a caller-EXPLICIT bitrate against a lossless output is rejected as invalid_options (flac/wav have no bitrate target); the `default: 128` is never the basis for a rejection (ADR-0020 D1, carried into ADR-0023 \u2014 a default a caller did not set is the server's to resolve, and is dropped for a lossless target). The output is the input format unless `output_format` re-targets it: with `output_format: original` the lossy/lossless distinction follows the input MIME (mpeg/aac/ogg/mp4 = lossy \u2192 bitrate applies; flac/wav input \u2192 an explicit bitrate is rejected); with an explicit `output_format`, it follows that target (flac/wav target \u2192 an explicit bitrate is rejected). Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels/sample_rate/normalize) apply to all formats.\n",
+              "description": "Output bitrate in kbps (CBR/ABR). Applies to lossy OUTPUTS. Only a caller-EXPLICIT bitrate against a lossless output is rejected as invalid_options (flac/wav have no bitrate target); the `default: 128` is never the basis for a rejection (a default a caller did not set is the server's to resolve, and is dropped for a lossless target). The output is the input format unless `output_format` re-targets it: with `output_format: original` the lossy/lossless distinction follows the input MIME (mpeg/aac/ogg/mp4 = lossy \u2192 bitrate applies; flac/wav input \u2192 an explicit bitrate is rejected); with an explicit `output_format`, it follows that target (flac/wav target \u2192 an explicit bitrate is rejected). Not expressed as `depends_on` \u2014 the lossy-output condition is an output-value \u00d7 input-MIME cross-axis the option-to-option `depends_on` cannot model without dropping `original` and breaking same-format callers. The other knobs (channels/sample_rate/normalize) apply to all formats.\n",
               "type": "enum",
               "value_type": "integer",
               "values": [
@@ -930,12 +930,12 @@
               ]
             },
             "trim_end": {
-              "description": "Trim from end in seconds (absent = to the end). Removes this many seconds from the end; with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. STABLE \u2014 see `trim_start`.\n",
+              "description": "Trim from end in seconds (absent = to the end). Removes this many seconds from the end; with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. See `trim_start`.\n",
               "min": 0,
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds (absent = from the start). STABLE (qZI5EK9j) \u2014 the compress-audio worker cuts the clip before encoding (input-side ffmpeg `-ss`/`-t`; lambdas PR #259), SAME FROM-END semantic as compress.video / convert / merge: the kept clip is [`trim_start`, input_duration \u2212 `trim_end`].\n",
+              "description": "Trim from beginning in seconds (absent = from the start). The clip is cut before encoding, with the same from-end semantic as compress.video / convert / merge: the kept clip is [`trim_start`, input_duration \u2212 `trim_end`].\n",
               "min": 0,
               "type": "float"
             }
@@ -949,20 +949,20 @@
             "font_subsetting": {
               "availability": "planned",
               "default": true,
-              "description": "Subset embedded fonts to only include glyphs used in the document. Significant size reduction for books with large font files. `planned` \u2014 not yet read by the worker.",
+              "description": "Subset embedded fonts to only include glyphs used in the document. Significant size reduction for books with large font files. `planned` \u2014 not yet supported.",
               "type": "boolean"
             },
             "image_quality": {
               "availability": "planned",
               "default": 80,
-              "description": "Recompress embedded images at this quality level. `planned` \u2014 not yet read by the worker (use `quality`).",
+              "description": "Recompress embedded images at this quality level. `planned` \u2014 not yet supported (use `quality`).",
               "max": 100,
               "min": 1,
               "type": "integer"
             },
             "quality": {
               "default": 50,
-              "description": "Compression quality (1 = smallest, 100 = best). The only worker-honored document option today.",
+              "description": "Compression quality (1 = smallest, 100 = best). The only document compression option supported today.",
               "max": 100,
               "min": 1,
               "type": "integer"
@@ -970,7 +970,7 @@
             "strip_unused_css": {
               "availability": "planned",
               "default": false,
-              "description": "Remove CSS rules not referenced by any content. Risk: may affect rendering in some readers. `planned` \u2014 not yet read by the worker.",
+              "description": "Remove CSS rules not referenced by any content. Risk: may affect rendering in some readers. `planned` \u2014 not yet supported.",
               "type": "boolean"
             }
           }
@@ -985,14 +985,14 @@
             "image_quality": {
               "availability": "planned",
               "default": 80,
-              "description": "Recompress embedded images at this quality level. `planned` \u2014 not yet read by the worker (use `quality`).",
+              "description": "Recompress embedded images at this quality level. `planned` \u2014 not yet supported (use `quality`).",
               "max": 100,
               "min": 1,
               "type": "integer"
             },
             "quality": {
               "default": 50,
-              "description": "Compression quality (1 = smallest, 100 = best). The only worker-honored document option today.",
+              "description": "Compression quality (1 = smallest, 100 = best). The only document compression option supported today.",
               "max": 100,
               "min": 1,
               "type": "integer"
@@ -1000,13 +1000,13 @@
             "strip_metadata": {
               "availability": "planned",
               "default": true,
-              "description": "Remove document metadata (author, revision history, comments). `planned` \u2014 not yet read by the worker.",
+              "description": "Remove document metadata (author, revision history, comments). `planned` \u2014 not yet supported.",
               "type": "boolean"
             },
             "strip_unused_styles": {
               "availability": "planned",
               "default": false,
-              "description": "Remove style definitions not referenced in document content. `planned` \u2014 not yet read by the worker.",
+              "description": "Remove style definitions not referenced in document content. `planned` \u2014 not yet supported.",
               "type": "boolean"
             }
           }
@@ -1021,14 +1021,14 @@
             "image_quality": {
               "availability": "planned",
               "default": 80,
-              "description": "Recompress embedded images at this quality level (1 = smallest, 100 = best). `planned` \u2014 not yet read by the worker (use `quality`).",
+              "description": "Recompress embedded images at this quality level (1 = smallest, 100 = best). `planned` \u2014 not yet supported (use `quality`).",
               "max": 100,
               "min": 1,
               "type": "integer"
             },
             "quality": {
               "default": 50,
-              "description": "Compression quality (1 = smallest, 100 = best). The only worker-honored document option today.",
+              "description": "Compression quality (1 = smallest, 100 = best). The only document compression option supported today.",
               "max": 100,
               "min": 1,
               "type": "integer"
@@ -1036,19 +1036,19 @@
             "strip_hidden_data": {
               "availability": "planned",
               "default": true,
-              "description": "Remove revisions, comments, personal info, hidden rows/columns, and speaker notes. `planned` \u2014 not yet read by the worker.",
+              "description": "Remove revisions, comments, personal info, hidden rows/columns, and speaker notes. `planned` \u2014 not yet supported.",
               "type": "boolean"
             },
             "strip_macros": {
               "availability": "planned",
               "default": true,
-              "description": "Remove VBA macros and ActiveX controls. `planned` \u2014 not yet read by the worker.",
+              "description": "Remove VBA macros and ActiveX controls. `planned` \u2014 not yet supported.",
               "type": "boolean"
             },
             "strip_unused_fonts": {
               "availability": "planned",
               "default": false,
-              "description": "Remove embedded fonts not referenced in the document. Risk: may affect rendering on systems without the font installed. `planned` \u2014 not yet read by the worker.",
+              "description": "Remove embedded fonts not referenced in the document. Risk: may affect rendering on systems without the font installed. `planned` \u2014 not yet supported.",
               "type": "boolean"
             }
           }
@@ -1061,7 +1061,7 @@
             "colorspace": {
               "availability": "planned",
               "default": "unchanged",
-              "description": "Output color space. `planned` \u2014 not yet read by the worker (use `grayscale` for grayscale conversion).",
+              "description": "Output color space. `planned` \u2014 not yet supported (use `grayscale` for grayscale conversion).",
               "type": "enum",
               "values": [
                 "unchanged",
@@ -1073,27 +1073,27 @@
             "flatten_forms": {
               "availability": "planned",
               "default": false,
-              "description": "Flatten interactive form fields into static content. `planned` \u2014 not yet read by the worker.",
+              "description": "Flatten interactive form fields into static content. `planned` \u2014 not yet supported.",
               "type": "boolean"
             },
             "grayscale": {
               "default": false,
-              "description": "Convert all images to grayscale (smaller output; discards colour). Worker-honored.",
+              "description": "Convert all images to grayscale (smaller output; discards colour).",
               "type": "boolean"
             },
             "image_dpi": {
-              "description": "Downsample images above this DPI (72\u2013600 inclusive). Omit to keep the worker's DPI analysis. Out-of-range is rejected as invalid_options.",
+              "description": "Downsample images above this DPI (72\u2013600 inclusive). Omit to use automatic DPI analysis. Out-of-range is rejected.",
               "max": 600,
               "min": 72,
               "type": "integer"
             },
             "pages": {
               "availability": "planned",
-              "description": "Page selection (e.g. '1-5,8,10-12'). Omit to keep all pages. `planned` \u2014 not yet read by the worker.",
+              "description": "Page selection (e.g. '1-5,8,10-12'). Omit to keep all pages. `planned` \u2014 not yet supported.",
               "type": "string"
             },
             "profile": {
-              "description": "Ghostscript optimization preset, pinned directly (overrides the quality\u2192preset mapping). screen = lowest-res / smallest, ebook = mid, printer = 300dpi, prepress = print-production. Optional \u2014 omit to let `quality` drive the preset.",
+              "description": "Compression preset, pinned directly (overrides the quality\u2192preset mapping). screen = lowest-res / smallest, ebook = mid, printer = 300dpi, prepress = print-production. Optional \u2014 omit to let `quality` drive the preset.",
               "type": "enum",
               "values": [
                 "screen",
@@ -1104,7 +1104,7 @@
             },
             "quality": {
               "default": 50,
-              "description": "Compression quality (1 = smallest, 100 = best). Maps to a Ghostscript preset. Overridden by `profile` when that is set.",
+              "description": "Compression quality (1 = smallest, 100 = best). Maps to a compression preset. Overridden by `profile` when that is set.",
               "max": 100,
               "min": 1,
               "type": "integer"
@@ -1119,9 +1119,8 @@
           ],
           "options": {
             "auto_orient": {
-              "availability": "planned",
               "default": true,
-              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. `planned` \u2014 a restored control (was removed): the worker must apply the EXIF-orientation transform before encode on both Output routes. Default `true` (a behaviour change, proven planned-first). No-op for inputs without an orientation tag.",
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. Default `true`; no-op for inputs without an orientation tag. On an already-rotated image the pixels are re-encoded (near-lossless), which can drop other (non-orientation) metadata even with `metadata: keep`.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1131,7 +1130,7 @@
             "color_profile": {
               "availability": "planned",
               "default": "keep",
-              "description": "ICC colour-profile handling \u2014 its OWN control, DECOUPLED from `metadata` (stripping metadata must NOT silently shift colours; that coupling is the correctness bug this fixes). `keep` (default) = preserve the embedded profile; `srgb` = convert to sRGB (also handles CMYK\u2192sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 the worker does not yet honour it (today the default strips ICC during metadata-strip; the fix preserves it). Applies on BOTH Output routes (optimiser preserves; transcoder preserves/converts). Worker-proven flip.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 not yet supported.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1150,7 +1149,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set, on whichever Output route runs.",
+              "description": "Resize mode. `max` (default) = fit within the given bounds, preserving aspect ratio and never upscaling (caps at the source dimensions \u2014 this is the \"no-enlarge\" behaviour). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past the source). Applies only when width or height is set.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1163,7 +1162,7 @@
               ]
             },
             "height": {
-              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Resize replaces the image (one output). Optional \u2014 see `width`.",
+              "description": "Target height in pixels (1-16384; width \u00d7 height within the group's max output area). Resizes the image (one output). Optional \u2014 see `width`.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1177,11 +1176,16 @@
               "depends_on": {
                 "metadata": "strip"
               },
-              "description": "Selective per-category metadata keep (optimiser/same_format route): preserve ONLY these categories and strip the rest \u2014 refines the strip path (`metadata: strip`). Valid categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 the worker does not yet do selective keep (use `metadata: keep` to preserve everything), so the API returns feature_not_available until lambdas proves it.",
+              "description": "Selectively keep only certain metadata categories and strip the rest \u2014 refines `metadata: strip`. Allowed categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 selective keep is not yet supported (use `metadata: keep` to preserve everything).",
               "honored_on": [
                 "same_format"
               ],
               "items": {
+                "enum": [
+                  "copyright",
+                  "gps",
+                  "date"
+                ],
                 "type": "string"
               },
               "type": "array",
@@ -1189,7 +1193,7 @@
             },
             "metadata": {
               "default": "strip",
-              "description": "Metadata handling (optimiser/same_format route). `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). `all` is a DEPRECATED alias of `strip` (the pre-2026-06-23 token; `all` reading as \"strip all\" was counterintuitive) \u2014 still accepted, emits Deprecation/Sunset, migrate to `strip`. The API lowers `strip`\u2192`all` at the worker boundary. Any other value is rejected as invalid_options.",
+              "description": "Metadata handling. `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF, colour profile, and XMP. `all` is a DEPRECATED alias of `strip` (kept for older callers; emits Deprecation/Sunset headers \u2014 migrate to `strip`). Any other value is rejected.",
               "honored_on": [
                 "same_format"
               ],
@@ -1207,7 +1211,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Concrete format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are SELECTION STRATEGIES, not concrete targets (convert cannot express \"pick the smallest\"), so they live here and stay `planned` until the API try-all-return-smallest logic + worker proof land. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported. See FORMAT.md.",
               "per_value_availability": {
                 "auto": {
                   "availability": "planned"
@@ -1226,7 +1230,7 @@
             },
             "quality": {
               "default": 80,
-              "description": "Compression quality (1 = smallest file, 100 = best quality). For animated GIF the worker honours this but real-world size reduction is typically small.",
+              "description": "Compression quality (1 = smallest file, 100 = best quality). For animated GIF this is honoured but real-world size reduction is typically small.",
               "honored_on": [
                 "same_format"
               ],
@@ -1235,7 +1239,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven convert resize engine (Lanczos; the API routes Output resize through the convert worker, BOTH routes \u2014 the compress optimiser has no resize) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1254,9 +1258,8 @@
           ],
           "options": {
             "auto_orient": {
-              "availability": "planned",
               "default": true,
-              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. `planned` \u2014 a restored control (was removed): the worker must apply the EXIF-orientation transform before encode on both Output routes. Default `true` (a behaviour change, proven planned-first). No-op for inputs without an orientation tag.",
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. Default `true`; no-op for inputs without an orientation tag. On an already-rotated image the pixels are re-encoded (near-lossless), which can drop other (non-orientation) metadata even with `metadata: keep`.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1265,7 +1268,7 @@
             },
             "avif_speed": {
               "default": 4,
-              "description": "AVIF encode speed (1-10, ravif). Lower = smaller file, slower encode; higher = faster, larger. Default 4. Optimiser (same_format) route.",
+              "description": "AVIF encode speed (1-10). Lower = smaller file, slower encode; higher = faster, larger. Default 4.",
               "honored_on": [
                 "same_format"
               ],
@@ -1276,7 +1279,7 @@
             "color_profile": {
               "availability": "planned",
               "default": "keep",
-              "description": "ICC colour-profile handling \u2014 its OWN control, DECOUPLED from `metadata` (stripping metadata must NOT silently shift colours; that coupling is the correctness bug this fixes). `keep` (default) = preserve the embedded profile; `srgb` = convert to sRGB (also handles CMYK\u2192sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 the worker does not yet honour it (today the default strips ICC during metadata-strip; the fix preserves it). Applies on BOTH Output routes (optimiser preserves; transcoder preserves/converts). Worker-proven flip.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 not yet supported.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1290,7 +1293,7 @@
             },
             "encoding_mode": {
               "default": "quality",
-              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default). `target_size` = hit a byte budget via the worker's encode-measure-binary-search loop \u2014 STABLE (worker-proven on staging, lambdas git-870a7c2: re-encode under target + best-effort + original-wins). AVIF encodes are slow, so the loop caps iterations (a 6-iteration cap, ~18s worst case). Optimiser (same_format) route.",
+              "description": "Compression mode. `quality` = the `quality` slider drives the encode (default). `target_size` = automatically find the highest quality that fits a byte budget (set via `target_size_bytes`); if the budget can't be met even at the lowest quality, the closest result is returned, and the original is kept if re-encoding wouldn't be smaller. AVIF encoding is slower, so the search is bounded and may stop slightly above the budget.",
               "honored_on": [
                 "same_format"
               ],
@@ -1307,7 +1310,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set, on whichever Output route runs.",
+              "description": "Resize mode. `max` (default) = fit within the given bounds, preserving aspect ratio and never upscaling (caps at the source dimensions \u2014 this is the \"no-enlarge\" behaviour). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past the source). Applies only when width or height is set.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1320,7 +1323,7 @@
               ]
             },
             "height": {
-              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Resize replaces the image (one output). Optional \u2014 see `width`.",
+              "description": "Target height in pixels (1-16384; width \u00d7 height within the group's max output area). Resizes the image (one output). Optional \u2014 see `width`.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1331,7 +1334,7 @@
             },
             "metadata": {
               "default": "strip",
-              "description": "Metadata handling. `strip` = remove all EXIF/IPTC/XMP (default, the only supported behaviour). `all` is a DEPRECATED alias of `strip` (migrate to `strip`; the API lowers it at the worker boundary). `keep` is NOT offered for AVIF \u2014 ravif re-encodes from pixels and cannot preserve metadata (the worker rejects `keep` as invalid_options).",
+              "description": "Metadata handling. `strip` = remove all EXIF/IPTC/XMP (default, the only supported behaviour). `all` is a DEPRECATED alias of `strip` (migrate to `strip`). `keep` is NOT offered for AVIF \u2014 it is re-encoded from pixels and cannot preserve metadata.",
               "honored_on": [
                 "same_format"
               ],
@@ -1348,7 +1351,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Concrete format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are SELECTION STRATEGIES, not concrete targets (convert cannot express \"pick the smallest\"), so they live here and stay `planned` until the API try-all-return-smallest logic + worker proof land. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported. See FORMAT.md.",
               "per_value_availability": {
                 "auto": {
                   "availability": "planned"
@@ -1370,7 +1373,7 @@
               "depends_on": {
                 "encoding_mode": "quality"
               },
-              "description": "Compression quality (1 = smallest file, 100 = best quality). Active in `quality` mode (default); in `target_size` mode the encode-measure loop owns quality, so this option is inactive.",
+              "description": "Compression quality (1 = smallest file, 100 = best quality). Active in `quality` mode (default); in `target_size` mode the quality is chosen automatically to hit the size budget, so this option is inactive.",
               "honored_on": [
                 "same_format"
               ],
@@ -1382,7 +1385,7 @@
               "depends_on": {
                 "encoding_mode": "target_size"
               },
-              "description": "Target output size in bytes (min 1024 = 1 KiB). The image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). STABLE (worker-proven, lambdas git-870a7c2). Optimiser (same_format) route.",
+              "description": "Target output size in bytes (min 1024 = 1 KiB). The encoder searches for the highest quality that lands at or under this size; if the target can't be met even at the lowest quality, the closest result is returned (the result reports the chosen quality and whether the target was met). Requires `encoding_mode: target_size`.",
               "honored_on": [
                 "same_format"
               ],
@@ -1390,7 +1393,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven convert resize engine (Lanczos; the API routes Output resize through the convert worker, BOTH routes \u2014 the compress optimiser has no resize) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1408,9 +1411,8 @@
           ],
           "options": {
             "auto_orient": {
-              "availability": "planned",
               "default": true,
-              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. `planned` \u2014 a restored control (was removed): the worker must apply the EXIF-orientation transform before encode on both Output routes. Default `true` (a behaviour change, proven planned-first). No-op for inputs without an orientation tag.",
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. Default `true`; no-op for inputs without an orientation tag. On an already-rotated image the pixels are re-encoded (near-lossless), which can drop other (non-orientation) metadata even with `metadata: keep`.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1418,7 +1420,7 @@
               "type": "boolean"
             },
             "chroma_subsampling": {
-              "description": "JPEG chroma subsampling \u2014 the colour-resolution/size trade-off. `420` (4:2:0) = smallest, chroma at quarter resolution (default-ish for web photos); `422` (4:2:2) = half-horizontal; `444` (4:4:4) = full chroma (largest, best for sharp colour edges / text). JPEG ONLY (declared on image_jpeg only \u2014 ravif hardcodes 4:4:4, libwebp lossy locks 4:2:0). String values (the worker strict-matches strings). STABLE \u2014 worker-proven on staging (lambdas PR #264, deployed git-f2bef85: output JPEG SOF luma sampling bytes verified 0x22/0x21/0x11 for 420/422/444). INCOMPATIBLE with `lossless` (any chroma value): lossless JPEG is a DCT-coefficient copy and cannot resample chroma \u2014 see the chroma_subsampling.lossless_conflict constraint.",
+              "description": "JPEG chroma subsampling \u2014 the colour-resolution/size trade-off. `420` (4:2:0) = smallest, chroma at quarter resolution (typical for web photos); `422` (4:2:2) = half horizontal resolution; `444` (4:4:4) = full chroma (largest, best for sharp colour edges / text). JPEG only. INCOMPATIBLE with `lossless` (any chroma value): a lossless JPEG copies the existing coefficients and cannot resample chroma.",
               "honored_on": [
                 "same_format"
               ],
@@ -1432,7 +1434,7 @@
             "color_profile": {
               "availability": "planned",
               "default": "keep",
-              "description": "ICC colour-profile handling \u2014 its OWN control, DECOUPLED from `metadata` (stripping metadata must NOT silently shift colours; that coupling is the correctness bug this fixes). `keep` (default) = preserve the embedded profile; `srgb` = convert to sRGB (also handles CMYK\u2192sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 the worker does not yet honour it (today the default strips ICC during metadata-strip; the fix preserves it). Applies on BOTH Output routes (optimiser preserves; transcoder preserves/converts). Worker-proven flip.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 not yet supported.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1446,7 +1448,7 @@
             },
             "encoding_mode": {
               "default": "quality",
-              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default). `target_size` = hit a byte budget via the worker's encode-measure-binary-search loop \u2014 STABLE (worker-proven on staging, lambdas git-870a7c2: re-encode under target + best-effort below floor + original-wins, all proven). Optimiser (same_format) route.",
+              "description": "Compression mode. `quality` = the `quality` slider drives the encode (default). `target_size` = automatically find the highest quality that fits a byte budget (set via `target_size_bytes`); if the budget can't be met even at the lowest quality, the closest result is returned, and the original is kept if re-encoding wouldn't be smaller.",
               "honored_on": [
                 "same_format"
               ],
@@ -1463,7 +1465,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set, on whichever Output route runs.",
+              "description": "Resize mode. `max` (default) = fit within the given bounds, preserving aspect ratio and never upscaling (caps at the source dimensions \u2014 this is the \"no-enlarge\" behaviour). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past the source). Applies only when width or height is set.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1476,7 +1478,7 @@
               ]
             },
             "height": {
-              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Resize replaces the image (one output). Optional \u2014 see `width`.",
+              "description": "Target height in pixels (1-16384; width \u00d7 height within the group's max output area). Resizes the image (one output). Optional \u2014 see `width`.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1490,11 +1492,16 @@
               "depends_on": {
                 "metadata": "strip"
               },
-              "description": "Selective per-category metadata keep (optimiser/same_format route): preserve ONLY these categories and strip the rest \u2014 refines the strip path (`metadata: strip`). Valid categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 the worker does not yet do selective keep (use `metadata: keep` to preserve everything), so the API returns feature_not_available until lambdas proves it.",
+              "description": "Selectively keep only certain metadata categories and strip the rest \u2014 refines `metadata: strip`. Allowed categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 selective keep is not yet supported (use `metadata: keep` to preserve everything).",
               "honored_on": [
                 "same_format"
               ],
               "items": {
+                "enum": [
+                  "copyright",
+                  "gps",
+                  "date"
+                ],
                 "type": "string"
               },
               "type": "array",
@@ -1505,7 +1512,7 @@
               "depends_on": {
                 "encoding_mode": "quality"
               },
-              "description": "Lossless JPEG re-optimisation (optimiser path): optimises the Huffman tables WITHOUT re-encoding pixels \u2014 bit-preserving on the pixel data, no quality loss (it cannot recover detail a lossy JPEG already lost). STABLE \u2014 the compress-image worker honours the `lossless` bool (un-parked 2026-06-23). Only in `quality` mode \u2014 incompatible with `target_size` (the byte-budget loop is inherently lossy). Optimiser (same_format) route only.",
+              "description": "Lossless JPEG re-optimisation: re-packs the file WITHOUT re-encoding the pixels \u2014 no quality loss (it cannot recover detail a lossy JPEG already lost). Only in `quality` mode \u2014 incompatible with `target_size` (hitting a byte budget is inherently lossy).",
               "honored_on": [
                 "same_format"
               ],
@@ -1513,7 +1520,7 @@
             },
             "metadata": {
               "default": "strip",
-              "description": "Metadata handling (optimiser/same_format route). `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). `all` is a DEPRECATED alias of `strip` (the pre-2026-06-23 token; `all` reading as \"strip all\" was counterintuitive) \u2014 still accepted, emits Deprecation/Sunset, migrate to `strip`. The API lowers `strip`\u2192`all` at the worker boundary. Any other value is rejected as invalid_options.",
+              "description": "Metadata handling. `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF, colour profile, and XMP. `all` is a DEPRECATED alias of `strip` (kept for older callers; emits Deprecation/Sunset headers \u2014 migrate to `strip`). Any other value is rejected.",
               "honored_on": [
                 "same_format"
               ],
@@ -1531,7 +1538,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Concrete format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are SELECTION STRATEGIES, not concrete targets (convert cannot express \"pick the smallest\"), so they live here and stay `planned` until the API try-all-return-smallest logic + worker proof land. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported. See FORMAT.md.",
               "per_value_availability": {
                 "auto": {
                   "availability": "planned"
@@ -1550,7 +1557,7 @@
             },
             "progressive": {
               "default": true,
-              "description": "Enable progressive JPEG rendering (a low-quality preview renders first, then refines). JPEG only \u2014 the optimiser (same_format) route.",
+              "description": "Enable progressive JPEG rendering (a low-quality preview renders first, then refines). JPEG only.",
               "honored_on": [
                 "same_format"
               ],
@@ -1561,7 +1568,7 @@
               "depends_on": {
                 "encoding_mode": "quality"
               },
-              "description": "Compression quality (1 = smallest file, 100 = best quality). Active in `quality` mode (default); in `target_size` mode the encode-measure loop owns quality, so this option is inactive.",
+              "description": "Compression quality (1 = smallest file, 100 = best quality). Active in `quality` mode (default); in `target_size` mode the quality is chosen automatically to hit the size budget, so this option is inactive.",
               "honored_on": [
                 "same_format"
               ],
@@ -1573,7 +1580,7 @@
               "depends_on": {
                 "encoding_mode": "target_size"
               },
-              "description": "Target output size in bytes (min 1024 = 1 KiB). The image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). STABLE (worker-proven, lambdas git-870a7c2). Optimiser (same_format) route.",
+              "description": "Target output size in bytes (min 1024 = 1 KiB). The encoder searches for the highest quality that lands at or under this size; if the target can't be met even at the lowest quality, the closest result is returned (the result reports the chosen quality and whether the target was met). Requires `encoding_mode: target_size`.",
               "honored_on": [
                 "same_format"
               ],
@@ -1581,7 +1588,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven convert resize engine (Lanczos; the API routes Output resize through the convert worker, BOTH routes \u2014 the compress optimiser has no resize) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1599,9 +1606,8 @@
           ],
           "options": {
             "auto_orient": {
-              "availability": "planned",
               "default": true,
-              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. `planned` \u2014 a restored control (was removed): the worker must apply the EXIF-orientation transform before encode on both Output routes. Default `true` (a behaviour change, proven planned-first). No-op for inputs without an orientation tag.",
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. Default `true`; no-op for inputs without an orientation tag. On an already-rotated image the pixels are re-encoded (near-lossless), which can drop other (non-orientation) metadata even with `metadata: keep`.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1611,7 +1617,7 @@
             "color_profile": {
               "availability": "planned",
               "default": "keep",
-              "description": "ICC colour-profile handling \u2014 its OWN control, DECOUPLED from `metadata` (stripping metadata must NOT silently shift colours; that coupling is the correctness bug this fixes). `keep` (default) = preserve the embedded profile; `srgb` = convert to sRGB (also handles CMYK\u2192sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 the worker does not yet honour it (today the default strips ICC during metadata-strip; the fix preserves it). Applies on BOTH Output routes (optimiser preserves; transcoder preserves/converts). Worker-proven flip.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 not yet supported.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1630,7 +1636,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set, on whichever Output route runs.",
+              "description": "Resize mode. `max` (default) = fit within the given bounds, preserving aspect ratio and never upscaling (caps at the source dimensions \u2014 this is the \"no-enlarge\" behaviour). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past the source). Applies only when width or height is set.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1643,7 +1649,7 @@
               ]
             },
             "height": {
-              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Resize replaces the image (one output). Optional \u2014 see `width`.",
+              "description": "Target height in pixels (1-16384; width \u00d7 height within the group's max output area). Resizes the image (one output). Optional \u2014 see `width`.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1657,11 +1663,16 @@
               "depends_on": {
                 "metadata": "strip"
               },
-              "description": "Selective per-category metadata keep (optimiser/same_format route): preserve ONLY these categories and strip the rest \u2014 refines the strip path (`metadata: strip`). Valid categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 the worker does not yet do selective keep (use `metadata: keep` to preserve everything), so the API returns feature_not_available until lambdas proves it.",
+              "description": "Selectively keep only certain metadata categories and strip the rest \u2014 refines `metadata: strip`. Allowed categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 selective keep is not yet supported (use `metadata: keep` to preserve everything).",
               "honored_on": [
                 "same_format"
               ],
               "items": {
+                "enum": [
+                  "copyright",
+                  "gps",
+                  "date"
+                ],
                 "type": "string"
               },
               "type": "array",
@@ -1670,7 +1681,7 @@
             "lossy": {
               "availability": "planned",
               "default": false,
-              "description": "Lossy PNG palette quantization (pngquant/imagequant-class) \u2014 a large saving for flat-colour PNGs. `planned` AND LICENSING-GATED: do not stable-flip until the lambdas licensing spike confirms a permissive quantizer path (libimagequant/pngquant is GPL-or-commercial). Optimiser (same_format) route only.",
+              "description": "Lossy PNG palette quantization \u2014 a large saving for flat-colour PNGs. `planned` \u2014 not yet supported.",
               "honored_on": [
                 "same_format"
               ],
@@ -1678,7 +1689,7 @@
             },
             "metadata": {
               "default": "strip",
-              "description": "Metadata handling (optimiser/same_format route). `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). `all` is a DEPRECATED alias of `strip` (the pre-2026-06-23 token; `all` reading as \"strip all\" was counterintuitive) \u2014 still accepted, emits Deprecation/Sunset, migrate to `strip`. The API lowers `strip`\u2192`all` at the worker boundary. Any other value is rejected as invalid_options.",
+              "description": "Metadata handling. `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF, colour profile, and XMP. `all` is a DEPRECATED alias of `strip` (kept for older callers; emits Deprecation/Sunset headers \u2014 migrate to `strip`). Any other value is rejected.",
               "honored_on": [
                 "same_format"
               ],
@@ -1696,7 +1707,7 @@
             },
             "optimization_level": {
               "default": 3,
-              "description": "PNG optimization effort (0-6, oxipng). Higher = smaller file, slower encode. Default 3. Optimiser (same_format) route.",
+              "description": "PNG optimization effort (0-6). Higher = smaller file, slower encode. Default 3.",
               "honored_on": [
                 "same_format"
               ],
@@ -1706,7 +1717,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Concrete format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are SELECTION STRATEGIES, not concrete targets (convert cannot express \"pick the smallest\"), so they live here and stay `planned` until the API try-all-return-smallest logic + worker proof land. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported. See FORMAT.md.",
               "per_value_availability": {
                 "auto": {
                   "availability": "planned"
@@ -1734,7 +1745,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven convert resize engine (Lanczos; the API routes Output resize through the convert worker, BOTH routes \u2014 the compress optimiser has no resize) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1752,7 +1763,7 @@
           "options": {
             "metadata": {
               "default": "strip",
-              "description": "Metadata handling. `strip` = remove all metadata (default, the only supported behaviour). `all` is a DEPRECATED alias of `strip` (migrate to `strip`; the API lowers it at the worker boundary). `keep` is NOT offered for SVG \u2014 SVGO optimises the markup and cannot preserve a metadata block (the worker rejects `keep` as invalid_options).",
+              "description": "Metadata handling. `strip` = remove all metadata (default, the only supported behaviour). `all` is a DEPRECATED alias of `strip` (migrate to `strip`). `keep` is NOT offered for SVG \u2014 optimising the markup cannot preserve a metadata block.",
               "honored_on": [
                 "same_format"
               ],
@@ -1769,7 +1780,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes are the convert operation's job. `auto` / `smallest` are PLANNED auto-format directives (server picks the best/smallest candidate format, reported via the result `mime_type`) \u2014 selection strategies, not concrete targets, planned until the API logic + worker proof land. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives (the server picks the best/smallest candidate format, reported via the result `mime_type`) \u2014 selection strategies, not concrete targets, planned until supported. See FORMAT.md.",
               "per_value_availability": {
                 "auto": {
                   "availability": "planned"
@@ -1805,9 +1816,8 @@
           ],
           "options": {
             "auto_orient": {
-              "availability": "planned",
               "default": true,
-              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. `planned` \u2014 a restored control (was removed): the worker must apply the EXIF-orientation transform before encode on both Output routes. Default `true` (a behaviour change, proven planned-first). No-op for inputs without an orientation tag.",
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. Default `true`; no-op for inputs without an orientation tag. On an already-rotated image the pixels are re-encoded (near-lossless), which can drop other (non-orientation) metadata even with `metadata: keep`.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1817,7 +1827,7 @@
             "color_profile": {
               "availability": "planned",
               "default": "keep",
-              "description": "ICC colour-profile handling \u2014 its OWN control, DECOUPLED from `metadata` (stripping metadata must NOT silently shift colours; that coupling is the correctness bug this fixes). `keep` (default) = preserve the embedded profile; `srgb` = convert to sRGB (also handles CMYK\u2192sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 the worker does not yet honour it (today the default strips ICC during metadata-strip; the fix preserves it). Applies on BOTH Output routes (optimiser preserves; transcoder preserves/converts). Worker-proven flip.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 not yet supported.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1831,7 +1841,7 @@
             },
             "encoding_mode": {
               "default": "quality",
-              "description": "Compression mode (mirrors compress.video). `quality` = the `quality` slider drives the encode (default). `target_size` = hit a byte budget via the worker's encode-measure-binary-search loop \u2014 STABLE (worker-proven on staging, lambdas git-870a7c2: re-encode under target + best-effort below floor + original-wins, all proven). Optimiser (same_format) route.",
+              "description": "Compression mode. `quality` = the `quality` slider drives the encode (default). `target_size` = automatically find the highest quality that fits a byte budget (set via `target_size_bytes`); if the budget can't be met even at the lowest quality, the closest result is returned, and the original is kept if re-encoding wouldn't be smaller.",
               "honored_on": [
                 "same_format"
               ],
@@ -1848,7 +1858,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set, on whichever Output route runs.",
+              "description": "Resize mode. `max` (default) = fit within the given bounds, preserving aspect ratio and never upscaling (caps at the source dimensions \u2014 this is the \"no-enlarge\" behaviour). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past the source). Applies only when width or height is set.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1861,7 +1871,7 @@
               ]
             },
             "height": {
-              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Resize replaces the image (one output). Optional \u2014 see `width`.",
+              "description": "Target height in pixels (1-16384; width \u00d7 height within the group's max output area). Resizes the image (one output). Optional \u2014 see `width`.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1875,11 +1885,16 @@
               "depends_on": {
                 "metadata": "strip"
               },
-              "description": "Selective per-category metadata keep (optimiser/same_format route): preserve ONLY these categories and strip the rest \u2014 refines the strip path (`metadata: strip`). Valid categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 the worker does not yet do selective keep (use `metadata: keep` to preserve everything), so the API returns feature_not_available until lambdas proves it.",
+              "description": "Selectively keep only certain metadata categories and strip the rest \u2014 refines `metadata: strip`. Allowed categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 selective keep is not yet supported (use `metadata: keep` to preserve everything).",
               "honored_on": [
                 "same_format"
               ],
               "items": {
+                "enum": [
+                  "copyright",
+                  "gps",
+                  "date"
+                ],
                 "type": "string"
               },
               "type": "array",
@@ -1890,7 +1905,7 @@
               "depends_on": {
                 "encoding_mode": "quality"
               },
-              "description": "Encode WebP losslessly (optimiser path): a genuine lossless WebP encode. STABLE \u2014 the compress-image worker honours the `lossless` bool (un-parked 2026-06-23). Note a lossless encode can be LARGER than a lossy one at the same visual quality. Only in `quality` mode \u2014 incompatible with `target_size` (the byte-budget loop is inherently lossy). Optimiser (same_format) route only.",
+              "description": "Encode WebP losslessly: a genuine lossless WebP encode. Note a lossless encode can be LARGER than a lossy one at the same visual quality. Only in `quality` mode \u2014 incompatible with `target_size` (hitting a byte budget is inherently lossy).",
               "honored_on": [
                 "same_format"
               ],
@@ -1898,7 +1913,7 @@
             },
             "metadata": {
               "default": "strip",
-              "description": "Metadata handling (optimiser/same_format route). `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF/ICC/XMP \u2014 STABLE (worker-proven, libcaesium; lambdas PR #260, staging round-trip + unit test). `all` is a DEPRECATED alias of `strip` (the pre-2026-06-23 token; `all` reading as \"strip all\" was counterintuitive) \u2014 still accepted, emits Deprecation/Sunset, migrate to `strip`. The API lowers `strip`\u2192`all` at the worker boundary. Any other value is rejected as invalid_options.",
+              "description": "Metadata handling. `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF, colour profile, and XMP. `all` is a DEPRECATED alias of `strip` (kept for older callers; emits Deprecation/Sunset headers \u2014 migrate to `strip`). Any other value is rejected.",
               "honored_on": [
                 "same_format"
               ],
@@ -1916,7 +1931,7 @@
             },
             "output_format": {
               "default": "original",
-              "description": "Output format. original = keep input format (default); webp = recompress to WebP \u2014 the one live compress+format target (proven on staging). Concrete format changes (jpeg/png/avif/gif/tiff) are the convert operation's job, not compress. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are SELECTION STRATEGIES, not concrete targets (convert cannot express \"pick the smallest\"), so they live here and stay `planned` until the API try-all-return-smallest logic + worker proof land. See FORMAT.md.",
+              "description": "Output format. original = keep input format (default); webp = recompress to WebP. Concrete format changes (jpeg/png/avif/gif/tiff) are handled by the convert operation. `auto` / `smallest` are PLANNED auto-format directives \u2014 the server encodes to several candidate formats and returns the best (`auto` = the most suitable; `smallest` = the absolute fewest bytes), reporting the chosen format via the result `mime_type`. They are selection strategies, not concrete targets, and stay `planned` until supported. See FORMAT.md.",
               "per_value_availability": {
                 "auto": {
                   "availability": "planned"
@@ -1938,7 +1953,7 @@
               "depends_on": {
                 "encoding_mode": "quality"
               },
-              "description": "Compression quality (1 = smallest file, 100 = best quality). Active in `quality` mode (default); in `target_size` mode the encode-measure loop owns quality, so this option is inactive.",
+              "description": "Compression quality (1 = smallest file, 100 = best quality). Active in `quality` mode (default); in `target_size` mode the quality is chosen automatically to hit the size budget, so this option is inactive.",
               "honored_on": [
                 "same_format"
               ],
@@ -1950,7 +1965,7 @@
               "depends_on": {
                 "encoding_mode": "target_size"
               },
-              "description": "Target output size in bytes (min 1024 = 1 KiB). The image encode-measure loop binary-searches quality to land at or under the target; best-effort if the target is unreachable at min quality (the result reports the chosen quality + whether the target was met). STABLE (worker-proven, lambdas git-870a7c2). Optimiser (same_format) route.",
+              "description": "Target output size in bytes (min 1024 = 1 KiB). The encoder searches for the highest quality that lands at or under this size; if the target can't be met even at the lowest quality, the closest result is returned (the result reports the chosen quality and whether the target was met). Requires `encoding_mode: target_size`.",
               "honored_on": [
                 "same_format"
               ],
@@ -1958,7 +1973,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). Resize the image as part of Output (replace semantics, ONE transformed output) using the proven convert resize engine (Lanczos; the API routes Output resize through the convert worker, BOTH routes \u2014 the compress optimiser has no resize) \u2014 it is NOT the derivative `thumbnail` op. Optional; omit to keep the source dimensions.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image as part of the operation (one transformed output, replacing the source). Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1984,7 +1999,7 @@
                   "vorbis"
                 ]
               },
-              "description": "Audio track bitrate in kbps. Only valid with an explicit re-encode audio_codec (aac/opus/vorbis): an explicit audio_bitrate with audio_codec `copy`/omitted is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); copy preserves the source bitrate. FE/SDK also prune it pre-submit. No default: a bitrate is only meaningful on an explicit re-encode (matches the worker, which applies none).\n",
+              "description": "Audio track bitrate in kbps. Only valid with an explicit re-encode audio_codec (aac/opus/vorbis): an explicit audio_bitrate with audio_codec `copy`/omitted is rejected; copy preserves the source bitrate. No default: a bitrate is only meaningful on an explicit re-encode.\n",
               "type": "enum",
               "value_type": "integer",
               "values": [
@@ -1998,7 +2013,7 @@
             },
             "audio_codec": {
               "default": "copy",
-              "description": "Audio codec. copy = passthrough (keep the source stream as-is; re-encode only on explicit request) \u2014 aac/opus/vorbis re-encode. Default is `copy` (ADR-0020 D7, carried into ADR-0023): on the same-container path (`output_format` original/absent) the source stream is already container-compatible, so copy is safe. When `output_format` RE-TARGETS the container, an absent/default audio_codec resolves to a container-valid codec via the facade (e.g. webm -> opus), NOT a blind copy of an incompatible stream \u2014 a DEFAULT is never rejected (the exact per-container resolution, incl. ogg vorbis-vs-opus, is an output_format stable-flip prerequisite, ADR-0023 D5). A caller-EXPLICIT codec the resolved container cannot carry (e.g. aac on a webm target) returns invalid_options. See FORMAT.md \"Container-conditional defaults\" + ADR-0023 (supersedes ADR-0020).\n",
+              "description": "Audio codec. copy = passthrough (keep the source stream as-is; re-encode only on explicit request) \u2014 aac/opus/vorbis re-encode. Default is `copy`: on the same-container path (`output_format` original/absent) the source stream is already container-compatible, so copy is safe. When `output_format` RE-TARGETS the container, an absent/default audio_codec resolves to a container-valid codec via the facade (e.g. webm -> opus), NOT a blind copy of an incompatible stream \u2014 a DEFAULT is never rejected (the exact per-container resolution, incl. ogg vorbis-vs-opus, is an output_format stable-flip prerequisite). A caller-EXPLICIT codec the resolved container cannot carry (e.g. aac on a webm target) is rejected. See FORMAT.md \"Container-conditional defaults\".\n",
               "type": "enum",
               "values": [
                 "aac",
@@ -2009,7 +2024,7 @@
             },
             "codec": {
               "default": "h264",
-              "description": "Video codec. h264 = widest compatibility, h265/av1 = better compression but slower. The default (h264) is the MP4/MOV standard and is CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input container): for a container that cannot carry it (e.g. WebM, which carries VP8/VP9/ AV1) the server resolves a container-valid codec (WebM -> vp9). A DEFAULT value is never rejected \u2014 including an explicit `output_format: webm` left at the default `h264` (resolves to vp9, NOT invalid_options); only a caller-EXPLICIT incompatible codec returns invalid_options. See FORMAT.md \"Container-conditional defaults\" + ADR-0023 (supersedes ADR-0020).\n",
+              "description": "Video codec. h264 = widest compatibility, h265/av1 = better compression but slower. The default (h264) is the MP4/MOV standard and is CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input container): for a container that cannot carry it (e.g. WebM, which carries VP8/VP9/ AV1) the server resolves a container-valid codec (WebM -> vp9). A DEFAULT value is never rejected \u2014 including an explicit `output_format: webm` left at the default `h264` (resolves to vp9, not rejected); only a caller-EXPLICIT incompatible codec is rejected. See FORMAT.md \"Container-conditional defaults\".\n",
               "type": "enum",
               "values": [
                 "h264",
@@ -2030,7 +2045,7 @@
             },
             "encoding_mode": {
               "default": "crf",
-              "description": "crf = constant quality (variable file size). target_size = constrained output file size (two-pass). target_size is LIVE for mp4/MOV output; for webm/ogg output and long-form the server returns `feature_not_available` (use crf there) until VP9 two-pass ships.",
+              "description": "crf = constant quality (variable file size). target_size = constrained output file size (two-pass). target_size is LIVE for mp4/MOV output; for webm/ogg output and long-form the server returns `feature_not_available` (use crf there) until two-pass for this container ships.",
               "type": "enum",
               "values": [
                 "crf",
@@ -2039,7 +2054,7 @@
             },
             "faststart": {
               "default": true,
-              "description": "Move the MP4/MOV moov atom to start for progressive web playback. MP4/MOV only. CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input): the default (true) is silently inapplicable for a container with no moov atom (e.g. WebM) \u2014 that is NOT a rejection. Only a caller-EXPLICIT faststart:true on such a container returns invalid_options. See FORMAT.md \"Container-conditional defaults\" + ADR-0023 (supersedes ADR-0020).\n",
+              "description": "Move the MP4/MOV moov atom to the front so the file starts playing before it is fully downloaded (progressive web playback). MP4/MOV only. CONTAINER-CONDITIONAL against the RESOLVED output container (the explicit `output_format` if set, else the input): the default (true) is silently inapplicable for a container with no moov atom (e.g. WebM) \u2014 that is NOT a rejection. Only a caller-EXPLICIT faststart:true on such a container is rejected. See FORMAT.md \"Container-conditional defaults\".\n",
               "type": "boolean"
             },
             "fit": {
@@ -2065,14 +2080,14 @@
               "type": "float"
             },
             "height": {
-              "description": "Output height in pixels. Must be an EVEN integer >= 2 (yuv420p chroma-subsampling); odd values are rejected as invalid_options by the encoder.",
+              "description": "Output height in pixels. Must be an even integer \u2265 2; odd values are rejected by the encoder.",
               "max": 4320,
               "min": 2,
               "type": "integer"
             },
             "output_format": {
               "default": "original",
-              "description": "Output container. original = keep the input container (default, same-format compression). Non-`original` values re-target the container via the API \"compress+format\" facade (one canonicalized convert-with-size-cap pass); see per_value_availability + ADR-0023 + FORMAT.md. When set, the RESOLVED target container determines the valid codec/audio_codec/faststart sets \u2014 an absent/default codec resolves to a container-valid one (e.g. webm -> vp9) and is never rejected; only a caller-EXPLICIT incompatible value is invalid_options.",
+              "description": "Output container. original = keep the input container (default, same-format compression). Non-`original` values re-target the container via the API \"compress+format\" facade (one canonicalized convert-with-size-cap pass); see FORMAT.md. When set, the RESOLVED target container determines the valid codec/audio_codec/faststart sets \u2014 an absent/default codec resolves to a container-valid one (e.g. webm -> vp9) and is never rejected; only a caller-EXPLICIT incompatible value is rejected.",
               "per_value_availability": {
                 "mp4": {
                   "availability": "planned"
@@ -2112,22 +2127,22 @@
               "depends_on": {
                 "encoding_mode": "target_size"
               },
-              "description": "Target output file size in bytes (min 1MiB). The libx264 two-pass encode lands the output at or under the target (a safety undershoot + audio reserve apply). mp4/MOV output only \u2014 webm/ogg + long-form return `feature_not_available` until VP9 two-pass ships.",
+              "description": "Target output file size in bytes (min 1MiB). A two-pass encode lands the output at or under the target (a safety undershoot + audio reserve apply). mp4/MOV output only \u2014 webm/ogg + long-form return `feature_not_available` until two-pass for this container ships.",
               "min": 1048576,
               "type": "integer"
             },
             "trim_end": {
-              "description": "Trim from end in seconds (absent = to the end). Removes this many seconds from the end; with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. STABLE \u2014 see `trim_start` (short-form only; long-form \u2192 `feature_not_available`).\n",
+              "description": "Trim from end in seconds (absent = to the end). Removes this many seconds from the end; with `trim_start` the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. See `trim_start` (short-form only; long-form is not supported).\n",
               "min": 0,
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds (absent = from the start). STABLE (qZI5EK9j) \u2014 the compress-video worker cuts the clip before encoding (input-side ffmpeg `-ss`/`-t`; lambdas PR #258), SAME FROM-END semantic as convert/merge: the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. SHORT-FORM only \u2014 for long-form video the server returns `feature_not_available` (trim a short clip, or chain a `split`); see the compress.video.trim.longform constraint.\n",
+              "description": "Trim from beginning in seconds (absent = from the start). The clip is cut before encoding, with the same from-end semantic as convert/merge: the kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. SHORT-FORM only \u2014 for long-form video this is not supported (trim a short clip, or chain a `split`); see the compress.video.trim.longform constraint.\n",
               "min": 0,
               "type": "float"
             },
             "width": {
-              "description": "Output width in pixels. Must be an EVEN integer >= 2 (yuv420p chroma-subsampling); odd values are rejected as invalid_options by the encoder.",
+              "description": "Output width in pixels. Must be an even integer \u2265 2; odd values are rejected by the encoder.",
               "max": 7680,
               "min": 2,
               "type": "integer"
@@ -2236,7 +2251,7 @@
             },
             "pages": {
               "default": "1",
-              "description": "Page selection (e.g. '1-5,8'). Each resolved page produces a\nseparate output file. **Maximum 200 resolved entries per\nrequest** \u2014 aligns with the `OperationResult.outputs[]`\n`maxItems: 200` cap per ADR-0009 \u00a7D5\n(`docs/decisions/0009-multi-output-result-envelope.md`).\nExpressions resolving to more than 200 entries (e.g.\n`'1-201'`, `'1-100,102-205'`) are out of contract.\nDuplicate or overlapping entries (e.g. `'1,1'`,\n`'1-100,50-150'`) are counted toward the cap as parsed;\ndeduplication, if any, is a runtime concern and is NOT part\nof this contract. Enforcement at the API edge validator and\nthe Lambda runtime is tracked under WgCqnMRa follow-ups\n(cross-repo: API + Lambdas `bFlEXizR`).\n",
+              "description": "Page selection (e.g. '1-5,8'). Each resolved page produces a\nseparate output file. **Maximum 200 resolved entries per\nrequest** \u2014 aligns with the `OperationResult.outputs[]`\n`maxItems: 200` cap. Expressions resolving to more than 200\nentries (e.g. `'1-201'`, `'1-100,102-205'`) are out of\ncontract. Duplicate or overlapping entries (e.g. `'1,1'`,\n`'1-100,50-150'`) are counted toward the cap as parsed;\ndeduplication, if any, is a runtime concern and is NOT part\nof this contract.\n",
               "type": "string"
             }
           }
@@ -2256,9 +2271,8 @@
           ],
           "options": {
             "auto_orient": {
-              "availability": "planned",
               "default": true,
-              "description": "Bake EXIF orientation into the pixels on the transcoder (format-change) route \u2014 mirrors compress.image.auto_orient. `planned` \u2014 the convert worker does not yet apply the orientation transform. Declared HERE so the API re-validates the rewritten Output convert op.",
+              "description": "Bake EXIF orientation into the pixels (honour the camera/device rotation tag) so the output displays upright everywhere, then drop the now-redundant orientation tag. Default `true`; no-op for inputs without an orientation tag. The format-change re-encodes from pixels, so other (non-orientation) metadata is not carried across.",
               "honored_on": [
                 "format_change"
               ],
@@ -2268,7 +2282,7 @@
               "depends_on": {
                 "output_format": "jpeg"
               },
-              "description": "Background colour as a 6-digit hex (`#RRGGBB`, e.g. `#ffffff`) for transparent images converted to JPEG (the format-change\u2192JPEG alpha-flatten \u2014 Output's transparency fill control). HEX ONLY: the worker honours only `#RRGGBB` and silently drops a CSS named colour (e.g. `magenta`) to the white default, so the `pattern` rejects a non-hex value as `invalid_options` rather than advertising an inert free-form string (e2e staging-verified 2026-06-22).",
+              "description": "Background colour as a 6-digit hex (`#RRGGBB`, e.g. `#ffffff`) for transparent images converted to JPEG (the alpha-flatten fill colour when converting to JPEG). HEX ONLY: a non-hex value (e.g. a CSS named colour) is rejected rather than silently falling back.",
               "honored_on": [
                 "format_change"
               ],
@@ -2278,7 +2292,7 @@
             "color_profile": {
               "availability": "planned",
               "default": "keep",
-              "description": "ICC colour-profile handling on the transcoder (format-change) route \u2014 mirrors compress.image.color_profile (its own control, decoupled from metadata). `keep` (default) = preserve; `srgb` = convert to sRGB (incl. CMYK\u2192sRGB); `strip` = drop. `planned` \u2014 the convert worker re-encodes from pixels and does not yet preserve/convert the profile. Declared HERE so the API re-validates the rewritten Output convert op.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile. `planned` \u2014 not yet supported.",
               "honored_on": [
                 "format_change"
               ],
@@ -2296,7 +2310,7 @@
                 "logic": "or",
                 "width": "set"
               },
-              "description": "Resize mode. `max` (default) = fit within bounds, preserving aspect ratio and NEVER upscaling \u2014 it caps at the source dimensions. This IS the \"no-enlarge\" behaviour (there is no separate `no_enlarge` flag \u2014 the worker has no such key). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past source). Applies only when width or height is set.",
+              "description": "Resize mode. `max` (default) = fit within the given bounds, preserving aspect ratio and never upscaling (caps at the source dimensions \u2014 this is the \"no-enlarge\" behaviour). `crop`/`scale` = exact dimensions (`scale` deliberately enlarges past the source). Applies only when width or height is set.",
               "honored_on": [
                 "format_change"
               ],
@@ -2308,7 +2322,7 @@
               ]
             },
             "height": {
-              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Not honored for SVG input. See `width`.",
+              "description": "Target height in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Not honored for SVG input. See `width`.",
               "honored_on": [
                 "format_change"
               ],
@@ -2319,7 +2333,7 @@
             "metadata": {
               "availability": "planned",
               "default": "strip",
-              "description": "Metadata handling on the format-change (convert/transcoder) route. `strip` = remove all EXIF/IPTC/XMP (default), `keep` = preserve. `planned` \u2014 the convert worker re-encodes from pixels and does not yet preserve metadata across a format change, so the API returns feature_not_available (rather than \"Unknown option\" on a format-change request \u2014 e2e/api flagged 2026-06-23). This is a new (planned) surface, so it carries no deprecated `all` alias \u2014 unlike compress.image.metadata, which keeps `all` for its existing callers. Stable-flip gated on lambdas proving convert-route metadata preservation; the honoured target subset may narrow (avif/heic targets re-encode and cannot keep).",
+              "description": "Metadata handling across a format change. `strip` = remove all EXIF/IPTC/XMP (default), `keep` = preserve. `planned` \u2014 metadata is not yet preserved across a format change. The honoured target subset may narrow (avif/heic targets are re-encoded and cannot keep metadata).",
               "honored_on": [
                 "format_change"
               ],
@@ -2360,7 +2374,7 @@
               "type": "integer"
             },
             "width": {
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). The convert worker resizes (Lanczos) before encode; single transformed output. NOT honored for SVG input (the worker rejects svg resize). Input-gated \u2014 see the resize comment above.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Resizes the image before encoding (one transformed output). NOT honored for SVG input. Optional; omit to keep the source dimensions.",
               "honored_on": [
                 "format_change"
               ],
@@ -2388,7 +2402,6 @@
           ],
           "options": {
             "auto_orient": {
-              "availability": "planned",
               "default": true,
               "depends_on": {
                 "output_format": [
@@ -2400,7 +2413,7 @@
                   "tiff"
                 ]
               },
-              "description": "Bake EXIF orientation into the pixels (format-change route) \u2014 mirrors compress.image.auto_orient. `planned`. SCOPED via depends_on to the STILL-IMAGE targets only \u2014 the video targets (mp4/webm) carry no EXIF orientation. Declared HERE so the API re-validates the rewritten Output op.",
+              "description": "Bake EXIF orientation into the pixels so the output displays upright everywhere. Default `true`; no-op for inputs without an orientation tag (a GIF carries none, so this is a no-op for GIF input). Scoped to the STILL-IMAGE targets only \u2014 the video targets (mp4/webm) carry no EXIF orientation.",
               "honored_on": [
                 "format_change"
               ],
@@ -2410,7 +2423,7 @@
               "depends_on": {
                 "output_format": "jpeg"
               },
-              "description": "Background colour as a 6-digit hex (`#RRGGBB`) for a transparent GIF flattened to JPEG (alpha-flatten). HEX ONLY \u2014 non-hex is rejected as `invalid_options` (see convert.image.background).",
+              "description": "Background colour as a 6-digit hex (`#RRGGBB`) for a transparent GIF flattened to JPEG (alpha-flatten). HEX ONLY \u2014 a non-hex value is rejected (see convert.image.background).",
               "honored_on": [
                 "format_change"
               ],
@@ -2430,7 +2443,7 @@
                   "tiff"
                 ]
               },
-              "description": "ICC colour-profile handling (format-change route) \u2014 mirrors compress.image.color_profile. `keep` (default)/`srgb`/`strip`. `planned`. SCOPED via depends_on to the STILL-IMAGE targets only \u2014 the video targets (mp4/webm) carry no ICC, so color_profile is not accepted for a gif\u2192video output (it would be inert). Declared HERE so the API re-validates the rewritten Output op.",
+              "description": "Colour-profile handling \u2014 `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB; `strip` = drop the profile. `planned` \u2014 not yet supported. Scoped to the STILL-IMAGE targets only \u2014 the video targets (mp4/webm) carry no colour profile, so this is not accepted for a gif\u2192video output.",
               "honored_on": [
                 "format_change"
               ],
@@ -2470,7 +2483,7 @@
                   "tiff"
                 ]
               },
-              "description": "Resize-inside-Output: target height in pixels (1-16384; width*height <= max_output_pixels). Scoped to the still-image targets \u2014 resized gif\u2192video unproven, see `width`.",
+              "description": "Target height in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Scoped to the still-image targets \u2014 see `width`.",
               "honored_on": [
                 "format_change"
               ],
@@ -2481,7 +2494,7 @@
             "metadata": {
               "availability": "planned",
               "default": "strip",
-              "description": "Metadata handling on the format-change route (still-image targets). `planned` \u2014 mirrors convert.image.metadata (the convert worker does not yet preserve metadata across a format change). The video targets carry no EXIF/IPTC/XMP.",
+              "description": "Metadata handling for the still-image targets. `planned` \u2014 metadata is not yet preserved across a format change. The video targets carry no EXIF/IPTC/XMP.",
               "honored_on": [
                 "format_change"
               ],
@@ -2492,7 +2505,7 @@
               ]
             },
             "output_format": {
-              "description": "Target format. The still-image targets (jpeg/png/webp/avif/gif/tiff) take the first frame / rasterise. `mp4` / `webm` are the GIF\u2192VIDEO transcode targets \u2014 the animated GIF becomes a muted, play-once video (`mp4` = H.264 / yuv420p / +faststart, plays everywhere; `webm` = VP9, smaller). STABLE \u2014 worker-proven on staging (lambdas PR #268, deployed git-6783cb9: gif\u2192mp4 ~70% smaller / gif\u2192webm ~84% smaller, valid containers + worker-set Content-Type, real decode-every-frame transcode). GIFs are silent (no audio stream); the GIF infinite-loop becomes a playback attribute (`<video loop>`) the player sets, NOT baked into the file.",
+              "description": "Target format. The still-image targets (jpeg/png/webp/avif/gif/tiff) take the first frame / rasterise. `mp4` / `webm` are the GIF\u2192VIDEO transcode targets \u2014 the animated GIF becomes a muted, play-once video (`mp4` = H.264, plays everywhere; `webm` = VP9, smaller), typically far smaller than the original GIF. GIFs are silent (no audio stream); the GIF infinite-loop becomes a playback attribute (`<video loop>`) the player sets, NOT baked into the file.",
               "required": true,
               "type": "enum",
               "values": [
@@ -2515,7 +2528,7 @@
                   "avif"
                 ]
               },
-              "description": "Output quality for the lossy STILL-IMAGE targets (jpeg/webp/avif). The video targets (mp4/webm) use a sensible default encode quality in v1 \u2014 there is no exposed CRF knob yet (planned-first; may be added later).",
+              "description": "Output quality for the lossy STILL-IMAGE targets (jpeg/webp/avif). The video targets (mp4/webm) use a sensible default encode quality in v1 \u2014 there is no exposed CRF knob yet (may be added later).",
               "honored_on": [
                 "format_change"
               ],
@@ -2534,7 +2547,7 @@
                   "tiff"
                 ]
               },
-              "description": "Resize-inside-Output: target width in pixels (1-16384; width*height <= max_output_pixels). SCOPED via depends_on to the STILL-IMAGE targets \u2014 the bare gif\u2192video transcode proof (#268) did NOT prove resize-while-transcoding, so width/height are not accepted for the mp4/webm video targets (prove-before- flip; else the API would accept+route+bill a resized gif\u2192video the worker may not honour). Un-scope per-target when lambdas proves resized gif\u2192video.",
+              "description": "Target width in pixels (1-16384; width \u00d7 height must not exceed the group's maximum output area). Scoped to the STILL-IMAGE targets only \u2014 resizing while transcoding to the mp4/webm video targets is not yet supported, so width/height are not accepted for the video targets.",
               "honored_on": [
                 "format_change"
               ],
@@ -2553,7 +2566,7 @@
               "depends_on": {
                 "output_format": "jpeg"
               },
-              "description": "Background colour as a 6-digit hex (`#RRGGBB`) for transparent SVG rasterised to JPEG (alpha-flatten). HEX ONLY \u2014 non-hex is rejected as `invalid_options` (see convert.image.background).",
+              "description": "Background colour as a 6-digit hex (`#RRGGBB`) for transparent SVG rasterised to JPEG (alpha-flatten). HEX ONLY \u2014 a non-hex value is rejected (see convert.image.background).",
               "honored_on": [
                 "format_change"
               ],
@@ -2618,7 +2631,7 @@
               "depends_on": {
                 "output_format": "gif"
               },
-              "description": "GIF dithering method (ffmpeg `paletteuse`). `bayer` is a good size/quality balance; `none` is smallest (may band).\n",
+              "description": "GIF dithering method. `bayer` is a good size/quality balance; `none` is smallest (may band).\n",
               "type": "enum",
               "values": [
                 "none",
@@ -2633,7 +2646,7 @@
               "depends_on": {
                 "output_format": "gif"
               },
-              "description": "Output frame rate for video \u2192 GIF (ffmpeg `fps` filter). Lower = fewer frames = smaller file. Video \u2192 GIF only.\n",
+              "description": "Output frame rate for video \u2192 GIF. Lower = fewer frames = smaller file. Video \u2192 GIF only.\n",
               "max": 50,
               "min": 1,
               "type": "float"
@@ -2652,7 +2665,7 @@
               "depends_on": {
                 "output_format": "gif"
               },
-              "description": "GIF palette size (ffmpeg `palettegen` max_colors). Fewer colors = smaller file.\n",
+              "description": "GIF palette size (the palette generation max colours). Fewer colors = smaller file.\n",
               "max": 256,
               "min": 2,
               "type": "integer"
@@ -2674,7 +2687,7 @@
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds (absent = from the start). The convert-video worker cuts the clip before transcoding \u2014 the user's \"trim a video then make a GIF\" path. The kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Live for all video outputs (gif/mp4/webm/ogg).\n",
+              "description": "Trim from beginning in seconds (absent = from the start). The clip is cut before transcoding \u2014 the user's \"trim a video then make a GIF\" path. The kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Live for all video outputs (gif/mp4/webm/ogg).\n",
               "min": 0,
               "type": "float"
             },
@@ -2720,7 +2733,7 @@
     "custom_luma": {
       "availability": "planned",
       "default": false,
-      "description": "Apply a caller-uploaded luma matte (transition-mask) over a base\nvideo to produce a custom luma-matte transition effect. Inspired\nby Cloudinary's deprecated luma-matte custom transitions and\nintended as a paid-tier (`pro`+) creative feature.\n\n**NOT** related to FFmpeg's `xfade=custom` filter (which is an\nexpression-mode parameter on the same `xfade` filter). The\n`merge.transition.custom` value is tagged `planned` as an advisory\nthat points callers at this dedicated operation for caller-uploaded\nluma-matte transitions.\n\nMulti-input: exactly one input with `role: base` (the source\nvideo being transitioned) + exactly one input with\n`role: transition_mask` (the luma matte \u2014 a video whose pixel\nluminance drives the transition reveal \u2014 bright = revealed,\ndark = held). Each input is a `MultiInputSource` \u2014 imported\nexternally, referenced from a vault connection, or an upstream\n`job_output` (uploads are NOT referenced directly inside inputs[]).\nAn uploaded base or mask enters via a `passthrough` source job\nreferenced by `{ type: job_output, from: <id> }` (per ticket\n4som89Uh).\n\nPer ADR-0001 \u00a71.3 (Tension 1 \u2014 `planned` operations return\n`feature_not_available` HTTP 422 until Lambda support ships).\nPer ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F4 round 6\n(codex-corrected \u2014 `xfade=custom` is an expression, not a\ntransition; this operation is the deliberate alternative).\n",
+      "description": "Apply a caller-uploaded luma matte (transition-mask) over a base\nvideo to produce a custom luma-matte transition effect. Inspired\nby Cloudinary's deprecated luma-matte custom transitions and\nintended as a paid-tier (`pro`+) creative feature.\n\n**NOT** related to the `xfade=custom` expression-mode transition\nparameter. The `merge.transition.custom` value is tagged `planned`\nas an advisory that points callers at this dedicated operation for\ncaller-uploaded luma-matte transitions.\n\nMulti-input: exactly one input with `role: base` (the source\nvideo being transitioned) + exactly one input with\n`role: transition_mask` (the luma matte \u2014 a video whose pixel\nluminance drives the transition reveal \u2014 bright = revealed,\ndark = held). Each input is imported\nexternally, referenced from a vault connection, or an upstream\n`job_output` (uploads are NOT referenced directly inside inputs[]).\nAn uploaded base or mask enters via a `passthrough` source job\nreferenced by `{ type: job_output, from: <id> }` (per ticket\n4som89Uh).\n\n`planned` \u2014 not yet supported.\n",
       "input_model": "multi",
       "max_inputs": 2,
       "mime_groups": {
@@ -2807,11 +2820,11 @@
     },
     "image_watermark": {
       "default": false,
-      "description": "Apply an image overlay onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). Each input\nis a `MultiInputSource` \u2014 an external_import handle, a vault\nconnection, or an upstream `job_output` (uploads are NOT referenced\ndirectly inside inputs[]). To use an uploaded base or overlay, feed\nit through a `passthrough` source job and reference that job via\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until Lambda\nsupport ships. Per Tension 1 (ADR-0001) + plan v5 \u00a7F4 round 6.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`) which routes through\nFFmpeg overlay + re-encode. Per ADR-0013.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 100 megapixels for image bases (raised from 25MP \u2014\nlambdas #250, proven on the 45.9MP report case); per-frame caps for\nanimated GIF bases will be defined when the corresponding Lambda\nsupport ships. Per ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n",
+      "description": "Apply an image overlay onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). Each input\nis an external_import handle, a vault\nconnection, or an upstream `job_output` (uploads are NOT referenced\ndirectly inside inputs[]). To use an uploaded base or overlay, feed\nit through a `passthrough` source job and reference that job via\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until backend\nsupport ships.\n\nTIFF (image/tiff) and BMP (image/bmp) bases are likewise advertised\nas `planned` via the parallel `image_tiff` / `image_bmp` mime_groups.\nBoth formats are already decodable and the worker's encode arms are a\ncheap add (shared `image`-crate encoders), so each flips to `stable`\nonce its arm ships and is proven. Because watermark output mirrors the\ninput format (`produces: same_as_input`), advertising a base format is\nonly honest when the worker can both decode AND encode it \u2014 which\nholds for TIFF/BMP but not for HEIC/AVIF (no encoder) or SVG (cannot\nre-emit svg from a rasterised composite); those stay out of scope.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`), which overlays and\nre-encodes the video.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 100 megapixels for image bases; per-frame caps for\nanimated GIF bases will be defined when the corresponding backend\nsupport ships.\n",
       "features": {
         "multi_overlay_stack": {
           "availability": "planned",
-          "description": "Allow up to 8 overlay inputs per job (currently capped at 1\noverlay). Per-overlay placement via JobInputV2.per_input_options.\nLambda-side support not yet confirmed; tagged planned per\nADR-0001 \u00a71.4. Scope is image-base only at the time this feature\nwas specified; extension to GIF / video bases tracks alongside\nthe corresponding mime_group `planned` \u2192 `stable` flips.\n"
+          "description": "Allow up to 8 overlay inputs per job (currently capped at 1\noverlay). Per-overlay placement via per-input placement options.\nBackend support not yet confirmed; tagged planned. Scope is\nimage-base only at the time this feature was specified; extension\nto GIF / video bases tracks alongside the corresponding mime_group\n`planned` \u2192 `stable` flips.\n"
         }
       },
       "input_model": "multi",
@@ -2866,6 +2879,54 @@
             }
           }
         },
+        "image_bmp": {
+          "availability": "planned",
+          "mimes": [
+            "image/bmp"
+          ],
+          "options": {
+            "anchor": {
+              "default": "bottom_right",
+              "description": "9-grid anchor position on the base image. Combined with\nmargin_x and margin_y for fine-grained offset from the\nanchor point.\n",
+              "type": "enum",
+              "values": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "center_left",
+                "center",
+                "center_right",
+                "bottom_left",
+                "bottom_center",
+                "bottom_right"
+              ]
+            },
+            "margin_x": {
+              "default": "0px",
+              "description": "Horizontal offset from the anchor in pixels or percentage of\nbase width. Anchor-relative; positive moves toward the image\ncentre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_x` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "margin_y": {
+              "default": "0px",
+              "description": "Vertical offset from the anchor in pixels or percentage of\nbase height. Anchor-relative; positive moves toward the image\ncentre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_y` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "opacity": {
+              "default": 0.5,
+              "description": "Overlay opacity (0 = fully transparent, 1 = fully opaque).\nClamped to range.\n",
+              "max": 1.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "overlay_width": {
+              "description": "Optional overlay width as pixels or percentage of base\nwidth. Aspect ratio preserved. Omit to use the original\noverlay size.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            }
+          }
+        },
         "image_gif": {
           "availability": "planned",
           "mimes": [
@@ -2897,6 +2958,54 @@
             "margin_y": {
               "default": "0px",
               "description": "Vertical offset from the anchor in pixels or percentage of\nbase height. Anchor-relative; positive moves toward the\nframe centre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_y` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "opacity": {
+              "default": 0.5,
+              "description": "Overlay opacity (0 = fully transparent, 1 = fully opaque).\nClamped to range.\n",
+              "max": 1.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "overlay_width": {
+              "description": "Optional overlay width as pixels or percentage of base\nwidth. Aspect ratio preserved. Omit to use the original\noverlay size.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            }
+          }
+        },
+        "image_tiff": {
+          "availability": "planned",
+          "mimes": [
+            "image/tiff"
+          ],
+          "options": {
+            "anchor": {
+              "default": "bottom_right",
+              "description": "9-grid anchor position on the base image. Combined with\nmargin_x and margin_y for fine-grained offset from the\nanchor point.\n",
+              "type": "enum",
+              "values": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "center_left",
+                "center",
+                "center_right",
+                "bottom_left",
+                "bottom_center",
+                "bottom_right"
+              ]
+            },
+            "margin_x": {
+              "default": "0px",
+              "description": "Horizontal offset from the anchor in pixels or percentage of\nbase width. Anchor-relative; positive moves toward the image\ncentre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_x` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "margin_y": {
+              "default": "0px",
+              "description": "Vertical offset from the anchor in pixels or percentage of\nbase height. Anchor-relative; positive moves toward the image\ncentre.\n\n**`anchor: center` exception.** Same rejection rule as the\n`image` mime_group \u2014 non-zero `margin_y` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
             },
@@ -3008,12 +3117,12 @@
               ]
             },
             "trim_end": {
-              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced by the worker, not statically bounded\nhere.\n",
+              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\n",
               "min": 0,
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced by the worker, not statically\nbounded here.\n",
+              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\n",
               "min": 0,
               "type": "float"
             }
@@ -3070,7 +3179,7 @@
               "type": "integer"
             },
             "output_type": {
-              "description": "Result format: animated GIF or slideshow video. No default \u2014 caller must pick explicitly (image/collage and document/PDF concat are not supported by the V1 merge Lambda).",
+              "description": "Result format: animated GIF or slideshow video. No default \u2014 caller must pick explicitly (image/collage and document/PDF concat are not supported by V1 merge).",
               "required": true,
               "type": "enum",
               "values": [
@@ -3637,12 +3746,12 @@
               ]
             },
             "trim_end": {
-              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced by the worker, not statically bounded\nhere.\n",
+              "description": "Trim from end in seconds (per-input). Applied to this input\nBEFORE any transition/crossfade. Matches the `compress` trim\nsemantic. No `max` \u2014 the upper bound is the input's own\nduration, enforced at processing time, not statically bounded\nhere.\n",
               "min": 0,
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced by the worker, not statically\nbounded here.\n",
+              "description": "Trim from beginning in seconds (per-input). Applied to this\ninput BEFORE any transition/crossfade. Matches the\n`compress` trim semantic. No `max` \u2014 the upper bound is the\ninput's own duration, enforced at processing time, not statically\nbounded here.\n",
               "min": 0,
               "type": "float"
             }
@@ -3677,7 +3786,7 @@
     "passthrough": {
       "availability": "beta",
       "default": false,
-      "description": "Inert lossless source operation. A single-input source job whose\nSOLE operation is `passthrough` emits its source bytes UNCHANGED \u2014\nno compression, no transformation, no Lambda dispatch. The API\nself-completes the job at workflow-create/publish time: the job's\nterminal output IS the upload's `{bucket, key}` unchanged.\n\n**Purpose.** Lets an uploaded file enter a multi-input operation\n(`merge` / `archive` / `image_watermark` / etc.) LOSSLESSLY. Since\nV2 narrows `JobInputV2.source` to exclude upload-direct (`MultiInputSource`\n\u2014 job_output / external_import / connection only), an upload that\nmust feed a multi-input op enters via a `passthrough` source job\nreferenced downstream by `{ type: job_output, from: <id> }`. This\npreserves billing / DAG / lineage that direct upload-in-inputs[]\nwould bypass.\n\n**Distinct from `operations: []`.** An empty `operations[]` on a\nsingle-input upload job KEEPS its implicit-compress meaning (see\n`POST /api/workflows` description). `passthrough` is the EXPLICIT\nlossless opt-out chosen via the existing rule \"non-empty\n`operations[]` without `compress` = compression opt-out\" \u2014 it is a\nsole, named operation, not an empty chain.\n\n**Never published to SNS.** Because the API self-completes the job\nat publish, `passthrough` is INTENTIONALLY absent from the AsyncAPI\nrouting enums (`OperationType`, `OperationRequestAttributes.operation_type`)\nand has no `ops-passthrough` queue. It never appears on the wire as\na request message.\n\nMedia-agnostic (no `mime_groups`): it accepts any uploaded MIME and\ncopies it verbatim, so there are no per-MIME options or constraints.\n`availability: beta` \u2014 the API self-completion path is LIVE (the\ninputs[]-narrowing + passthrough self-complete mechanism is deployed),\nso workflow-create accepts `passthrough` source jobs and MUST NOT\nreturn `feature_not_available`. Activated per ticket\n[`4som89Uh`](https://trello.com/c/4som89Uh) + ADR-0004 (planned\u2192beta\nflip; self-complete code deployed API-side).\n",
+      "description": "Inert lossless source operation. A single-input source job whose\nSOLE operation is `passthrough` emits its source bytes UNCHANGED \u2014\nno compression, no transformation, no backend dispatch. The API\nself-completes the job at workflow-create/publish time: the job's\nterminal output IS the upload's `{bucket, key}` unchanged.\n\n**Purpose.** Lets an uploaded file enter a multi-input operation\n(`merge` / `archive` / `image_watermark` / etc.) LOSSLESSLY. Since\nV2 narrows the input source to exclude upload-direct (a multi-input source\n\u2014 job_output / external_import / connection only), an upload that\nmust feed a multi-input op enters via a `passthrough` source job\nreferenced downstream by `{ type: job_output, from: <id> }`. This\npreserves billing / DAG / lineage that direct upload-in-inputs[]\nwould bypass.\n\n**Distinct from `operations: []`.** An empty `operations[]` on a\nsingle-input upload job KEEPS its implicit-compress meaning (see\n`POST /api/workflows` description). `passthrough` is the EXPLICIT\nlossless opt-out chosen via the existing rule \"non-empty\n`operations[]` without `compress` = compression opt-out\" \u2014 it is a\nsole, named operation, not an empty chain.\n\n**Never published to SNS.** Because the API self-completes the job\nat publish, `passthrough` is INTENTIONALLY absent from the AsyncAPI\nrouting enums (`OperationType`, `OperationRequestAttributes.operation_type`)\nand has no `ops-passthrough` queue. It never appears on the wire as\na request message.\n\nMedia-agnostic (no `mime_groups`): it accepts any uploaded MIME and\ncopies it verbatim, so there are no per-MIME options or constraints.\n`availability: beta` \u2014 the API self-completion path is LIVE (the\ninputs[]-narrowing + passthrough self-complete mechanism is deployed),\nso workflow-create accepts `passthrough` source jobs and MUST NOT\nreturn `feature_not_available`. Activated per ticket\n[`4som89Uh`](https://trello.com/c/4som89Uh) (planned\u2192beta flip;\nself-complete code deployed API-side).\n",
       "input_model": "single"
     },
     "render_variants": {
@@ -3771,11 +3880,11 @@
     "split": {
       "availability": "beta",
       "default": false,
-      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three shared modes** (audio + video; the mode discriminator\ngates which option applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**Plus an audio-only `silence` mode** (`beta`, gated by the\n`silence_mode_audio` feature): cut at detected silence gaps via\nthe worker's ffmpeg `silencedetect` filter. Video stays\nthree-mode.\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches FFmpeg /\nCloudinary / Shotstack / AWS MediaConvert conventions.\n\n**200-output hard cap** per ADR-0009 \u00a7D5\n(`OperationResult.outputs[].maxItems: 200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- `silence` (audio): resolved segment count (detected gaps + 1)\n  `<= 200`; preflight rejects as `invalid_options` (422)\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming**: 3-digit zero-padded \u2014 `output-001` ..\n`output-200`. Matches the convert PDF\u2192N precedent.\n\n**Output envelope binding** (per ADR-0014 + ADR-0009 \u00a7D2):\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based gapless page index)\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts. Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate `split-video-fargate`\nLambda (same `split` OperationType, different worker; routing\nvia `processing_class`). No schema-side discriminator beyond MIME\ndetection + `processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(workers live on staging \u2014 shape-stable + opt-in, MUST NOT 422).\nVideo activates **both classes**: `video.processing_class.short_form`\nAND `long_form` are `beta` \u2014 the `split-video-fargate` worker is\ndeployed + wired on staging but NOT yet proven end-to-end\n([`rcwvUKhI`](https://trello.com/c/rcwvUKhI); the first customer-path\nsoak has not completed and the 4GB+ speed-up is unmeasured; the\nlong-form fan-out is flag-gated dark). The `image_gif` and\n`document_pdf` mime_groups stay `availability: planned` until their\ncross-repo Lambda workers ship ([`vKI0CFDu`](https://trello.com/c/vKI0CFDu)\n+ lambdas L1); dispatch returns `feature_not_available` (422) for the\nstill-planned groups/classes until then.\n\nPer ADR-0014.\n",
+      "description": "Fan one input file into N outputs across GIF, PDF, audio, and\nvideo MIME families. Single-input \u2014 one input file per job, fanned\ninto N outputs per the per-mime-group catalog. Mirrors the\n`merge` / `convert` catalog-split-by-mime-group pattern.\n\n**Three shared modes** (audio + video; the mode discriminator\ngates which option applies per the `depends_on` rules in this\nschema):\n- `interval`: split every N numeric-seconds.\n- `count`: split into N equal-duration pieces (integer 2..=200).\n- `cut_points`: explicit cut points in numeric-seconds (strictly\n  increasing, no duplicates, each > 0 and < probed duration).\n\n**Plus an audio-only `silence` mode** (`beta`, gated by the\n`silence_mode_audio` feature): cut at detected silence gaps via\nserver-side silence detection. Video stays three-mode.\n\n**GIF + PDF use range-based selection** instead of three modes:\n- GIF (`image_gif`): `frame_range` REQUIRED + `output_format`\n  enum {png,webp,jpg}.\n- PDF (`document_pdf`): `page_range` OR `page_groups` (mutually\n  exclusive per `depends_on`).\n\n**Wire format**: numeric seconds (floats allowed for sub-second\nprecision). NOT ISO 8601 duration strings. Matches common\nvideo-tooling conventions.\n\n**200-output hard cap** (`OperationResult.outputs[].maxItems:\n200`). Preflight rejects\nrequests exceeding this BEFORE work as `invalid_options` (422).\nCap math by mode:\n- `interval`: `ceil(probed_duration / interval) <= 200`\n- `count`: enforced by the option's `min: 2 max: 200` range\n- `cut_points`: `cut_points.len() + 1 <= 200`\n- `silence` (audio): resolved segment count (detected gaps + 1)\n  `<= 200`; preflight rejects as `invalid_options` (422)\n- PDF: resolved page count after expansion `<= 200`\n  (cross-ref [`WgCqnMRa`](https://trello.com/c/WgCqnMRa))\n- GIF: resolved frame count after expansion `<= 200`\n\n**Output naming**: 3-digit zero-padded \u2014 `output-001` ..\n`output-200`. Matches the convert PDF\u2192N precedent.\n\n**Output envelope binding**:\n- `image_gif`: `PositionIndexed` (frame stream-position 0-based\n  ordinal)\n- `document_pdf`: `PageIndexed` (1-based gapless page index)\n- `audio`: `PositionIndexed` (cut stream-position ordinal)\n- `video`: `PositionIndexed` (cut stream-position ordinal)\n\n**`precision` flag** (audio + video only): `fast` (default) =\npacket-boundary approximate cuts; `exact` = re-encode-aligned\nprecise cuts. Mime_group scoping is the gate \u2014 precision does\nNOT apply to GIF or PDF (frame extraction is exact and PDF page\nselection is exact by definition).\n\n**Long-form video** routes to a separate long-form processing\npath (same `split` OperationType; routing via `processing_class`).\nNo schema-side discriminator beyond MIME detection +\n`processing_class`.\n\n`availability: beta` for the `audio` and `video` mime_groups\n(shape-stable + opt-in, MUST NOT 422). Video activates **both\nclasses**: `video.processing_class.short_form` AND `long_form` are\n`beta`. The `image_gif` and `document_pdf` mime_groups stay\n`availability: planned` until their cross-repo backend support ships;\ndispatch returns `feature_not_available` (422) for the still-planned\ngroups/classes until then.\n",
       "features": {
         "silence_mode_audio": {
           "availability": "beta",
-          "description": "Silence-detect cut mode for audio (`mode: silence` \u2014\nserver-side silence detection in the audio split worker).\n`beta`: shape-stable + opt-in. The worker is built; the mode\nships dark until the API regenerates enum validation to accept\n`mode: silence`. The `silence` enum value carries a matching\n`per_value_availability: beta` on `audio.mode`.\n"
+          "description": "Silence-detect cut mode for audio (`mode: silence` \u2014\nserver-side silence detection). `beta`: shape-stable + opt-in.\nThe mode ships dark until the API regenerates enum validation\nto accept `mode: silence`. The `silence` enum value carries a\nmatching `per_value_availability: beta` on `audio.mode`.\n"
         }
       },
       "input_model": "single",
@@ -3843,7 +3952,7 @@
             },
             "precision": {
               "default": "fast",
-              "description": "Cut precision. Under `fast`, audio cuts are\npacket-boundary approximate (drift bounded by codec\npacket size \u2014 typically <= 23ms for AAC, <= 26ms for\nMP3). Under `exact`, the Lambda re-encodes to align cuts\nprecisely at the requested timestamps (slower, larger\noutput, but sample-accurate).\n",
+              "description": "Cut precision. Under `fast`, audio cuts are\npacket-boundary approximate (drift bounded by codec\npacket size \u2014 typically <= 23ms for AAC, <= 26ms for\nMP3). Under `exact`, the server re-encodes to align cuts\nprecisely at the requested timestamps (slower, larger\noutput, but sample-accurate).\n",
               "type": "enum",
               "values": [
                 "fast",
@@ -3994,7 +4103,7 @@
             },
             "precision": {
               "default": "fast",
-              "description": "Cut precision. Under `fast`, video cuts are keyframe-\naligned (drift bounded by GOP size \u2014 typically up to 1-2\nseconds depending on encoder). Under `exact`, the Lambda\nre-encodes to align cuts precisely at the requested\ntimestamps (slower, larger output, but frame-accurate).\n",
+              "description": "Cut precision. Under `fast`, video cuts are keyframe-\naligned (drift bounded by GOP size \u2014 typically up to 1-2\nseconds depending on encoder). Under `exact`, the backend\nre-encodes to align cuts precisely at the requested\ntimestamps (slower, larger output, but frame-accurate).\n",
               "type": "enum",
               "values": [
                 "fast",
@@ -4033,7 +4142,7 @@
     },
     "text_watermark": {
       "default": false,
-      "description": "Render a text overlay onto an image using bundled Liberation Sans\n(SIL OFL). Single-input \u2014 text comes from options, not from a file\ninput. Source capped at 100 megapixels in `single` mode (raised from\n25MP \u2014 lambdas #250, proven on the 45.9MP report case). `tiled` mode\nkeeps the 25-megapixel canvas bound (see `tile_spacing` /\n`watermark_mode`). Per ADR-0004 \u00a7\"V2 JobDefinition\" + plan v5 \u00a7F1.\n\nTwo rendering modes:\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source image (Cinavia / Adobe Stock\n  pattern); rotation default -45\u00b0 and tile_spacing controls density.\n",
+      "description": "Render a text overlay onto an image using bundled Liberation Sans\n(SIL OFL). Single-input \u2014 text comes from options, not from a file\ninput. Source capped at 100 megapixels in `single` mode. `tiled`\nmode keeps the 25-megapixel canvas bound (see `tile_spacing` /\n`watermark_mode`).\n\nTwo rendering modes:\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source image (Cinavia / Adobe Stock\n  pattern); rotation default -45\u00b0 and tile_spacing controls density.\n\nStable today for image/jpeg, image/png, image/webp inputs. TIFF\n(image/tiff) and BMP (image/bmp) inputs are advertised as `planned`\nvia the parallel `image_tiff` / `image_bmp` mime_groups \u2014 both are\nalready decodable and the worker's encode arms are a cheap add\n(shared `image`-crate encoders), so each flips to `stable` once its\narm ships and is proven. Output mirrors the input format\n(`produces: same_as_input`), so a format is only advertised when the\nworker can both decode AND encode it; HEIC/AVIF (no encoder) and SVG\n(cannot re-emit svg from a rasterised composite) stay out of scope.\n",
       "input_model": "single",
       "mime_groups": {
         "image": {
@@ -4083,6 +4192,194 @@
             "margin_x": {
               "default": "0px",
               "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\") or\npercentage of base width (e.g. \"5%\"). Direction is\nanchor-relative. Ignored when watermark_mode: tiled.\n\n**`anchor: center` exception** (watermark_mode: single only).\nWhen the anchor is `center` the centre is the centre \u2014 there\nis no anchor-relative direction. Non-zero `margin_x`\n(anything other than the default `\"0px\"` or the equivalent\n`\"0%\"`) combined with `anchor: center` is rejected by the\nAPI at workflow-create time as `invalid_options` (HTTP 422).\nTo nudge a roughly-centred label, pick a peripheral anchor\n(e.g. `top_left`) and use `margin_x` / `margin_y` to\nposition it. Not applicable to watermark_mode: tiled, where\nanchor + margin are ignored entirely.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "margin_y": {
+              "default": "0px",
+              "description": "Vertical offset from the anchor as pixels or percentage of\nbase height. Ignored when watermark_mode: tiled.\n\n**`anchor: center` exception** (watermark_mode: single only).\nSame rejection rule as `margin_x` \u2014 non-zero `margin_y` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "opacity": {
+              "default": 1.0,
+              "description": "Text overlay opacity. Default 1.0 \u2014 the alpha channel of\n`color` already encodes transparency, so opacity is usually\nleft at 1.0 and transparency is set via the color hex.\n",
+              "max": 1.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "rotation": {
+              "default": -45.0,
+              "description": "Rotation angle in degrees. Default -45\u00b0 suits tiled mode\n(angled diagonal pattern). Clamped to range.\n",
+              "max": 360.0,
+              "min": -360.0,
+              "type": "float"
+            },
+            "text": {
+              "description": "Watermark text. Must be non-empty.\n",
+              "required": true,
+              "type": "string"
+            },
+            "tile_spacing": {
+              "depends_on": {
+                "watermark_mode": "tiled"
+              },
+              "description": "Spacing between tiled labels in pixels. Defaults to font_size\nwhen omitted. Only applies when watermark_mode is tiled.\n",
+              "max": 1000,
+              "min": 0,
+              "type": "integer"
+            },
+            "watermark_mode": {
+              "default": "single",
+              "description": "Rendering mode:\n- `single`: one label placed at the anchor + margin offset.\n- `tiled`: repeated tiles across the entire source image at\n  the rotation angle.\n",
+              "type": "enum",
+              "values": [
+                "single",
+                "tiled"
+              ]
+            }
+          }
+        },
+        "image_bmp": {
+          "availability": "planned",
+          "mimes": [
+            "image/bmp"
+          ],
+          "options": {
+            "anchor": {
+              "default": "bottom_right",
+              "description": "9-grid anchor position. For watermark_mode: single, the text\nlabel is placed at this anchor + margin_x/margin_y offset.\nFor watermark_mode: tiled, anchor is ignored (tiles fill the\nsource image).\n",
+              "type": "enum",
+              "values": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "center_left",
+                "center",
+                "center_right",
+                "bottom_left",
+                "bottom_center",
+                "bottom_right"
+              ]
+            },
+            "color": {
+              "default": "#FFFFFF80",
+              "description": "Text colour as hex RGB (#RRGGBB) or RGBA (#RRGGBBAA).\nDefault is white with 50% alpha.\n",
+              "pattern": "^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$",
+              "type": "string"
+            },
+            "font_family": {
+              "default": "liberation_sans",
+              "description": "Font family. V2.0 ships with bundled Liberation Sans only;\nuser-uploaded fonts are a future extension (separate ticket).\n",
+              "type": "enum",
+              "values": [
+                "liberation_sans"
+              ]
+            },
+            "font_size": {
+              "default": 48.0,
+              "description": "Font size in pixels. Clamped to range.",
+              "max": 512.0,
+              "min": 8.0,
+              "type": "float"
+            },
+            "margin_x": {
+              "default": "0px",
+              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\") or\npercentage of base width (e.g. \"5%\"). Direction is\nanchor-relative. Ignored when watermark_mode: tiled.\n\n**`anchor: center` exception** (watermark_mode: single only).\nNon-zero `margin_x` combined with `anchor: center` is rejected\nby the API at workflow-create time as `invalid_options`\n(HTTP 422). Not applicable to watermark_mode: tiled, where\nanchor + margin are ignored entirely.\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "margin_y": {
+              "default": "0px",
+              "description": "Vertical offset from the anchor as pixels or percentage of\nbase height. Ignored when watermark_mode: tiled.\n\n**`anchor: center` exception** (watermark_mode: single only).\nSame rejection rule as `margin_x` \u2014 non-zero `margin_y` with\n`anchor: center` is rejected by the API at workflow-create\ntime as `invalid_options` (HTTP 422).\n",
+              "pattern": "^\\d+(\\.\\d+)?(px|%)$",
+              "type": "string"
+            },
+            "opacity": {
+              "default": 1.0,
+              "description": "Text overlay opacity. Default 1.0 \u2014 the alpha channel of\n`color` already encodes transparency, so opacity is usually\nleft at 1.0 and transparency is set via the color hex.\n",
+              "max": 1.0,
+              "min": 0.0,
+              "type": "float"
+            },
+            "rotation": {
+              "default": -45.0,
+              "description": "Rotation angle in degrees. Default -45\u00b0 suits tiled mode\n(angled diagonal pattern). Clamped to range.\n",
+              "max": 360.0,
+              "min": -360.0,
+              "type": "float"
+            },
+            "text": {
+              "description": "Watermark text. Must be non-empty.\n",
+              "required": true,
+              "type": "string"
+            },
+            "tile_spacing": {
+              "depends_on": {
+                "watermark_mode": "tiled"
+              },
+              "description": "Spacing between tiled labels in pixels. Defaults to font_size\nwhen omitted. Only applies when watermark_mode is tiled.\n",
+              "max": 1000,
+              "min": 0,
+              "type": "integer"
+            },
+            "watermark_mode": {
+              "default": "single",
+              "description": "Rendering mode:\n- `single`: one label placed at the anchor + margin offset.\n- `tiled`: repeated tiles across the entire source image at\n  the rotation angle.\n",
+              "type": "enum",
+              "values": [
+                "single",
+                "tiled"
+              ]
+            }
+          }
+        },
+        "image_tiff": {
+          "availability": "planned",
+          "mimes": [
+            "image/tiff"
+          ],
+          "options": {
+            "anchor": {
+              "default": "bottom_right",
+              "description": "9-grid anchor position. For watermark_mode: single, the text\nlabel is placed at this anchor + margin_x/margin_y offset.\nFor watermark_mode: tiled, anchor is ignored (tiles fill the\nsource image).\n",
+              "type": "enum",
+              "values": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "center_left",
+                "center",
+                "center_right",
+                "bottom_left",
+                "bottom_center",
+                "bottom_right"
+              ]
+            },
+            "color": {
+              "default": "#FFFFFF80",
+              "description": "Text colour as hex RGB (#RRGGBB) or RGBA (#RRGGBBAA).\nDefault is white with 50% alpha.\n",
+              "pattern": "^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$",
+              "type": "string"
+            },
+            "font_family": {
+              "default": "liberation_sans",
+              "description": "Font family. V2.0 ships with bundled Liberation Sans only;\nuser-uploaded fonts are a future extension (separate ticket).\n",
+              "type": "enum",
+              "values": [
+                "liberation_sans"
+              ]
+            },
+            "font_size": {
+              "default": 48.0,
+              "description": "Font size in pixels. Clamped to range.",
+              "max": 512.0,
+              "min": 8.0,
+              "type": "float"
+            },
+            "margin_x": {
+              "default": "0px",
+              "description": "Horizontal offset from the anchor as pixels (e.g. \"40px\") or\npercentage of base width (e.g. \"5%\"). Direction is\nanchor-relative. Ignored when watermark_mode: tiled.\n\n**`anchor: center` exception** (watermark_mode: single only).\nNon-zero `margin_x` combined with `anchor: center` is rejected\nby the API at workflow-create time as `invalid_options`\n(HTTP 422). Not applicable to watermark_mode: tiled, where\nanchor + margin are ignored entirely.\n",
               "pattern": "^\\d+(\\.\\d+)?(px|%)$",
               "type": "string"
             },
@@ -4184,7 +4481,7 @@
               "depends_on": {
                 "source": "page"
               },
-              "description": "1-based index of the printed page to render, after print-layout pagination is applied. For office formats this is the page in the LibreOffice PDF export \u2014 NOT a 1:1 sheet/slide index: a spreadsheet sheet may span multiple printed pages and multi-sheet workbooks paginate their sheets in order. For PDF inputs it is the PDF page number directly.",
+              "description": "1-based index of the printed page to render, after print-layout pagination is applied. For office formats this is the page in the document's print layout \u2014 NOT a 1:1 sheet/slide index: a spreadsheet sheet may span multiple printed pages and multi-sheet workbooks paginate their sheets in order. For PDF inputs it is the PDF page number directly.",
               "min": 1,
               "type": "integer"
             },
@@ -4232,6 +4529,14 @@
             "image/heic"
           ],
           "options": {
+            "background": {
+              "depends_on": {
+                "format": "jpg"
+              },
+              "description": "Background colour as a 6-digit hex (`#RRGGBB`, e.g. `#ffffff`) for a transparent image (e.g. PNG/WebP with alpha) resized to an opaque JPG thumbnail \u2014 the alpha-flatten fill colour. Mirrors convert.image.background. HEX ONLY: a non-hex value (e.g. a CSS named colour) is rejected rather than advertising an inert free-form string. When omitted, transparency is flattened onto white. JPG output only: PNG/WebP keep alpha, so the flatten (and this option) do not apply.",
+              "pattern": "^#[0-9a-fA-F]{6}$",
+              "type": "string"
+            },
             "fit": {
               "default": "crop",
               "description": "Resize mode",
@@ -4289,6 +4594,70 @@
             }
           }
         },
+        "image_svg": {
+          "availability": "planned",
+          "max_output_pixels": 16000000,
+          "mimes": [
+            "image/svg+xml"
+          ],
+          "options": {
+            "background": {
+              "depends_on": {
+                "format": "jpg"
+              },
+              "description": "Background colour as a 6-digit hex (`#RRGGBB`, e.g. `#ffffff`) for a transparent image (e.g. PNG/WebP with alpha) resized to an opaque JPG thumbnail \u2014 the alpha-flatten fill colour. Mirrors convert.image.background. HEX ONLY: a non-hex value (e.g. a CSS named colour) is rejected rather than advertising an inert free-form string. When omitted, transparency is flattened onto white. JPG output only: PNG/WebP keep alpha, so the flatten (and this option) do not apply.",
+              "pattern": "^#[0-9a-fA-F]{6}$",
+              "type": "string"
+            },
+            "fit": {
+              "default": "crop",
+              "description": "Resize mode",
+              "type": "enum",
+              "values": [
+                "max",
+                "crop",
+                "scale"
+              ]
+            },
+            "format": {
+              "default": "jpg",
+              "description": "Output format for the thumbnail",
+              "type": "enum",
+              "values": [
+                "jpg",
+                "png",
+                "webp"
+              ]
+            },
+            "height": {
+              "description": "Target height in pixels (1-16384; width*height <= 16MP). For image input this is a full resize, not just a small preview.",
+              "max": 16384,
+              "min": 1,
+              "required": true,
+              "type": "integer"
+            },
+            "quality": {
+              "default": 85,
+              "depends_on": {
+                "format": [
+                  "jpg",
+                  "webp"
+                ]
+              },
+              "description": "Output quality for lossy thumbnail formats (jpg/webp): higher = better quality, larger file. Ignored for png (lossless).",
+              "max": 100,
+              "min": 1,
+              "type": "integer"
+            },
+            "width": {
+              "description": "Target width in pixels (1-16384; width*height <= 16MP). For image input this is a full resize, not just a small preview.",
+              "max": 16384,
+              "min": 1,
+              "required": true,
+              "type": "integer"
+            }
+          }
+        },
         "video": {
           "max_output_pixels": 16000000,
           "mimes": [
@@ -4318,7 +4687,7 @@
               ]
             },
             "height": {
-              "description": "Target height in pixels (1-16384; width*height <= 16MP). Rounded down to an even number by the worker.",
+              "description": "Target height in pixels (1-16384; width*height <= 16MP). Rounded down to an even number.",
               "max": 16384,
               "min": 1,
               "required": true,
@@ -4343,7 +4712,7 @@
               "type": "string"
             },
             "width": {
-              "description": "Target width in pixels (1-16384; width*height <= 16MP). Rounded down to an even number by the worker.",
+              "description": "Target width in pixels (1-16384; width*height <= 16MP). Rounded down to an even number.",
               "max": 16384,
               "min": 1,
               "required": true,
@@ -4378,7 +4747,7 @@
     "video_text_watermark": {
       "availability": "planned",
       "default": false,
-      "description": "Render a text overlay onto a base video using bundled Liberation\nSans (SIL OFL) via FFmpeg's `drawtext` filter. Single-input \u2014 the\ntext and its styling come from options, not from a file input.\nPer ADR-0013.\n\n**Dedicated operation, not an extension of `text_watermark`.**\n`text_watermark` renders onto images (single-pass Rust path);\n`video_text_watermark` renders per-frame via FFmpeg drawtext +\nre-encode (overlay = pixel modification, no stream-copy escape).\nDifferent runtime, different deploy unit.\n\n**Audio passthrough.** The base video's audio stream is preserved\nunchanged via FFmpeg stream-copy \u2014 the watermark applies to the\nvisual track only.\n\nTwo rendering modes (mirrors `text_watermark`):\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source frames at the rotation\n  angle.\n\n`availability: planned` until the cross-repo Lambda support ships;\ndispatch returns `feature_not_available` (422) until then. Per\nADR-0013 + lambdas pre-launch epic Wave A (ticket\n[`4NrRPCgh`](https://trello.com/c/4NrRPCgh)).\n",
+      "description": "Render a text overlay onto a base video using bundled Liberation\nSans (SIL OFL). Single-input \u2014 the text and its styling come from\noptions, not from a file input.\n\n**Dedicated operation, not an extension of `text_watermark`.**\n`text_watermark` renders onto images (single-pass); per-frame video\ntext rendering requires a re-encode (overlay = pixel modification,\nno stream-copy escape). Different runtime.\n\n**Audio passthrough.** The base video's audio stream is preserved\nunchanged (stream-copied) \u2014 the watermark applies to the visual\ntrack only.\n\nTwo rendering modes (mirrors `text_watermark`):\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source frames at the rotation\n  angle.\n\n`availability: planned` until the cross-repo backend support ships;\ndispatch returns `feature_not_available` (422) until then.\n",
       "input_model": "single",
       "mime_groups": {
         "video": {
@@ -4506,11 +4875,11 @@
     "video_watermark": {
       "availability": "beta",
       "default": false,
-      "description": "Apply an image overlay onto a base video\nasset using FFmpeg's `overlay` filter. Multi-input role-based:\nexactly one input with `role: base` (the source video) + exactly\none with `role: overlay` (the watermark image). Each input is a\n`MultiInputSource` \u2014 an external_import handle, a vault connection,\nor an upstream `job_output` (uploads are NOT referenced directly\ninside inputs[]). To use an uploaded base or overlay, feed it through\na `passthrough` source job and reference it via `{ type: job_output,\nfrom: <id> }` (per ticket 4som89Uh).\n\n**Dedicated operation, not an extension of `image_watermark`.**\n`image_watermark` is pure-Rust/no-FFmpeg and handles\nimage-on-image overlay only. `video_watermark` requires FFmpeg's\noverlay filter + re-encode + a different deploy unit (no\nstream-copy escape \u2014 overlay = pixel modification). Per ADR-0013.\n\n**Audio passthrough.** The base video's audio stream is preserved\nunchanged via FFmpeg stream-copy \u2014 the watermark applies to the\nvisual track only.\n\nActivated to `availability: beta` (Wave A, ticket\n[`c3uthIP4`](https://trello.com/c/c3uthIP4)): the cross-repo Lambda\nbackend is live (API accepts + publishes via the operations SNS\ntopic), so the operation and its `short_form` processing class are\nshape-stable + opt-in and MUST NOT return `feature_not_available`.\n`long_form` stays `planned` (no live Fargate worker yet \u2014 its\nlong-form path is not provisioned) and the `multi_overlay_stack`\nfeature stays `planned` (Lambda support unconfirmed); requesting\nthose planned sub-features DOES still return `feature_not_available`\nuntil they are separately activated. Per ADR-0013 + lambdas\npre-launch epic Wave A (ticket\n[`SlluxMBN`'s sibling `4NrRPCgh`](https://trello.com/c/4NrRPCgh)).\n",
+      "description": "Apply an image overlay onto a base video\nasset. Multi-input role-based:\nexactly one input with `role: base` (the source video) + exactly\none with `role: overlay` (the watermark image). Each input is a\na multi-input source \u2014 an external_import handle, a vault connection,\nor an upstream `job_output` (uploads are NOT referenced directly\ninside inputs[]). To use an uploaded base or overlay, feed it through\na `passthrough` source job and reference it via `{ type: job_output,\nfrom: <id> }` (per ticket 4som89Uh).\n\n**Dedicated operation, not an extension of `image_watermark`.**\n`image_watermark` handles image-on-image overlay only.\n`video_watermark` requires an overlay + re-encode (no stream-copy escape \u2014 overlay = pixel modification).\n\n**Audio passthrough.** The base video's audio stream is preserved\nunchanged (stream-copied) \u2014 the watermark applies to the visual\ntrack only.\n\nActivated to `availability: beta` (Wave A, ticket\n[`c3uthIP4`](https://trello.com/c/c3uthIP4)): the cross-repo backend\nis live (API accepts + publishes via the operations SNS\ntopic), so the operation and its `short_form` processing class are\nshape-stable + opt-in and MUST NOT return `feature_not_available`.\n`long_form` stays `planned` (its long-form path is not yet\nprovisioned) and the `multi_overlay_stack` feature stays `planned`\n(backend support unconfirmed); requesting those planned sub-features\nDOES still return `feature_not_available` until they are separately\nactivated.\n",
       "features": {
         "multi_overlay_stack": {
           "availability": "planned",
-          "description": "Allow up to 8 overlay inputs per job (currently capped at 1\noverlay). Per-overlay placement via JobInputV2.per_input_options.\nLambda-side support not yet confirmed; tagged planned per\nADR-0001 \u00a71.4. Mirrors the same-named feature on\n`image_watermark`.\n"
+          "description": "Allow up to 8 overlay inputs per job (currently capped at 1\noverlay). Per-overlay placement via per-input placement options.\nBackend support not yet confirmed; tagged planned. Mirrors\nthe same-named feature on `image_watermark`.\n"
         }
       },
       "input_model": "multi",
@@ -4604,7 +4973,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.117.0",
+  "schema_version": "2.123.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

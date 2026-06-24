@@ -15,7 +15,7 @@ final class VideoWatermarkMetadata
             features: [
                 'multi_overlay_stack' => new FeatureEntry(
                     availability: 'planned',
-                    description: 'Allow up to 8 overlay inputs per job (currently capped at 1 overlay). Per-overlay placement via JobInputV2.per_input_options. Lambda-side support not yet confirmed; tagged planned per ADR-0001 §1.4. Mirrors the same-named feature on `image_watermark`. ',
+                    description: 'Allow up to 8 overlay inputs per job (currently capped at 1 overlay). Per-overlay placement via per-input placement options. Backend support not yet confirmed; tagged planned. Mirrors the same-named feature on `image_watermark`. ',
                 ),
             ],
             mime_groups: [
