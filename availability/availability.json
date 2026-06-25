@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 143,
+  "capabilities_version": 145,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -449,6 +449,10 @@
                 "enterprise": {
                   "max_input_size_bytes": 120000000000,
                   "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
                 }
               },
               "required_tier": "pro"
@@ -611,6 +615,10 @@
                 "enterprise": {
                   "max_input_size_bytes": 120000000000,
                   "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
                 }
               },
               "required_tier": "pro"
@@ -2162,6 +2170,10 @@
                 "enterprise": {
                   "max_input_size_bytes": 120000000000,
                   "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
                 }
               },
               "required_tier": "pro"
@@ -2716,6 +2728,10 @@
                 "enterprise": {
                   "max_input_size_bytes": 120000000000,
                   "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
                 }
               },
               "required_tier": "pro"
@@ -2790,6 +2806,10 @@
                 "enterprise": {
                   "max_input_size_bytes": 120000000000,
                   "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
                 }
               },
               "required_tier": "pro"
@@ -3768,6 +3788,9 @@
               "per_tier_constraints": {
                 "enterprise": {
                   "max_total_input_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_total_input_size_bytes": 50000000000
                 }
               },
               "required_tier": "pro"
@@ -4125,6 +4148,10 @@
                 "enterprise": {
                   "max_input_size_bytes": 120000000000,
                   "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
                 }
               },
               "required_tier": "pro"
@@ -4731,6 +4758,9 @@
               "per_tier_constraints": {
                 "enterprise": {
                   "max_input_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000
                 }
               },
               "required_tier": "pro"
@@ -4857,6 +4887,10 @@
                 "enterprise": {
                   "max_input_size_bytes": 120000000000,
                   "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
                 }
               },
               "required_tier": "pro"
@@ -4946,6 +4980,10 @@
                 "enterprise": {
                   "max_input_size_bytes": 120000000000,
                   "max_output_size_bytes": 120000000000
+                },
+                "max": {
+                  "max_input_size_bytes": 50000000000,
+                  "max_output_size_bytes": 50000000000
                 }
               },
               "required_tier": "pro"
@@ -4975,7 +5013,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.130.0",
+  "schema_version": "2.133.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {
