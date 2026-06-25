@@ -1,6 +1,6 @@
 <?php
 /**
- * UploadThresholds
+ * CapabilityInputSpec
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * UploadThresholds Class Doc Comment
+ * CapabilityInputSpec Class Doc Comment
  *
  * @category Class
- * @description Canonical upload threshold constants. Per ticket [u0ar7Yye](https://trello.com/c/u0ar7Yye). All values are &#x60;const:&#x60;-pinned so SDK generators emit them as typed binding constants — frontend / API / SDKs reference these instead of hardcoding magic numbers.  These are CONTRACT VALUES, not runtime-discoverable settings. A future runtime &#x60;GET /api/uploads/limits&#x60; endpoint may overlay per-tier or per-environment overrides on top of these baselines (deferred follow-up).
+ * @description Per-operation input cardinality — the &#x60;capabilities.&lt;op&gt;.input&#x60; block surfaced by the API (ticket &#x60;03Qg3Ms7&#x60; / PR #477), round-tripped verbatim from the operation-capability model. It mirrors the operation&#39;s &#x60;input_model&#x60; / &#x60;min_inputs&#x60; / &#x60;max_inputs&#x60; / &#x60;per_role_cardinality&#x60; (the &#x60;operations.*&#x60; map carries the same facts under those keys; this is the &#x60;capabilities&#x60; projection). &#x60;model&#x60; is always present; &#x60;min&#x60; / &#x60;max&#x60; accompany multi-input ops; &#x60;roles&#x60; is added only by role-based multis. A single-input op emits just &#x60;{ model: single }&#x60;; a role-less multi emits &#x60;{ model: multi, min, max }&#x60;; a role-based multi adds &#x60;roles&#x60;.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
+class CapabilityInputSpec implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      *
      * @var string
      */
-    protected static $openAPIModelName = 'UploadThresholds';
+    protected static $openAPIModelName = 'CapabilityInputSpec';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,10 +58,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $openAPITypes = [
-        'single_shot_max_bytes' => 'int',
-        'multipart_chunk_size' => 'int',
-        'multipart_concurrency_default' => 'int',
-        'multipart_first_chunk_size' => 'int'
+        'model' => 'string',
+        'min' => 'int',
+        'max' => 'int',
+        'roles' => 'string[]'
     ];
 
     /**
@@ -72,10 +72,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'single_shot_max_bytes' => 'int64',
-        'multipart_chunk_size' => 'int64',
-        'multipart_concurrency_default' => null,
-        'multipart_first_chunk_size' => 'int64'
+        'model' => null,
+        'min' => null,
+        'max' => null,
+        'roles' => null
     ];
 
     /**
@@ -84,10 +84,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'single_shot_max_bytes' => false,
-        'multipart_chunk_size' => false,
-        'multipart_concurrency_default' => false,
-        'multipart_first_chunk_size' => false
+        'model' => false,
+        'min' => false,
+        'max' => false,
+        'roles' => false
     ];
 
     /**
@@ -176,10 +176,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'single_shot_max_bytes' => 'single_shot_max_bytes',
-        'multipart_chunk_size' => 'multipart_chunk_size',
-        'multipart_concurrency_default' => 'multipart_concurrency_default',
-        'multipart_first_chunk_size' => 'multipart_first_chunk_size'
+        'model' => 'model',
+        'min' => 'min',
+        'max' => 'max',
+        'roles' => 'roles'
     ];
 
     /**
@@ -188,10 +188,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'single_shot_max_bytes' => 'setSingleShotMaxBytes',
-        'multipart_chunk_size' => 'setMultipartChunkSize',
-        'multipart_concurrency_default' => 'setMultipartConcurrencyDefault',
-        'multipart_first_chunk_size' => 'setMultipartFirstChunkSize'
+        'model' => 'setModel',
+        'min' => 'setMin',
+        'max' => 'setMax',
+        'roles' => 'setRoles'
     ];
 
     /**
@@ -200,10 +200,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'single_shot_max_bytes' => 'getSingleShotMaxBytes',
-        'multipart_chunk_size' => 'getMultipartChunkSize',
-        'multipart_concurrency_default' => 'getMultipartConcurrencyDefault',
-        'multipart_first_chunk_size' => 'getMultipartFirstChunkSize'
+        'model' => 'getModel',
+        'min' => 'getMin',
+        'max' => 'getMax',
+        'roles' => 'getRoles'
     ];
 
     /**
@@ -247,20 +247,22 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
         return self::$openAPIModelName;
     }
 
-    public const SINGLE_SHOT_MAX_BYTES_NUMBER_10000000 = 10000000;
-    public const MULTIPART_CHUNK_SIZE_NUMBER_16777216 = 16777216;
-    public const MULTIPART_CONCURRENCY_DEFAULT_NUMBER_4 = 4;
-    public const MULTIPART_FIRST_CHUNK_SIZE_NUMBER_8388608 = 8388608;
+    public const MODEL_SINGLE = 'single';
+    public const MODEL_MULTI = 'multi';
+    public const ROLES_BASE = 'base';
+    public const ROLES_OVERLAY = 'overlay';
+    public const ROLES_TRANSITION_MASK = 'transition_mask';
 
     /**
      * Gets allowable values of the enum
      *
      * @return string[]
      */
-    public function getSingleShotMaxBytesAllowableValues()
+    public function getModelAllowableValues()
     {
         return [
-            self::SINGLE_SHOT_MAX_BYTES_NUMBER_10000000,
+            self::MODEL_SINGLE,
+            self::MODEL_MULTI,
         ];
     }
 
@@ -269,34 +271,12 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      *
      * @return string[]
      */
-    public function getMultipartChunkSizeAllowableValues()
+    public function getRolesAllowableValues()
     {
         return [
-            self::MULTIPART_CHUNK_SIZE_NUMBER_16777216,
-        ];
-    }
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getMultipartConcurrencyDefaultAllowableValues()
-    {
-        return [
-            self::MULTIPART_CONCURRENCY_DEFAULT_NUMBER_4,
-        ];
-    }
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getMultipartFirstChunkSizeAllowableValues()
-    {
-        return [
-            self::MULTIPART_FIRST_CHUNK_SIZE_NUMBER_8388608,
+            self::ROLES_BASE,
+            self::ROLES_OVERLAY,
+            self::ROLES_TRANSITION_MASK,
         ];
     }
 
@@ -315,10 +295,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('single_shot_max_bytes', $data ?? [], null);
-        $this->setIfExists('multipart_chunk_size', $data ?? [], null);
-        $this->setIfExists('multipart_concurrency_default', $data ?? [], null);
-        $this->setIfExists('multipart_first_chunk_size', $data ?? [], null);
+        $this->setIfExists('model', $data ?? [], null);
+        $this->setIfExists('min', $data ?? [], null);
+        $this->setIfExists('max', $data ?? [], null);
+        $this->setIfExists('roles', $data ?? [], null);
     }
 
     /**
@@ -348,54 +328,14 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['single_shot_max_bytes'] === null) {
-            $invalidProperties[] = "'single_shot_max_bytes' can't be null";
+        if ($this->container['model'] === null) {
+            $invalidProperties[] = "'model' can't be null";
         }
-        $allowedValues = $this->getSingleShotMaxBytesAllowableValues();
-        if (!is_null($this->container['single_shot_max_bytes']) && !in_array($this->container['single_shot_max_bytes'], $allowedValues, true)) {
+        $allowedValues = $this->getModelAllowableValues();
+        if (!is_null($this->container['model']) && !in_array($this->container['model'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'single_shot_max_bytes', must be one of '%s'",
-                $this->container['single_shot_max_bytes'],
-                implode("', '", $allowedValues)
-            );
-        }
-
-        if ($this->container['multipart_chunk_size'] === null) {
-            $invalidProperties[] = "'multipart_chunk_size' can't be null";
-        }
-        $allowedValues = $this->getMultipartChunkSizeAllowableValues();
-        if (!is_null($this->container['multipart_chunk_size']) && !in_array($this->container['multipart_chunk_size'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'multipart_chunk_size', must be one of '%s'",
-                $this->container['multipart_chunk_size'],
-                implode("', '", $allowedValues)
-            );
-        }
-
-        if ($this->container['multipart_concurrency_default'] === null) {
-            $invalidProperties[] = "'multipart_concurrency_default' can't be null";
-        }
-        $allowedValues = $this->getMultipartConcurrencyDefaultAllowableValues();
-        if (!is_null($this->container['multipart_concurrency_default']) && !in_array($this->container['multipart_concurrency_default'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'multipart_concurrency_default', must be one of '%s'",
-                $this->container['multipart_concurrency_default'],
-                implode("', '", $allowedValues)
-            );
-        }
-
-        if (($this->container['multipart_concurrency_default'] < 1)) {
-            $invalidProperties[] = "invalid value for 'multipart_concurrency_default', must be bigger than or equal to 1.";
-        }
-
-        if ($this->container['multipart_first_chunk_size'] === null) {
-            $invalidProperties[] = "'multipart_first_chunk_size' can't be null";
-        }
-        $allowedValues = $this->getMultipartFirstChunkSizeAllowableValues();
-        if (!is_null($this->container['multipart_first_chunk_size']) && !in_array($this->container['multipart_first_chunk_size'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'multipart_first_chunk_size', must be one of '%s'",
-                $this->container['multipart_first_chunk_size'],
+                "invalid value '%s' for 'model', must be one of '%s'",
+                $this->container['model'],
                 implode("', '", $allowedValues)
             );
         }
@@ -416,154 +356,128 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
 
 
     /**
-     * Gets single_shot_max_bytes
+     * Gets model
      *
-     * @return int
+     * @return string
      */
-    public function getSingleShotMaxBytes()
+    public function getModel()
     {
-        return $this->container['single_shot_max_bytes'];
+        return $this->container['model'];
     }
 
     /**
-     * Sets single_shot_max_bytes
+     * Sets model
      *
-     * @param int $single_shot_max_bytes Maximum file size in bytes for the single-shot upload path (`POST /api/uploads`). Files above this size MUST use the multipart flow (`POST /api/uploads/multipart/initiate` → chunk PUTs → `POST /api/uploads/multipart/complete`). 10 MB / 10,000,000 bytes — chosen to match the ALB-fronted single-request body cap. Raising this requires infrastructure work (ALB swap or rearchitect; out of scope for this ticket).
+     * @param string $model `single` — one input. `multi` — multiple inputs (with `min` / `max`, and `roles` for role-based ops).
      *
      * @return self
      */
-    public function setSingleShotMaxBytes($single_shot_max_bytes)
+    public function setModel($model)
     {
-        if (is_null($single_shot_max_bytes)) {
-            throw new \InvalidArgumentException('non-nullable single_shot_max_bytes cannot be null');
+        if (is_null($model)) {
+            throw new \InvalidArgumentException('non-nullable model cannot be null');
         }
-        $allowedValues = $this->getSingleShotMaxBytesAllowableValues();
-        if (!in_array($single_shot_max_bytes, $allowedValues, true)) {
+        $allowedValues = $this->getModelAllowableValues();
+        if (!in_array($model, $allowedValues, true)) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    "Invalid value '%s' for 'single_shot_max_bytes', must be one of '%s'",
-                    $single_shot_max_bytes,
+                    "Invalid value '%s' for 'model', must be one of '%s'",
+                    $model,
                     implode("', '", $allowedValues)
                 )
             );
         }
-        $this->container['single_shot_max_bytes'] = $single_shot_max_bytes;
+        $this->container['model'] = $model;
 
         return $this;
     }
 
     /**
-     * Gets multipart_chunk_size
+     * Gets min
      *
-     * @return int
+     * @return int|null
      */
-    public function getMultipartChunkSize()
+    public function getMin()
     {
-        return $this->container['multipart_chunk_size'];
+        return $this->container['min'];
     }
 
     /**
-     * Sets multipart_chunk_size
+     * Sets min
      *
-     * @param int $multipart_chunk_size Recommended chunk size in bytes for multipart upload chunks (16 MiB / 16,777,216 bytes — 1024-based). Raised from 5 MiB by CON-1 (ADR-0011): S3 caps a multipart upload at 10,000 parts, and the Enterprise envelope is a 120 GB hard ceiling. At 16 MiB a 120 GiB object needs 7,680 parts (≤ 10,000, inside AWS's 16–64 MB recommended band); 5 MiB would need 24,576 and 10 MiB 12,288 — both exceed the S3 limit. **Wire-incompatible change** — SDKs pin this as a compile-time constant, so CON-1 and SDK-2 ship as a non-independently-mergeable pair. The server's `MultipartInitiateResponse` returns a `recommended_chunk_size` per file based on first-chunk throughput; SDKs SHOULD prefer that runtime value when present and fall back to this constant otherwise.
+     * @param int|null $min Minimum number of inputs (multi-input ops).
      *
      * @return self
      */
-    public function setMultipartChunkSize($multipart_chunk_size)
+    public function setMin($min)
     {
-        if (is_null($multipart_chunk_size)) {
-            throw new \InvalidArgumentException('non-nullable multipart_chunk_size cannot be null');
+        if (is_null($min)) {
+            throw new \InvalidArgumentException('non-nullable min cannot be null');
         }
-        $allowedValues = $this->getMultipartChunkSizeAllowableValues();
-        if (!in_array($multipart_chunk_size, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'multipart_chunk_size', must be one of '%s'",
-                    $multipart_chunk_size,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-        $this->container['multipart_chunk_size'] = $multipart_chunk_size;
+        $this->container['min'] = $min;
 
         return $this;
     }
 
     /**
-     * Gets multipart_concurrency_default
+     * Gets max
      *
-     * @return int
+     * @return int|null
      */
-    public function getMultipartConcurrencyDefault()
+    public function getMax()
     {
-        return $this->container['multipart_concurrency_default'];
+        return $this->container['max'];
     }
 
     /**
-     * Sets multipart_concurrency_default
+     * Sets max
      *
-     * @param int $multipart_concurrency_default Recommended parallel-upload count for multipart chunks (4 simultaneous PUT requests). Matches the existing TS SDK default. Tuning above 4 risks throttling at the S3 + client-bandwidth layers; below 4 hurts overall throughput on typical broadband.
+     * @param int|null $max Maximum number of inputs (multi-input ops).
      *
      * @return self
      */
-    public function setMultipartConcurrencyDefault($multipart_concurrency_default)
+    public function setMax($max)
     {
-        if (is_null($multipart_concurrency_default)) {
-            throw new \InvalidArgumentException('non-nullable multipart_concurrency_default cannot be null');
+        if (is_null($max)) {
+            throw new \InvalidArgumentException('non-nullable max cannot be null');
         }
-        $allowedValues = $this->getMultipartConcurrencyDefaultAllowableValues();
-        if (!in_array($multipart_concurrency_default, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'multipart_concurrency_default', must be one of '%s'",
-                    $multipart_concurrency_default,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-
-        if (($multipart_concurrency_default < 1)) {
-            throw new \InvalidArgumentException('invalid value for $multipart_concurrency_default when calling UploadThresholds., must be bigger than or equal to 1.');
-        }
-
-        $this->container['multipart_concurrency_default'] = $multipart_concurrency_default;
+        $this->container['max'] = $max;
 
         return $this;
     }
 
     /**
-     * Gets multipart_first_chunk_size
+     * Gets roles
      *
-     * @return int
+     * @return string[]|null
      */
-    public function getMultipartFirstChunkSize()
+    public function getRoles()
     {
-        return $this->container['multipart_first_chunk_size'];
+        return $this->container['roles'];
     }
 
     /**
-     * Sets multipart_first_chunk_size
+     * Sets roles
      *
-     * @param int $multipart_first_chunk_size Fixed size in bytes for the FIRST chunk PUT in a multipart upload (8 MiB / 8,388,608 bytes — 1024-based). The server uses this chunk for MIME-type detection and throughput measurement; the 8 MiB window is assumed by the server's container-metadata probe (see `MultipartInitiateRequest.metadata_hint`). SDKs MUST send exactly this size for chunk index 0; for chunks 1+ they SHOULD prefer the runtime `MultipartInitiateResponse.recommended_chunk_size` and fall back to `multipart_chunk_size` when absent.
+     * @param string[]|null $roles Declared input roles for role-based multi-input ops. Omitted entirely for role-less multi-input ops — NOT synthesised. Mirrors the `JobInputRole` vocabulary (the request `role` enum); keep in sync if that enum widens.
      *
      * @return self
      */
-    public function setMultipartFirstChunkSize($multipart_first_chunk_size)
+    public function setRoles($roles)
     {
-        if (is_null($multipart_first_chunk_size)) {
-            throw new \InvalidArgumentException('non-nullable multipart_first_chunk_size cannot be null');
+        if (is_null($roles)) {
+            throw new \InvalidArgumentException('non-nullable roles cannot be null');
         }
-        $allowedValues = $this->getMultipartFirstChunkSizeAllowableValues();
-        if (!in_array($multipart_first_chunk_size, $allowedValues, true)) {
+        $allowedValues = $this->getRolesAllowableValues();
+        if (array_diff($roles, $allowedValues)) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    "Invalid value '%s' for 'multipart_first_chunk_size', must be one of '%s'",
-                    $multipart_first_chunk_size,
+                    "Invalid value for 'roles', must be one of '%s'",
                     implode("', '", $allowedValues)
                 )
             );
         }
-        $this->container['multipart_first_chunk_size'] = $multipart_first_chunk_size;
+        $this->container['roles'] = $roles;
 
         return $this;
     }
