@@ -1,6 +1,6 @@
 <?php
 /**
- * UploadThresholds
+ * WorkflowCreditSummary
  *
  * PHP version 8.1
  *
@@ -32,16 +32,16 @@ use \ArrayAccess;
 use \Gisl\Generated\OpenApi\ObjectSerializer;
 
 /**
- * UploadThresholds Class Doc Comment
+ * WorkflowCreditSummary Class Doc Comment
  *
  * @category Class
- * @description Canonical upload threshold constants. Per ticket [u0ar7Yye](https://trello.com/c/u0ar7Yye). All values are &#x60;const:&#x60;-pinned so SDK generators emit them as typed binding constants — frontend / API / SDKs reference these instead of hardcoding magic numbers.  These are CONTRACT VALUES, not runtime-discoverable settings. A future runtime &#x60;GET /api/uploads/limits&#x60; endpoint may overlay per-tier or per-environment overrides on top of these baselines (deferred follow-up).
+ * @description Per-workflow credit summary for the workflows-history read (credits-per-run). Exposes the billing-ledger figures so the UI can show what a run cost without treating an in-flight reservation as a final charge — &#x60;state&#x60; distinguishes a held reservation from a settled charge. Additive; the enclosing &#x60;credits&#x60; field is &#x60;null&#x60; for legacy workflows with no credit record. Per ticket &#x60;7XbqXO1B&#x60;.
  * @package  Gisl\Generated\OpenApi
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
+class WorkflowCreditSummary implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      *
      * @var string
      */
-    protected static $openAPIModelName = 'UploadThresholds';
+    protected static $openAPIModelName = 'WorkflowCreditSummary';
 
     /**
      * Array of property to type mappings. Used for (de)serialization
@@ -58,10 +58,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $openAPITypes = [
-        'single_shot_max_bytes' => 'int',
-        'multipart_chunk_size' => 'int',
-        'multipart_concurrency_default' => 'int',
-        'multipart_first_chunk_size' => 'int'
+        'reserved' => 'int',
+        'refunded' => 'int',
+        'net' => 'int',
+        'state' => 'string'
     ];
 
     /**
@@ -72,10 +72,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @psalm-var array<string, string|null>
      */
     protected static $openAPIFormats = [
-        'single_shot_max_bytes' => 'int64',
-        'multipart_chunk_size' => 'int64',
-        'multipart_concurrency_default' => null,
-        'multipart_first_chunk_size' => 'int64'
+        'reserved' => null,
+        'refunded' => null,
+        'net' => null,
+        'state' => null
     ];
 
     /**
@@ -84,10 +84,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var boolean[]
      */
     protected static array $openAPINullables = [
-        'single_shot_max_bytes' => false,
-        'multipart_chunk_size' => false,
-        'multipart_concurrency_default' => false,
-        'multipart_first_chunk_size' => false
+        'reserved' => false,
+        'refunded' => false,
+        'net' => false,
+        'state' => false
     ];
 
     /**
@@ -176,10 +176,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'single_shot_max_bytes' => 'single_shot_max_bytes',
-        'multipart_chunk_size' => 'multipart_chunk_size',
-        'multipart_concurrency_default' => 'multipart_concurrency_default',
-        'multipart_first_chunk_size' => 'multipart_first_chunk_size'
+        'reserved' => 'reserved',
+        'refunded' => 'refunded',
+        'net' => 'net',
+        'state' => 'state'
     ];
 
     /**
@@ -188,10 +188,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'single_shot_max_bytes' => 'setSingleShotMaxBytes',
-        'multipart_chunk_size' => 'setMultipartChunkSize',
-        'multipart_concurrency_default' => 'setMultipartConcurrencyDefault',
-        'multipart_first_chunk_size' => 'setMultipartFirstChunkSize'
+        'reserved' => 'setReserved',
+        'refunded' => 'setRefunded',
+        'net' => 'setNet',
+        'state' => 'setState'
     ];
 
     /**
@@ -200,10 +200,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'single_shot_max_bytes' => 'getSingleShotMaxBytes',
-        'multipart_chunk_size' => 'getMultipartChunkSize',
-        'multipart_concurrency_default' => 'getMultipartConcurrencyDefault',
-        'multipart_first_chunk_size' => 'getMultipartFirstChunkSize'
+        'reserved' => 'getReserved',
+        'refunded' => 'getRefunded',
+        'net' => 'getNet',
+        'state' => 'getState'
     ];
 
     /**
@@ -247,56 +247,21 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
         return self::$openAPIModelName;
     }
 
-    public const SINGLE_SHOT_MAX_BYTES_NUMBER_10000000 = 10000000;
-    public const MULTIPART_CHUNK_SIZE_NUMBER_16777216 = 16777216;
-    public const MULTIPART_CONCURRENCY_DEFAULT_NUMBER_4 = 4;
-    public const MULTIPART_FIRST_CHUNK_SIZE_NUMBER_8388608 = 8388608;
+    public const STATE_ACTIVE = 'active';
+    public const STATE_SETTLED = 'settled';
+    public const STATE_RELEASED = 'released';
 
     /**
      * Gets allowable values of the enum
      *
      * @return string[]
      */
-    public function getSingleShotMaxBytesAllowableValues()
+    public function getStateAllowableValues()
     {
         return [
-            self::SINGLE_SHOT_MAX_BYTES_NUMBER_10000000,
-        ];
-    }
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getMultipartChunkSizeAllowableValues()
-    {
-        return [
-            self::MULTIPART_CHUNK_SIZE_NUMBER_16777216,
-        ];
-    }
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getMultipartConcurrencyDefaultAllowableValues()
-    {
-        return [
-            self::MULTIPART_CONCURRENCY_DEFAULT_NUMBER_4,
-        ];
-    }
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getMultipartFirstChunkSizeAllowableValues()
-    {
-        return [
-            self::MULTIPART_FIRST_CHUNK_SIZE_NUMBER_8388608,
+            self::STATE_ACTIVE,
+            self::STATE_SETTLED,
+            self::STATE_RELEASED,
         ];
     }
 
@@ -315,10 +280,10 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(?array $data = null)
     {
-        $this->setIfExists('single_shot_max_bytes', $data ?? [], null);
-        $this->setIfExists('multipart_chunk_size', $data ?? [], null);
-        $this->setIfExists('multipart_concurrency_default', $data ?? [], null);
-        $this->setIfExists('multipart_first_chunk_size', $data ?? [], null);
+        $this->setIfExists('reserved', $data ?? [], null);
+        $this->setIfExists('refunded', $data ?? [], null);
+        $this->setIfExists('net', $data ?? [], null);
+        $this->setIfExists('state', $data ?? [], null);
     }
 
     /**
@@ -348,54 +313,35 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['single_shot_max_bytes'] === null) {
-            $invalidProperties[] = "'single_shot_max_bytes' can't be null";
+        if ($this->container['reserved'] === null) {
+            $invalidProperties[] = "'reserved' can't be null";
         }
-        $allowedValues = $this->getSingleShotMaxBytesAllowableValues();
-        if (!is_null($this->container['single_shot_max_bytes']) && !in_array($this->container['single_shot_max_bytes'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'single_shot_max_bytes', must be one of '%s'",
-                $this->container['single_shot_max_bytes'],
-                implode("', '", $allowedValues)
-            );
+        if (($this->container['reserved'] < 0)) {
+            $invalidProperties[] = "invalid value for 'reserved', must be bigger than or equal to 0.";
         }
 
-        if ($this->container['multipart_chunk_size'] === null) {
-            $invalidProperties[] = "'multipart_chunk_size' can't be null";
+        if ($this->container['refunded'] === null) {
+            $invalidProperties[] = "'refunded' can't be null";
         }
-        $allowedValues = $this->getMultipartChunkSizeAllowableValues();
-        if (!is_null($this->container['multipart_chunk_size']) && !in_array($this->container['multipart_chunk_size'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'multipart_chunk_size', must be one of '%s'",
-                $this->container['multipart_chunk_size'],
-                implode("', '", $allowedValues)
-            );
+        if (($this->container['refunded'] < 0)) {
+            $invalidProperties[] = "invalid value for 'refunded', must be bigger than or equal to 0.";
         }
 
-        if ($this->container['multipart_concurrency_default'] === null) {
-            $invalidProperties[] = "'multipart_concurrency_default' can't be null";
+        if ($this->container['net'] === null) {
+            $invalidProperties[] = "'net' can't be null";
         }
-        $allowedValues = $this->getMultipartConcurrencyDefaultAllowableValues();
-        if (!is_null($this->container['multipart_concurrency_default']) && !in_array($this->container['multipart_concurrency_default'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'multipart_concurrency_default', must be one of '%s'",
-                $this->container['multipart_concurrency_default'],
-                implode("', '", $allowedValues)
-            );
+        if (($this->container['net'] < 0)) {
+            $invalidProperties[] = "invalid value for 'net', must be bigger than or equal to 0.";
         }
 
-        if (($this->container['multipart_concurrency_default'] < 1)) {
-            $invalidProperties[] = "invalid value for 'multipart_concurrency_default', must be bigger than or equal to 1.";
+        if ($this->container['state'] === null) {
+            $invalidProperties[] = "'state' can't be null";
         }
-
-        if ($this->container['multipart_first_chunk_size'] === null) {
-            $invalidProperties[] = "'multipart_first_chunk_size' can't be null";
-        }
-        $allowedValues = $this->getMultipartFirstChunkSizeAllowableValues();
-        if (!is_null($this->container['multipart_first_chunk_size']) && !in_array($this->container['multipart_first_chunk_size'], $allowedValues, true)) {
+        $allowedValues = $this->getStateAllowableValues();
+        if (!is_null($this->container['state']) && !in_array($this->container['state'], $allowedValues, true)) {
             $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'multipart_first_chunk_size', must be one of '%s'",
-                $this->container['multipart_first_chunk_size'],
+                "invalid value '%s' for 'state', must be one of '%s'",
+                $this->container['state'],
                 implode("', '", $allowedValues)
             );
         }
@@ -416,154 +362,134 @@ class UploadThresholds implements ModelInterface, ArrayAccess, \JsonSerializable
 
 
     /**
-     * Gets single_shot_max_bytes
+     * Gets reserved
      *
      * @return int
      */
-    public function getSingleShotMaxBytes()
+    public function getReserved()
     {
-        return $this->container['single_shot_max_bytes'];
+        return $this->container['reserved'];
     }
 
     /**
-     * Sets single_shot_max_bytes
+     * Sets reserved
      *
-     * @param int $single_shot_max_bytes Maximum file size in bytes for the single-shot upload path (`POST /api/uploads`). Files above this size MUST use the multipart flow (`POST /api/uploads/multipart/initiate` → chunk PUTs → `POST /api/uploads/multipart/complete`). 10 MB / 10,000,000 bytes — chosen to match the ALB-fronted single-request body cap. Raising this requires infrastructure work (ALB swap or rearchitect; out of scope for this ticket).
+     * @param int $reserved Credits reserved (held) for the workflow at create time.
      *
      * @return self
      */
-    public function setSingleShotMaxBytes($single_shot_max_bytes)
+    public function setReserved($reserved)
     {
-        if (is_null($single_shot_max_bytes)) {
-            throw new \InvalidArgumentException('non-nullable single_shot_max_bytes cannot be null');
+        if (is_null($reserved)) {
+            throw new \InvalidArgumentException('non-nullable reserved cannot be null');
         }
-        $allowedValues = $this->getSingleShotMaxBytesAllowableValues();
-        if (!in_array($single_shot_max_bytes, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'single_shot_max_bytes', must be one of '%s'",
-                    $single_shot_max_bytes,
-                    implode("', '", $allowedValues)
-                )
-            );
+
+        if (($reserved < 0)) {
+            throw new \InvalidArgumentException('invalid value for $reserved when calling WorkflowCreditSummary., must be bigger than or equal to 0.');
         }
-        $this->container['single_shot_max_bytes'] = $single_shot_max_bytes;
+
+        $this->container['reserved'] = $reserved;
 
         return $this;
     }
 
     /**
-     * Gets multipart_chunk_size
+     * Gets refunded
      *
      * @return int
      */
-    public function getMultipartChunkSize()
+    public function getRefunded()
     {
-        return $this->container['multipart_chunk_size'];
+        return $this->container['refunded'];
     }
 
     /**
-     * Sets multipart_chunk_size
+     * Sets refunded
      *
-     * @param int $multipart_chunk_size Recommended chunk size in bytes for multipart upload chunks (16 MiB / 16,777,216 bytes — 1024-based). Raised from 5 MiB by CON-1 (ADR-0011): S3 caps a multipart upload at 10,000 parts, and the Enterprise envelope is a 120 GB hard ceiling. At 16 MiB a 120 GiB object needs 7,680 parts (≤ 10,000, inside AWS's 16–64 MB recommended band); 5 MiB would need 24,576 and 10 MiB 12,288 — both exceed the S3 limit. **Wire-incompatible change** — SDKs pin this as a compile-time constant, so CON-1 and SDK-2 ship as a non-independently-mergeable pair. The server's `MultipartInitiateResponse` returns a `recommended_chunk_size` per file based on first-chunk throughput; SDKs SHOULD prefer that runtime value when present and fall back to this constant otherwise.
+     * @param int $refunded Credits refunded back to the caller (e.g. on failure / partial completion / released reservation).
      *
      * @return self
      */
-    public function setMultipartChunkSize($multipart_chunk_size)
+    public function setRefunded($refunded)
     {
-        if (is_null($multipart_chunk_size)) {
-            throw new \InvalidArgumentException('non-nullable multipart_chunk_size cannot be null');
+        if (is_null($refunded)) {
+            throw new \InvalidArgumentException('non-nullable refunded cannot be null');
         }
-        $allowedValues = $this->getMultipartChunkSizeAllowableValues();
-        if (!in_array($multipart_chunk_size, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'multipart_chunk_size', must be one of '%s'",
-                    $multipart_chunk_size,
-                    implode("', '", $allowedValues)
-                )
-            );
+
+        if (($refunded < 0)) {
+            throw new \InvalidArgumentException('invalid value for $refunded when calling WorkflowCreditSummary., must be bigger than or equal to 0.');
         }
-        $this->container['multipart_chunk_size'] = $multipart_chunk_size;
+
+        $this->container['refunded'] = $refunded;
 
         return $this;
     }
 
     /**
-     * Gets multipart_concurrency_default
+     * Gets net
      *
      * @return int
      */
-    public function getMultipartConcurrencyDefault()
+    public function getNet()
     {
-        return $this->container['multipart_concurrency_default'];
+        return $this->container['net'];
     }
 
     /**
-     * Sets multipart_concurrency_default
+     * Sets net
      *
-     * @param int $multipart_concurrency_default Recommended parallel-upload count for multipart chunks (4 simultaneous PUT requests). Matches the existing TS SDK default. Tuning above 4 risks throttling at the S3 + client-bandwidth layers; below 4 hurts overall throughput on typical broadband.
+     * @param int $net Net credits charged for the run (`reserved` − `refunded`). AUTHORITATIVE for every non-`active` `state` (both `settled` and `released`); only while `state` is `active` is it a current-but-not-yet-final figure.
      *
      * @return self
      */
-    public function setMultipartConcurrencyDefault($multipart_concurrency_default)
+    public function setNet($net)
     {
-        if (is_null($multipart_concurrency_default)) {
-            throw new \InvalidArgumentException('non-nullable multipart_concurrency_default cannot be null');
-        }
-        $allowedValues = $this->getMultipartConcurrencyDefaultAllowableValues();
-        if (!in_array($multipart_concurrency_default, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'multipart_concurrency_default', must be one of '%s'",
-                    $multipart_concurrency_default,
-                    implode("', '", $allowedValues)
-                )
-            );
+        if (is_null($net)) {
+            throw new \InvalidArgumentException('non-nullable net cannot be null');
         }
 
-        if (($multipart_concurrency_default < 1)) {
-            throw new \InvalidArgumentException('invalid value for $multipart_concurrency_default when calling UploadThresholds., must be bigger than or equal to 1.');
+        if (($net < 0)) {
+            throw new \InvalidArgumentException('invalid value for $net when calling WorkflowCreditSummary., must be bigger than or equal to 0.');
         }
 
-        $this->container['multipart_concurrency_default'] = $multipart_concurrency_default;
+        $this->container['net'] = $net;
 
         return $this;
     }
 
     /**
-     * Gets multipart_first_chunk_size
+     * Gets state
      *
-     * @return int
+     * @return string
      */
-    public function getMultipartFirstChunkSize()
+    public function getState()
     {
-        return $this->container['multipart_first_chunk_size'];
+        return $this->container['state'];
     }
 
     /**
-     * Sets multipart_first_chunk_size
+     * Sets state
      *
-     * @param int $multipart_first_chunk_size Fixed size in bytes for the FIRST chunk PUT in a multipart upload (8 MiB / 8,388,608 bytes — 1024-based). The server uses this chunk for MIME-type detection and throughput measurement; the 8 MiB window is assumed by the server's container-metadata probe (see `MultipartInitiateRequest.metadata_hint`). SDKs MUST send exactly this size for chunk index 0; for chunks 1+ they SHOULD prefer the runtime `MultipartInitiateResponse.recommended_chunk_size` and fall back to `multipart_chunk_size` when absent.
+     * @param string $state A UI-facing PROJECTION of the workflow's billing-ledger reservation lifecycle into three states — the API maps the underlying ledger states into exactly one of these (consumers read only this projected value, not the raw ledger state): - `active` — reservation held, charge NOT yet final (a UI MUST NOT   present `net` as the final cost). - `settled` — final charge applied; `net` is authoritative. - `released` — the reservation reached a terminal NON-settled   outcome (released / cancelled / expired / fully-refunded — they   all project here); `net` is authoritative (typically 0, or the   partial charge that stuck).  Both non-`active` states are TERMINAL with an authoritative `net`; the `active` vs non-`active` split is the only distinction a cost readout needs (don't show a final figure while `active`).
      *
      * @return self
      */
-    public function setMultipartFirstChunkSize($multipart_first_chunk_size)
+    public function setState($state)
     {
-        if (is_null($multipart_first_chunk_size)) {
-            throw new \InvalidArgumentException('non-nullable multipart_first_chunk_size cannot be null');
+        if (is_null($state)) {
+            throw new \InvalidArgumentException('non-nullable state cannot be null');
         }
-        $allowedValues = $this->getMultipartFirstChunkSizeAllowableValues();
-        if (!in_array($multipart_first_chunk_size, $allowedValues, true)) {
+        $allowedValues = $this->getStateAllowableValues();
+        if (!in_array($state, $allowedValues, true)) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    "Invalid value '%s' for 'multipart_first_chunk_size', must be one of '%s'",
-                    $multipart_first_chunk_size,
+                    "Invalid value '%s' for 'state', must be one of '%s'",
+                    $state,
                     implode("', '", $allowedValues)
                 )
             );
         }
-        $this->container['multipart_first_chunk_size'] = $multipart_first_chunk_size;
+        $this->container['state'] = $state;
 
         return $this;
     }

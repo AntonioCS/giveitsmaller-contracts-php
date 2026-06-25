@@ -66,7 +66,6 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'color_profile' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'auto_orient' => new OptionMetadata(
@@ -120,7 +119,6 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'color_profile' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'auto_orient' => new OptionMetadata(
@@ -229,8 +227,11 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'color_profile' => new OptionMetadata(
-                            availability: 'planned',
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'srgb' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'auto_orient' => new OptionMetadata(
                             per_value_availability: [],

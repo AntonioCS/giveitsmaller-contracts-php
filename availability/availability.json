@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 142,
+  "capabilities_version": 143,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1432,9 +1432,8 @@
               ]
             },
             "color_profile": {
-              "availability": "planned",
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 not yet supported.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself).",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1615,9 +1614,8 @@
               "type": "boolean"
             },
             "color_profile": {
-              "availability": "planned",
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 not yet supported.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself).",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1825,13 +1823,17 @@
               "type": "boolean"
             },
             "color_profile": {
-              "availability": "planned",
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 not yet supported.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). On the WebP same-format route `srgb` is `planned` (the byte-level optimiser does not yet run the sRGB transform); `keep` and `strip` are live.",
               "honored_on": [
                 "same_format",
                 "format_change"
               ],
+              "per_value_availability": {
+                "srgb": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
                 "keep",
@@ -4973,7 +4975,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.127.0",
+  "schema_version": "2.130.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

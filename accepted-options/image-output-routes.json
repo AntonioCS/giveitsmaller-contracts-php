@@ -153,6 +153,7 @@
           "honored_options": [
             "auto_orient",
             "chroma_subsampling",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -167,7 +168,6 @@
           "input_mime": "image/jpeg",
           "max_output_pixels": 16000000,
           "planned_options": [
-            "color_profile",
             "keep_metadata"
           ],
           "source_op": "compress"
@@ -175,6 +175,7 @@
         "png": {
           "honored_options": [
             "auto_orient",
+            "color_profile",
             "fit",
             "height",
             "metadata",
@@ -186,7 +187,6 @@
           "input_mime": "image/png",
           "max_output_pixels": 16000000,
           "planned_options": [
-            "color_profile",
             "keep_metadata",
             "lossy"
           ],
@@ -223,6 +223,7 @@
         "webp": {
           "honored_options": [
             "auto_orient",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -236,7 +237,6 @@
           "input_mime": "image/webp",
           "max_output_pixels": 16000000,
           "planned_options": [
-            "color_profile",
             "keep_metadata"
           ],
           "source_op": "compress"
@@ -256,5 +256,5 @@
       "source_op": "compress"
     }
   },
-  "schema_version": "2.127.0"
+  "schema_version": "2.130.0"
 }
