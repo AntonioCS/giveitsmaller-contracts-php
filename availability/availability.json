@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 145,
+  "capabilities_version": 147,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1136,13 +1136,17 @@
               "type": "boolean"
             },
             "color_profile": {
-              "availability": "planned",
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 not yet supported.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop \u2014 for TIFF inputs the gamut is baked to sRGB; GIF carries no profile so this is a no-op); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default; CMYK/grayscale best-effort); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). On compress `srgb` is `planned` for this group (the sRGB pixel transform is wired for JPEG/PNG only so far); `keep` and `strip` are live.",
               "honored_on": [
                 "same_format",
                 "format_change"
               ],
+              "per_value_availability": {
+                "srgb": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
                 "keep",
@@ -1441,7 +1445,7 @@
             },
             "color_profile": {
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself).",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default; CMYK/grayscale best-effort); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself).",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1623,7 +1627,7 @@
             },
             "color_profile": {
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself).",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default; CMYK/grayscale best-effort); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself).",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -1832,7 +1836,7 @@
             },
             "color_profile": {
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). On the WebP same-format route `srgb` is `planned` (the byte-level optimiser does not yet run the sRGB transform); `keep` and `strip` are live.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default; CMYK/grayscale best-effort); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). On the WebP same-format route `srgb` is `planned` (the byte-level optimiser does not yet run the sRGB transform); `keep` and `strip` are live.",
               "honored_on": [
                 "same_format",
                 "format_change"
@@ -2304,9 +2308,8 @@
               "type": "string"
             },
             "color_profile": {
-              "availability": "planned",
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile. `planned` \u2014 not yet supported.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the target format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default; CMYK/grayscale best-effort); `strip` = drop the profile. The worker reads the input ICC for every accepted raster input (JPEG/PNG/WebP/TIFF, plus HEIF/AVIF via the ISO-BMFF `colr` box).",
               "honored_on": [
                 "format_change"
               ],
@@ -2445,7 +2448,6 @@
               "type": "string"
             },
             "color_profile": {
-              "availability": "planned",
               "default": "keep",
               "depends_on": {
                 "output_format": [
@@ -2457,7 +2459,7 @@
                   "tiff"
                 ]
               },
-              "description": "Colour-profile handling \u2014 `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB; `strip` = drop the profile. `planned` \u2014 not yet supported. Scoped to the STILL-IMAGE targets only \u2014 the video targets (mp4/webm) carry no colour profile, so this is not accepted for a gif\u2192video output.",
+              "description": "Colour-profile handling \u2014 `keep` (default) = preserve your colours (embed where the target carries an ICC, else bake to sRGB; a no-op for the GIF input itself, which carries no profile); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default); `strip` = drop the profile. Scoped to the STILL-IMAGE targets only \u2014 the video targets (mp4/webm) carry no colour profile, so this is not accepted for a gif\u2192video output.",
               "honored_on": [
                 "format_change"
               ],
@@ -5013,7 +5015,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.133.0",
+  "schema_version": "2.135.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

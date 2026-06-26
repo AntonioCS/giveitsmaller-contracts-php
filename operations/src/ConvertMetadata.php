@@ -50,7 +50,6 @@ final class ConvertMetadata
                             per_value_availability: [],
                         ),
                         'color_profile' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'auto_orient' => new OptionMetadata(
@@ -102,7 +101,6 @@ final class ConvertMetadata
                             per_value_availability: [],
                         ),
                         'color_profile' => new OptionMetadata(
-                            availability: 'planned',
                             per_value_availability: [],
                         ),
                         'auto_orient' => new OptionMetadata(
