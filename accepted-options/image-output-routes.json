@@ -115,6 +115,7 @@
           "honored_options": [
             "auto_orient",
             "avif_speed",
+            "color_profile",
             "encoding_mode",
             "fit",
             "height",
@@ -126,9 +127,7 @@
           ],
           "input_mime": "image/avif",
           "max_output_pixels": 16000000,
-          "planned_options": [
-            "color_profile"
-          ],
+          "planned_options": [],
           "source_op": "compress"
         },
         "gif": {
@@ -187,16 +186,14 @@
           "input_mime": "image/png",
           "max_output_pixels": 16000000,
           "planned_options": [
-            "keep_metadata",
-            "lossy"
+            "keep_metadata"
           ],
           "source_op": "compress"
         },
         "svg": {
           "honored_options": [
             "metadata",
-            "output_format",
-            "quality"
+            "output_format"
           ],
           "input_mime": "image/svg+xml",
           "planned_options": [],
@@ -256,5 +253,5 @@
       "source_op": "compress"
     }
   },
-  "schema_version": "2.135.0"
+  "schema_version": "2.139.0"
 }

@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 147,
+  "capabilities_version": 151,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -1289,13 +1289,17 @@
               "type": "integer"
             },
             "color_profile": {
-              "availability": "planned",
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve the embedded colour profile; `srgb` = convert to sRGB (also handles CMYK \u2192 sRGB); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). `planned` \u2014 not yet supported.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop \u2014 for AVIF the gamut is baked to sRGB); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default; CMYK/grayscale best-effort); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). On compress `srgb` is `planned` for this group (the sRGB pixel transform is wired for JPEG/PNG only so far); `keep` and `strip` are live.",
               "honored_on": [
                 "same_format",
                 "format_change"
               ],
+              "per_value_availability": {
+                "srgb": {
+                  "availability": "planned"
+                }
+              },
               "type": "enum",
               "values": [
                 "keep",
@@ -1688,15 +1692,6 @@
               "type": "array",
               "uniqueItems": true
             },
-            "lossy": {
-              "availability": "planned",
-              "default": false,
-              "description": "Lossy PNG palette quantization \u2014 a large saving for flat-colour PNGs. `planned` \u2014 not yet supported.",
-              "honored_on": [
-                "same_format"
-              ],
-              "type": "boolean"
-            },
             "metadata": {
               "default": "strip",
               "description": "Metadata handling. `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF, colour profile, and XMP. `all` is a DEPRECATED alias of `strip` (kept for older callers; emits Deprecation/Sunset headers \u2014 migrate to `strip`). Any other value is rejected.",
@@ -1746,7 +1741,7 @@
             },
             "quality": {
               "default": 80,
-              "description": "Compression quality (1 = smallest file, 100 = best quality).",
+              "description": "Compression quality (1-100). For PNG this is the SINGLE lossy/lossless control: `quality` < 100 applies lossy palette quantization (imagequant \u2014 licence-cleared for our server-side SaaS backend, `kkajDFXD`; the value is the quantization level), while `quality: 100` keeps the PNG lossless (oxipng optimisation only \u2014 tune the lossless effort via `optimization_level`). 1 = smallest file, 100 = best quality / lossless. There is no separate lossy/lossless toggle for PNG \u2014 it is purely quality-driven.",
               "honored_on": [
                 "same_format"
               ],
@@ -1806,16 +1801,6 @@
                 "auto",
                 "smallest"
               ]
-            },
-            "quality": {
-              "default": 80,
-              "description": "Compression quality (1 = smallest file, 100 = best quality).",
-              "honored_on": [
-                "same_format"
-              ],
-              "max": 100,
-              "min": 1,
-              "type": "integer"
             }
           }
         },
@@ -4600,10 +4585,11 @@
               "depends_on": {
                 "format": [
                   "jpg",
-                  "webp"
+                  "webp",
+                  "png"
                 ]
               },
-              "description": "Output quality for lossy thumbnail formats (jpg/webp): higher = better quality, larger file. Ignored for png (lossless).",
+              "description": "Output quality for lossy thumbnail formats (jpg / webp / png): higher = better quality, larger file. For PNG, `quality` < 100 applies lossy palette quantization (imagequant \u2014 transparency preserved); `quality: 100` keeps the PNG lossless. Per-format effective default (server-resolved when `quality` is unset, per ADR-0020 D1): PNG \u2192 70 (more aggressive \u2014 thumbnails target small files), jpg/webp \u2192 85. The schema `default` is the nominal jpg/webp value (85); the FE shows 70 as the initial PNG slider value.",
               "max": 100,
               "min": 1,
               "type": "integer"
@@ -4622,70 +4608,6 @@
             },
             "image/heic": {
               "availability": "beta"
-            }
-          }
-        },
-        "image_svg": {
-          "availability": "planned",
-          "max_output_pixels": 16000000,
-          "mimes": [
-            "image/svg+xml"
-          ],
-          "options": {
-            "background": {
-              "depends_on": {
-                "format": "jpg"
-              },
-              "description": "Background colour as a 6-digit hex (`#RRGGBB`, e.g. `#ffffff`) for a transparent image (e.g. PNG/WebP with alpha) resized to an opaque JPG thumbnail \u2014 the alpha-flatten fill colour. Mirrors convert.image.background. HEX ONLY: a non-hex value (e.g. a CSS named colour) is rejected rather than advertising an inert free-form string. When omitted, transparency is flattened onto white. JPG output only: PNG/WebP keep alpha, so the flatten (and this option) do not apply.",
-              "pattern": "^#[0-9a-fA-F]{6}$",
-              "type": "string"
-            },
-            "fit": {
-              "default": "crop",
-              "description": "Resize mode",
-              "type": "enum",
-              "values": [
-                "max",
-                "crop",
-                "scale"
-              ]
-            },
-            "format": {
-              "default": "jpg",
-              "description": "Output format for the thumbnail",
-              "type": "enum",
-              "values": [
-                "jpg",
-                "png",
-                "webp"
-              ]
-            },
-            "height": {
-              "description": "Target height in pixels (1-16384; width*height <= 16MP). For image input this is a full resize, not just a small preview.",
-              "max": 16384,
-              "min": 1,
-              "required": true,
-              "type": "integer"
-            },
-            "quality": {
-              "default": 85,
-              "depends_on": {
-                "format": [
-                  "jpg",
-                  "webp"
-                ]
-              },
-              "description": "Output quality for lossy thumbnail formats (jpg/webp): higher = better quality, larger file. Ignored for png (lossless).",
-              "max": 100,
-              "min": 1,
-              "type": "integer"
-            },
-            "width": {
-              "description": "Target width in pixels (1-16384; width*height <= 16MP). For image input this is a full resize, not just a small preview.",
-              "max": 16384,
-              "min": 1,
-              "required": true,
-              "type": "integer"
             }
           }
         },
@@ -5015,7 +4937,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.135.0",
+  "schema_version": "2.139.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

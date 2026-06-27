@@ -105,10 +105,6 @@ final class CompressMetadata
                                 ),
                             ],
                         ),
-                        'lossy' => new OptionMetadata(
-                            availability: 'planned',
-                            per_value_availability: [],
-                        ),
                         'width' => new OptionMetadata(
                             per_value_availability: [],
                         ),
@@ -171,8 +167,11 @@ final class CompressMetadata
                             per_value_availability: [],
                         ),
                         'color_profile' => new OptionMetadata(
-                            availability: 'planned',
-                            per_value_availability: [],
+                            per_value_availability: [
+                                'srgb' => new AvailabilityEntry(
+                                    availability: 'planned',
+                                ),
+                            ],
                         ),
                         'auto_orient' => new OptionMetadata(
                             per_value_availability: [],
@@ -243,9 +242,6 @@ final class CompressMetadata
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
-                        'quality' => new OptionMetadata(
-                            per_value_availability: [],
-                        ),
                         'metadata' => new OptionMetadata(
                             per_value_availability: [
                                 'all' => new AvailabilityEntry(

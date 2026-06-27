@@ -376,7 +376,6 @@ final class CompressTest extends TestCase
         $this->assertSame(CompressImagePngMetadata::Strip, $obj->metadata);
         $this->assertSame(3, $obj->optimization_level);
         $this->assertSame(CompressImagePngOutputFormat::Original, $obj->output_format);
-        $this->assertSame(false, $obj->lossy);
         $this->assertSame(CompressImagePngColorProfile::Keep, $obj->color_profile);
         $this->assertSame(true, $obj->auto_orient);
         $this->assertNull($obj->keep_metadata);
@@ -393,7 +392,6 @@ final class CompressTest extends TestCase
             keep_metadata: ['x'],
             optimization_level: 0,
             output_format: CompressImagePngOutputFormat::Original,
-            lossy: true,
             width: 1,
             height: 1,
             fit: CompressImagePngFit::Max,
@@ -784,7 +782,6 @@ final class CompressTest extends TestCase
     {
         $obj = new CompressImageSvgOptions();
         $this->assertInstanceOf(CompressImageSvgOptions::class, $obj);
-        $this->assertSame(80, $obj->quality);
         $this->assertSame(CompressImageSvgMetadata::Strip, $obj->metadata);
         $this->assertSame(CompressImageSvgOutputFormat::Original, $obj->output_format);
     }
@@ -792,7 +789,6 @@ final class CompressTest extends TestCase
     public function testCompressImageSvgOptionsFullConstruction(): void
     {
         $obj = new CompressImageSvgOptions(
-            quality: 1,
             metadata: CompressImageSvgMetadata::Strip,
             output_format: CompressImageSvgOutputFormat::Original,
         );

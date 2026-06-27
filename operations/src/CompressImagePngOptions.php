@@ -16,7 +16,6 @@ final class CompressImagePngOptions
         public readonly CompressImagePngMetadata $metadata = CompressImagePngMetadata::Strip,
         public readonly int $optimization_level = 3,
         public readonly CompressImagePngOutputFormat $output_format = CompressImagePngOutputFormat::Original,
-        public readonly bool $lossy = false,
         public readonly CompressImagePngColorProfile $color_profile = CompressImagePngColorProfile::Keep,
         public readonly bool $auto_orient = true,
         public readonly ?array $keep_metadata = null,
