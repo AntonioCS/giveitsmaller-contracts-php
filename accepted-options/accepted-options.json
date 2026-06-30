@@ -167,7 +167,6 @@
         "accepted_options": {
           "*": [
             "font_subsetting",
-            "image_quality",
             "quality",
             "strip_unused_css"
           ]
@@ -177,7 +176,6 @@
       "document_odf": {
         "accepted_options": {
           "*": [
-            "image_quality",
             "quality",
             "strip_metadata",
             "strip_unused_styles"
@@ -188,7 +186,6 @@
       "document_office": {
         "accepted_options": {
           "*": [
-            "image_quality",
             "quality",
             "strip_hidden_data",
             "strip_macros",
@@ -218,7 +215,6 @@
             "color_profile",
             "fit",
             "height",
-            "keep_metadata",
             "metadata",
             "output_format",
             "quality",
@@ -229,7 +225,6 @@
             "color_profile",
             "fit",
             "height",
-            "keep_metadata",
             "metadata",
             "output_format",
             "quality",
@@ -240,7 +235,6 @@
             "color_profile",
             "fit",
             "height",
-            "keep_metadata",
             "metadata",
             "output_format",
             "quality",
@@ -251,7 +245,6 @@
             "color_profile",
             "fit",
             "height",
-            "keep_metadata",
             "metadata",
             "output_format",
             "quality",
@@ -272,6 +265,7 @@
             "metadata",
             "output_format",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ],
@@ -285,6 +279,7 @@
             "metadata",
             "output_format",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ],
@@ -298,6 +293,7 @@
             "metadata",
             "output_format",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ],
@@ -311,6 +307,7 @@
             "metadata",
             "output_format",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ]
@@ -326,12 +323,12 @@
             "encoding_mode",
             "fit",
             "height",
-            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
             "progressive",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ],
@@ -342,12 +339,12 @@
             "encoding_mode",
             "fit",
             "height",
-            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
             "progressive",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ],
@@ -358,12 +355,12 @@
             "encoding_mode",
             "fit",
             "height",
-            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
             "progressive",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ],
@@ -374,12 +371,12 @@
             "encoding_mode",
             "fit",
             "height",
-            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
             "progressive",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ]
@@ -393,7 +390,6 @@
             "color_profile",
             "fit",
             "height",
-            "keep_metadata",
             "metadata",
             "optimization_level",
             "output_format",
@@ -405,7 +401,6 @@
             "color_profile",
             "fit",
             "height",
-            "keep_metadata",
             "metadata",
             "optimization_level",
             "output_format",
@@ -417,7 +412,6 @@
             "color_profile",
             "fit",
             "height",
-            "keep_metadata",
             "metadata",
             "optimization_level",
             "output_format",
@@ -429,7 +423,6 @@
             "color_profile",
             "fit",
             "height",
-            "keep_metadata",
             "metadata",
             "optimization_level",
             "output_format",
@@ -468,11 +461,11 @@
             "encoding_mode",
             "fit",
             "height",
-            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ],
@@ -482,11 +475,11 @@
             "encoding_mode",
             "fit",
             "height",
-            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ],
@@ -496,11 +489,11 @@
             "encoding_mode",
             "fit",
             "height",
-            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ],
@@ -510,11 +503,11 @@
             "encoding_mode",
             "fit",
             "height",
-            "keep_metadata",
             "lossless",
             "metadata",
             "output_format",
             "quality",
+            "quality_preset",
             "target_size_bytes",
             "width"
           ]
@@ -708,7 +701,6 @@
             "color_profile",
             "fit",
             "height",
-            "metadata",
             "output_format",
             "quality",
             "width"
@@ -718,7 +710,6 @@
             "color_profile",
             "fit",
             "height",
-            "metadata",
             "output_format",
             "width"
           ],
@@ -728,14 +719,12 @@
             "color_profile",
             "fit",
             "height",
-            "metadata",
             "output_format",
             "quality",
             "width"
           ],
           "mp4": [
             "fit",
-            "metadata",
             "output_format"
           ],
           "png": [
@@ -743,7 +732,6 @@
             "color_profile",
             "fit",
             "height",
-            "metadata",
             "output_format",
             "width"
           ],
@@ -752,13 +740,11 @@
             "color_profile",
             "fit",
             "height",
-            "metadata",
             "output_format",
             "width"
           ],
           "webm": [
             "fit",
-            "metadata",
             "output_format"
           ],
           "webp": [
@@ -766,7 +752,6 @@
             "color_profile",
             "fit",
             "height",
-            "metadata",
             "output_format",
             "quality",
             "width"
@@ -812,6 +797,18 @@
             "trim_end",
             "trim_start",
             "width"
+          ],
+          "mkv": [
+            "crf",
+            "output_format",
+            "trim_end",
+            "trim_start"
+          ],
+          "mov": [
+            "crf",
+            "output_format",
+            "trim_end",
+            "trim_start"
           ],
           "mp4": [
             "crf",
@@ -1162,5 +1159,5 @@
       }
     }
   },
-  "schema_version": "2.139.0"
+  "schema_version": "2.148.0"
 }

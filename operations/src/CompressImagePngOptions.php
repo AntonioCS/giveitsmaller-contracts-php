@@ -8,9 +8,6 @@ namespace Gisl\Generated\Operations;
 
 final class CompressImagePngOptions
 {
-    /**
-     * @param list<string>|null $keep_metadata
-     */
     public function __construct(
         public readonly int $quality = 80,
         public readonly CompressImagePngMetadata $metadata = CompressImagePngMetadata::Strip,
@@ -18,7 +15,6 @@ final class CompressImagePngOptions
         public readonly CompressImagePngOutputFormat $output_format = CompressImagePngOutputFormat::Original,
         public readonly CompressImagePngColorProfile $color_profile = CompressImagePngColorProfile::Keep,
         public readonly bool $auto_orient = true,
-        public readonly ?array $keep_metadata = null,
         public readonly ?int $width = null,
         public readonly ?int $height = null,
         public readonly ?CompressImagePngFit $fit = null,

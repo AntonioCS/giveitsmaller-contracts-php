@@ -10,7 +10,6 @@ final class ConvertImageGifOptions
 {
     public function __construct(
         public readonly ConvertImageGifOutputFormat $output_format,
-        public readonly ConvertImageGifMetadata $metadata = ConvertImageGifMetadata::Strip,
         public readonly ?int $quality = null,
         public readonly ?string $background = null,
         public readonly ?int $width = null,

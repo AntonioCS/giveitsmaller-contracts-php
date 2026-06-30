@@ -54,7 +54,6 @@ final class TextWatermarkMetadata
                     per_input_options: [],
                 ),
                 'image_tiff' => new MimeGroupMetadata(
-                    availability: 'planned',
                     processing_class: [],
                     per_mime_availability: [],
                     options: [
@@ -95,7 +94,6 @@ final class TextWatermarkMetadata
                     per_input_options: [],
                 ),
                 'image_bmp' => new MimeGroupMetadata(
-                    availability: 'planned',
                     processing_class: [],
                     per_mime_availability: [],
                     options: [

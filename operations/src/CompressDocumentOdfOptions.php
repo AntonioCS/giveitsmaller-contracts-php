@@ -10,7 +10,6 @@ final class CompressDocumentOdfOptions
 {
     public function __construct(
         public readonly int $quality = 50,
-        public readonly int $image_quality = 80,
         public readonly bool $strip_metadata = true,
         public readonly bool $strip_unused_styles = false,
     ) {}

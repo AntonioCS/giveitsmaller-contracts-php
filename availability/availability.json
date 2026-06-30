@@ -1,5 +1,5 @@
 {
-  "capabilities_version": 151,
+  "capabilities_version": 160,
   "endpoints": {
     "DELETE /api/auth/api-keys/{apiKeyId}": {
       "auth": "required",
@@ -960,14 +960,6 @@
               "description": "Subset embedded fonts to only include glyphs used in the document. Significant size reduction for books with large font files. `planned` \u2014 not yet supported.",
               "type": "boolean"
             },
-            "image_quality": {
-              "availability": "planned",
-              "default": 80,
-              "description": "Recompress embedded images at this quality level. `planned` \u2014 not yet supported (use `quality`).",
-              "max": 100,
-              "min": 1,
-              "type": "integer"
-            },
             "quality": {
               "default": 50,
               "description": "Compression quality (1 = smallest, 100 = best). The only document compression option supported today.",
@@ -990,14 +982,6 @@
             "application/vnd.oasis.opendocument.presentation"
           ],
           "options": {
-            "image_quality": {
-              "availability": "planned",
-              "default": 80,
-              "description": "Recompress embedded images at this quality level. `planned` \u2014 not yet supported (use `quality`).",
-              "max": 100,
-              "min": 1,
-              "type": "integer"
-            },
             "quality": {
               "default": 50,
               "description": "Compression quality (1 = smallest, 100 = best). The only document compression option supported today.",
@@ -1026,14 +1010,6 @@
             "application/vnd.openxmlformats-officedocument.presentationml.presentation"
           ],
           "options": {
-            "image_quality": {
-              "availability": "planned",
-              "default": 80,
-              "description": "Recompress embedded images at this quality level (1 = smallest, 100 = best). `planned` \u2014 not yet supported (use `quality`).",
-              "max": 100,
-              "min": 1,
-              "type": "integer"
-            },
             "quality": {
               "default": 50,
               "description": "Compression quality (1 = smallest, 100 = best). The only document compression option supported today.",
@@ -1183,26 +1159,6 @@
               "min": 1,
               "type": "integer"
             },
-            "keep_metadata": {
-              "availability": "planned",
-              "depends_on": {
-                "metadata": "strip"
-              },
-              "description": "Selectively keep only certain metadata categories and strip the rest \u2014 refines `metadata: strip`. Allowed categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 selective keep is not yet supported (use `metadata: keep` to preserve everything).",
-              "honored_on": [
-                "same_format"
-              ],
-              "items": {
-                "enum": [
-                  "copyright",
-                  "gps",
-                  "date"
-                ],
-                "type": "string"
-              },
-              "type": "array",
-              "uniqueItems": true
-            },
             "metadata": {
               "default": "strip",
               "description": "Metadata handling. `strip` = remove all EXIF/IPTC/XMP (default). `keep` = preserve EXIF, colour profile, and XMP. `all` is a DEPRECATED alias of `strip` (kept for older callers; emits Deprecation/Sunset headers \u2014 migrate to `strip`). Any other value is rejected.",
@@ -1263,7 +1219,6 @@
           }
         },
         "image_avif": {
-          "availability": "beta",
           "max_output_pixels": 16000000,
           "mimes": [
             "image/avif"
@@ -1290,16 +1245,11 @@
             },
             "color_profile": {
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop \u2014 for AVIF the gamut is baked to sRGB); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default; CMYK/grayscale best-effort); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). On compress `srgb` is `planned` for this group (the sRGB pixel transform is wired for JPEG/PNG only so far); `keep` and `strip` are live.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop \u2014 for AVIF the gamut is baked to sRGB); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default; CMYK/grayscale best-effort); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). All three values are live on compress AVIF \u2014 `srgb` flipped planned->stable 2026-06-30 on the lambdas proof (wide-gamut-p3-icc.avif: srgb bakes untagged, whole-image RMSE 0.041 / 92% pixels shifted vs strip). Note: on AVIF `keep` and `srgb` both bake the gamut to sRGB by design, so keep_px == srgb_px; the proving inequality is srgb != strip, which holds.",
               "honored_on": [
                 "same_format",
                 "format_change"
               ],
-              "per_value_availability": {
-                "srgb": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
                 "keep",
@@ -1309,14 +1259,15 @@
             },
             "encoding_mode": {
               "default": "quality",
-              "description": "Compression mode. `quality` = the `quality` slider drives the encode (default). `target_size` = automatically find the highest quality that fits a byte budget (set via `target_size_bytes`); if the budget can't be met even at the lowest quality, the closest result is returned, and the original is kept if re-encoding wouldn't be smaller. AVIF encoding is slower, so the search is bounded and may stop slightly above the budget.",
+              "description": "Compression mode. `quality` = the `quality` slider drives the encode (default). `target_size` = automatically find the highest quality that fits a byte budget (set via `target_size_bytes`); if the budget can't be met even at the lowest quality, the closest result is returned, and the original is kept if re-encoding wouldn't be smaller. `auto_quality` = hit a named perceptual-quality target (set via `quality_preset`) and let the worker pick the encoder quality that meets it \u2014 the perceptual twin of `target_size` (which targets bytes); the result reports the chosen quality. AVIF encoding is slower, so the search is bounded and may stop slightly above the budget.",
               "honored_on": [
                 "same_format"
               ],
               "type": "enum",
               "values": [
                 "quality",
-                "target_size"
+                "target_size",
+                "auto_quality"
               ]
             },
             "fit": {
@@ -1397,6 +1348,23 @@
               "min": 1,
               "type": "integer"
             },
+            "quality_preset": {
+              "default": "good",
+              "depends_on": {
+                "encoding_mode": "auto_quality"
+              },
+              "description": "Named perceptual-quality target for `encoding_mode: auto_quality` (best > good > fair > low; `good` is the default). The worker runs a perceptual-target search and picks the encoder quality that meets the named tier \u2014 the wire carries the NAME only, so the tier\u2192target mapping stays worker-internal and calibration-tunable without a contract change. Requires `encoding_mode: auto_quality`. The achieved perceptual score is reported on the result as `metrics.measured_quality` (+ `metrics.quality_metric`).",
+              "honored_on": [
+                "same_format"
+              ],
+              "type": "enum",
+              "values": [
+                "best",
+                "good",
+                "fair",
+                "low"
+              ]
+            },
             "target_size_bytes": {
               "depends_on": {
                 "encoding_mode": "target_size"
@@ -1463,14 +1431,15 @@
             },
             "encoding_mode": {
               "default": "quality",
-              "description": "Compression mode. `quality` = the `quality` slider drives the encode (default). `target_size` = automatically find the highest quality that fits a byte budget (set via `target_size_bytes`); if the budget can't be met even at the lowest quality, the closest result is returned, and the original is kept if re-encoding wouldn't be smaller.",
+              "description": "Compression mode. `quality` = the `quality` slider drives the encode (default). `target_size` = automatically find the highest quality that fits a byte budget (set via `target_size_bytes`); if the budget can't be met even at the lowest quality, the closest result is returned, and the original is kept if re-encoding wouldn't be smaller. `auto_quality` = hit a named perceptual-quality target (set via `quality_preset`) and let the worker pick the encoder quality that meets it \u2014 the perceptual twin of `target_size` (which targets bytes); the result reports the chosen quality.",
               "honored_on": [
                 "same_format"
               ],
               "type": "enum",
               "values": [
                 "quality",
-                "target_size"
+                "target_size",
+                "auto_quality"
               ]
             },
             "fit": {
@@ -1501,26 +1470,6 @@
               "max": 16384,
               "min": 1,
               "type": "integer"
-            },
-            "keep_metadata": {
-              "availability": "planned",
-              "depends_on": {
-                "metadata": "strip"
-              },
-              "description": "Selectively keep only certain metadata categories and strip the rest \u2014 refines `metadata: strip`. Allowed categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 selective keep is not yet supported (use `metadata: keep` to preserve everything).",
-              "honored_on": [
-                "same_format"
-              ],
-              "items": {
-                "enum": [
-                  "copyright",
-                  "gps",
-                  "date"
-                ],
-                "type": "string"
-              },
-              "type": "array",
-              "uniqueItems": true
             },
             "lossless": {
               "default": false,
@@ -1590,6 +1539,23 @@
               "max": 100,
               "min": 1,
               "type": "integer"
+            },
+            "quality_preset": {
+              "default": "good",
+              "depends_on": {
+                "encoding_mode": "auto_quality"
+              },
+              "description": "Named perceptual-quality target for `encoding_mode: auto_quality` (best > good > fair > low; `good` is the default). The worker runs a perceptual-target search and picks the encoder quality that meets the named tier \u2014 the wire carries the NAME only, so the tier\u2192target mapping stays worker-internal and calibration-tunable without a contract change. Requires `encoding_mode: auto_quality`. The achieved perceptual score is reported on the result as `metrics.measured_quality` (+ `metrics.quality_metric`).",
+              "honored_on": [
+                "same_format"
+              ],
+              "type": "enum",
+              "values": [
+                "best",
+                "good",
+                "fair",
+                "low"
+              ]
             },
             "target_size_bytes": {
               "depends_on": {
@@ -1671,26 +1637,6 @@
               "max": 16384,
               "min": 1,
               "type": "integer"
-            },
-            "keep_metadata": {
-              "availability": "planned",
-              "depends_on": {
-                "metadata": "strip"
-              },
-              "description": "Selectively keep only certain metadata categories and strip the rest \u2014 refines `metadata: strip`. Allowed categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 selective keep is not yet supported (use `metadata: keep` to preserve everything).",
-              "honored_on": [
-                "same_format"
-              ],
-              "items": {
-                "enum": [
-                  "copyright",
-                  "gps",
-                  "date"
-                ],
-                "type": "string"
-              },
-              "type": "array",
-              "uniqueItems": true
             },
             "metadata": {
               "default": "strip",
@@ -1821,16 +1767,11 @@
             },
             "color_profile": {
               "default": "keep",
-              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default; CMYK/grayscale best-effort); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). On the WebP same-format route `srgb` is `planned` (the byte-level optimiser does not yet run the sRGB transform); `keep` and `strip` are live.",
+              "description": "Colour-profile handling \u2014 a dedicated control, separate from `metadata` so that stripping metadata never silently shifts colours. `keep` (default) = preserve your colours: embed the ICC profile where the output format can carry one, otherwise convert to sRGB and bake the colours in so they survive (never a silent drop); `srgb` = convert to sRGB (transform pixels to sRGB, emit untagged \u2014 no embedded ICC, the web default; CMYK/grayscale best-effort); `strip` = drop the profile (smallest \u2014 only when the consumer manages colour itself). All three values are live on the WebP same-format route \u2014 the sRGB pixel transform is staging-proven (lambdas compression-image git-13b5000: srgb output untagged + a real pixel shift vs strip).",
               "honored_on": [
                 "same_format",
                 "format_change"
               ],
-              "per_value_availability": {
-                "srgb": {
-                  "availability": "planned"
-                }
-              },
               "type": "enum",
               "values": [
                 "keep",
@@ -1840,14 +1781,15 @@
             },
             "encoding_mode": {
               "default": "quality",
-              "description": "Compression mode. `quality` = the `quality` slider drives the encode (default). `target_size` = automatically find the highest quality that fits a byte budget (set via `target_size_bytes`); if the budget can't be met even at the lowest quality, the closest result is returned, and the original is kept if re-encoding wouldn't be smaller.",
+              "description": "Compression mode. `quality` = the `quality` slider drives the encode (default). `target_size` = automatically find the highest quality that fits a byte budget (set via `target_size_bytes`); if the budget can't be met even at the lowest quality, the closest result is returned, and the original is kept if re-encoding wouldn't be smaller. `auto_quality` = hit a named perceptual-quality target (set via `quality_preset`) and let the worker pick the encoder quality that meets it \u2014 the perceptual twin of `target_size` (which targets bytes); the result reports the chosen quality.",
               "honored_on": [
                 "same_format"
               ],
               "type": "enum",
               "values": [
                 "quality",
-                "target_size"
+                "target_size",
+                "auto_quality"
               ]
             },
             "fit": {
@@ -1878,26 +1820,6 @@
               "max": 16384,
               "min": 1,
               "type": "integer"
-            },
-            "keep_metadata": {
-              "availability": "planned",
-              "depends_on": {
-                "metadata": "strip"
-              },
-              "description": "Selectively keep only certain metadata categories and strip the rest \u2014 refines `metadata: strip`. Allowed categories: `copyright`, `gps` (location), `date` (capture time); combinable. `planned` \u2014 selective keep is not yet supported (use `metadata: keep` to preserve everything).",
-              "honored_on": [
-                "same_format"
-              ],
-              "items": {
-                "enum": [
-                  "copyright",
-                  "gps",
-                  "date"
-                ],
-                "type": "string"
-              },
-              "type": "array",
-              "uniqueItems": true
             },
             "lossless": {
               "default": false,
@@ -1959,6 +1881,23 @@
               "max": 100,
               "min": 1,
               "type": "integer"
+            },
+            "quality_preset": {
+              "default": "good",
+              "depends_on": {
+                "encoding_mode": "auto_quality"
+              },
+              "description": "Named perceptual-quality target for `encoding_mode: auto_quality` (best > good > fair > low; `good` is the default). The worker runs a perceptual-target search and picks the encoder quality that meets the named tier \u2014 the wire carries the NAME only, so the tier\u2192target mapping stays worker-internal and calibration-tunable without a contract change. Requires `encoding_mode: auto_quality`. The achieved perceptual score is reported on the result as `metrics.measured_quality` (+ `metrics.quality_metric`).",
+              "honored_on": [
+                "same_format"
+              ],
+              "type": "enum",
+              "values": [
+                "best",
+                "good",
+                "fair",
+                "low"
+              ]
             },
             "target_size_bytes": {
               "depends_on": {
@@ -2384,17 +2323,6 @@
               "min": 1,
               "type": "integer"
             }
-          },
-          "per_mime_availability": {
-            "image/avif": {
-              "availability": "beta"
-            },
-            "image/heic": {
-              "availability": "beta"
-            },
-            "image/heif": {
-              "availability": "beta"
-            }
           }
         },
         "image_gif": {
@@ -2491,19 +2419,6 @@
               "max": 16384,
               "min": 1,
               "type": "integer"
-            },
-            "metadata": {
-              "availability": "planned",
-              "default": "strip",
-              "description": "Metadata handling for the still-image targets. `planned` \u2014 metadata is not yet preserved across a format change. The video targets carry no EXIF/IPTC/XMP.",
-              "honored_on": [
-                "format_change"
-              ],
-              "type": "enum",
-              "values": [
-                "strip",
-                "keep"
-              ]
             },
             "output_format": {
               "description": "Target format. The still-image targets (jpeg/png/webp/avif/gif/tiff) take the first frame / rasterise. `mp4` / `webm` are the GIF\u2192VIDEO transcode targets \u2014 the animated GIF becomes a muted, play-once video (`mp4` = H.264, plays everywhere; `webm` = VP9, smaller), typically far smaller than the original GIF. GIFs are silent (no audio stream); the GIF infinite-loop becomes a playback attribute (`<video loop>`) the player sets, NOT baked into the file.",
@@ -2619,7 +2534,9 @@
                 "output_format": [
                   "mp4",
                   "webm",
-                  "ogg"
+                  "ogg",
+                  "mov",
+                  "mkv"
                 ]
               },
               "description": "CRF (Constant Rate Factor): 0 = lossless/best, 51 = worst. Lower = higher quality + larger file (the inverse of image `quality`). Video outputs only \u2014 NOT applicable to a `gif` output (frame extraction has no CRF). An explicit `crf` on a `gif` output is rejected as `invalid_options` at workflow-create (the API enforces this `depends_on`); FE/SDK prune it pre-submit.\n",
@@ -2672,14 +2589,16 @@
               "type": "integer"
             },
             "output_format": {
-              "description": "Target format. The video codec is fixed by the container (mp4->H.264, webm->VP9, ogg->Theora, gif->palette) \u2014 not caller-selectable.",
+              "description": "Target format. The video codec is fixed by the container (mp4->H.264, webm->VP9, ogg->Theora, gif->palette, mov->H.264, mkv->H.264) \u2014 not caller-selectable.",
               "required": true,
               "type": "enum",
               "values": [
                 "mp4",
                 "webm",
                 "ogg",
-                "gif"
+                "gif",
+                "mov",
+                "mkv"
               ]
             },
             "trim_end": {
@@ -2688,7 +2607,7 @@
               "type": "float"
             },
             "trim_start": {
-              "description": "Trim from beginning in seconds (absent = from the start). The clip is cut before transcoding \u2014 the user's \"trim a video then make a GIF\" path. The kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Live for all video outputs (gif/mp4/webm/ogg).\n",
+              "description": "Trim from beginning in seconds (absent = from the start). The clip is cut before transcoding \u2014 the user's \"trim a video then make a GIF\" path. The kept clip is [`trim_start`, input_duration \u2212 `trim_end`]. Live for all video outputs.\n",
               "min": 0,
               "type": "float"
             },
@@ -2829,7 +2748,7 @@
     },
     "image_watermark": {
       "default": false,
-      "description": "Apply an image overlay onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). Each input\nis an external_import handle, a vault\nconnection, or an upstream `job_output` (uploads are NOT referenced\ndirectly inside inputs[]). To use an uploaded base or overlay, feed\nit through a `passthrough` source job and reference that job via\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until backend\nsupport ships.\n\nTIFF (image/tiff) and BMP (image/bmp) bases are likewise advertised\nas `planned` via the parallel `image_tiff` / `image_bmp` mime_groups.\nBoth formats are already decodable and the worker's encode arms are a\ncheap add (shared `image`-crate encoders), so each flips to `stable`\nonce its arm ships and is proven. Because watermark output mirrors the\ninput format (`produces: same_as_input`), advertising a base format is\nonly honest when the worker can both decode AND encode it \u2014 which\nholds for TIFF/BMP but not for HEIC/AVIF (no encoder) or SVG (cannot\nre-emit svg from a rasterised composite); those stay out of scope.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`), which overlays and\nre-encodes the video.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 100 megapixels for image bases; per-frame caps for\nanimated GIF bases will be defined when the corresponding backend\nsupport ships.\n",
+      "description": "Apply an image overlay onto a base media\nasset. Multi-input: exactly one input with role: base (the source\nasset) + exactly one with role: overlay (the watermark). Each input\nis an external_import handle, a vault\nconnection, or an upstream `job_output` (uploads are NOT referenced\ndirectly inside inputs[]). To use an uploaded base or overlay, feed\nit through a `passthrough` source job and reference that job via\n`{ type: job_output, from: <id> }` (per ticket 4som89Uh).\n\nStable today for static-image bases (image/jpeg, image/png,\nimage/webp); animated GIF bases are advertised as `planned` via\nthe parallel `image_gif` mime_group \u2014 schema is contract-defined,\ndispatch returns `feature_not_available` (422) until backend\nsupport ships.\n\nTIFF (image/tiff) and BMP (image/bmp) bases are now `stable` too\n(flipped planned->stable 2026-06-30 on the lambdas staging proof,\nUANjD38A / #296) via the parallel `image_tiff` / `image_bmp`\nmime_groups. Because watermark output mirrors the input format\n(`produces: same_as_input`), advertising a base format is only honest\nwhen the worker can both decode AND encode it \u2014 which holds for\nTIFF/BMP but not for HEIC/AVIF (no encoder) or SVG (cannot re-emit svg\nfrom a rasterised composite); those stay out of scope.\n\n**Video bases are NOT supported by `image_watermark`.** Use the\ndedicated `video_watermark` operation\n(`schemas/operations/video_watermark.yaml`), which overlays and\nre-encodes the video.\n\n**Audio is explicitly NOT supported.** For audio overlay (DJ tags,\npodcast intros, jingles), use the `audio_overlay` operation\n(declared in schemas/operations/audio_overlay.yaml at\n`availability: planned`).\n\nSource capped at 100 megapixels for image bases; per-frame caps for\nanimated GIF bases will be defined when the corresponding backend\nsupport ships.\n",
       "features": {
         "multi_overlay_stack": {
           "availability": "planned",
@@ -2889,7 +2808,6 @@
           }
         },
         "image_bmp": {
-          "availability": "planned",
           "mimes": [
             "image/bmp"
           ],
@@ -2985,7 +2903,6 @@
           }
         },
         "image_tiff": {
-          "availability": "planned",
           "mimes": [
             "image/tiff"
           ],
@@ -4158,7 +4075,7 @@
     },
     "text_watermark": {
       "default": false,
-      "description": "Render a text overlay onto an image using bundled Liberation Sans\n(SIL OFL). Single-input \u2014 text comes from options, not from a file\ninput. Source capped at 100 megapixels in `single` mode. `tiled`\nmode keeps the 25-megapixel canvas bound (see `tile_spacing` /\n`watermark_mode`).\n\nTwo rendering modes:\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source image (Cinavia / Adobe Stock\n  pattern); rotation default -45\u00b0 and tile_spacing controls density.\n\nStable today for image/jpeg, image/png, image/webp inputs. TIFF\n(image/tiff) and BMP (image/bmp) inputs are advertised as `planned`\nvia the parallel `image_tiff` / `image_bmp` mime_groups \u2014 both are\nalready decodable and the worker's encode arms are a cheap add\n(shared `image`-crate encoders), so each flips to `stable` once its\narm ships and is proven. Output mirrors the input format\n(`produces: same_as_input`), so a format is only advertised when the\nworker can both decode AND encode it; HEIC/AVIF (no encoder) and SVG\n(cannot re-emit svg from a rasterised composite) stay out of scope.\n",
+      "description": "Render a text overlay onto an image using bundled Liberation Sans\n(SIL OFL). Single-input \u2014 text comes from options, not from a file\ninput. Source capped at 100 megapixels in `single` mode. `tiled`\nmode keeps the 25-megapixel canvas bound (see `tile_spacing` /\n`watermark_mode`).\n\nTwo rendering modes:\n- `single`: one label rendered at the anchor + margin position.\n- `tiled`: text tiled across the source image (Cinavia / Adobe Stock\n  pattern); rotation default -45\u00b0 and tile_spacing controls density.\n\nStable today for image/jpeg, image/png, image/webp inputs. TIFF\n(image/tiff) and BMP (image/bmp) inputs are now `stable` too (flipped\nplanned->stable 2026-06-30 on the lambdas staging proof, UANjD38A /\n#296) via the parallel `image_tiff` / `image_bmp` mime_groups. Output\nmirrors the input format (`produces: same_as_input`), so a format is\nonly advertised when the worker can both decode AND encode it;\nHEIC/AVIF (no encoder) and SVG (cannot re-emit svg from a rasterised\ncomposite) stay out of scope.\n",
       "input_model": "single",
       "mime_groups": {
         "image": {
@@ -4257,7 +4174,6 @@
           }
         },
         "image_bmp": {
-          "availability": "planned",
           "mimes": [
             "image/bmp"
           ],
@@ -4351,7 +4267,6 @@
           }
         },
         "image_tiff": {
-          "availability": "planned",
           "mimes": [
             "image/tiff"
           ],
@@ -4486,10 +4401,9 @@
               ]
             },
             "height": {
-              "description": "Target height in pixels (1-16384; width*height <= 16MP).",
+              "description": "Target height in pixels (1-16384; width*height <= 16MP). Optional \u2014 see `width` for the omitted-default behaviour.",
               "max": 16384,
               "min": 1,
-              "required": true,
               "type": "integer"
             },
             "page": {
@@ -4524,10 +4438,9 @@
               ]
             },
             "width": {
-              "description": "Target width in pixels (1-16384; width*height <= 16MP).",
+              "description": "Target width in pixels (1-16384; width*height <= 16MP). Optional \u2014 when omitted the server applies an aspect-preserving default (both omitted \u2192 longest edge 320px; only one of width/height provided \u2192 the other is derived from the source aspect ratio).",
               "max": 16384,
               "min": 1,
-              "required": true,
               "type": "integer"
             }
           }
@@ -4574,10 +4487,9 @@
               ]
             },
             "height": {
-              "description": "Target height in pixels (1-16384; width*height <= 16MP). For image input this is a full resize, not just a small preview.",
+              "description": "Target height in pixels (1-16384; width*height <= 16MP). For image input this is a full resize. Optional \u2014 see `width` for the omitted-default (aspect-preserving) behaviour.",
               "max": 16384,
               "min": 1,
-              "required": true,
               "type": "integer"
             },
             "quality": {
@@ -4595,19 +4507,10 @@
               "type": "integer"
             },
             "width": {
-              "description": "Target width in pixels (1-16384; width*height <= 16MP). For image input this is a full resize, not just a small preview.",
+              "description": "Target width in pixels (1-16384; width*height <= 16MP). For image input this is a full resize, not just a small preview. Optional \u2014 when omitted the server applies an aspect-preserving default (both omitted \u2192 longest edge 320px; only one of width/height provided \u2192 the other is derived from the source aspect ratio), so non-square images are never distorted.",
               "max": 16384,
               "min": 1,
-              "required": true,
               "type": "integer"
-            }
-          },
-          "per_mime_availability": {
-            "image/avif": {
-              "availability": "beta"
-            },
-            "image/heic": {
-              "availability": "beta"
             }
           }
         },
@@ -4640,10 +4543,9 @@
               ]
             },
             "height": {
-              "description": "Target height in pixels (1-16384; width*height <= 16MP). Rounded down to an even number.",
+              "description": "Target height in pixels (1-16384; width*height <= 16MP). Rounded down to an even number. Optional \u2014 see `width` for the omitted-default behaviour.",
               "max": 16384,
               "min": 1,
-              "required": true,
               "type": "integer"
             },
             "quality": {
@@ -4665,10 +4567,9 @@
               "type": "string"
             },
             "width": {
-              "description": "Target width in pixels (1-16384; width*height <= 16MP). Rounded down to an even number.",
+              "description": "Target width in pixels (1-16384; width*height <= 16MP). Rounded down to an even number. Optional \u2014 when omitted the server applies an aspect-preserving default (both omitted \u2192 longest edge 320px; only one of width/height provided \u2192 the other is derived from the source aspect ratio).",
               "max": 16384,
               "min": 1,
-              "required": true,
               "type": "integer"
             }
           },
@@ -4937,7 +4838,7 @@
       "sole_op": true
     }
   },
-  "schema_version": "2.139.0",
+  "schema_version": "2.148.0",
   "source_commit": null,
   "user_tier": null,
   "workflow_features": {

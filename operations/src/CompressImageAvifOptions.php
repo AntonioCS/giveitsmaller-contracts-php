@@ -17,6 +17,7 @@ final class CompressImageAvifOptions
         public readonly bool $auto_orient = true,
         public readonly ?int $quality = null,
         public readonly ?int $target_size_bytes = null,
+        public readonly ?CompressImageAvifQualityPreset $quality_preset = null,
         public readonly ?int $width = null,
         public readonly ?int $height = null,
         public readonly ?CompressImageAvifFit $fit = null,

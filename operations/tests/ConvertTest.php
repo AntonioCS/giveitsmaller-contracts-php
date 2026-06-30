@@ -16,7 +16,6 @@ use Gisl\Generated\Operations\ConvertImageColorProfile;
 use Gisl\Generated\Operations\ConvertImageFit;
 use Gisl\Generated\Operations\ConvertImageGifColorProfile;
 use Gisl\Generated\Operations\ConvertImageGifFit;
-use Gisl\Generated\Operations\ConvertImageGifMetadata;
 use Gisl\Generated\Operations\ConvertImageGifOptions;
 use Gisl\Generated\Operations\ConvertImageGifOutputFormat;
 use Gisl\Generated\Operations\ConvertImageMetadata;
@@ -308,25 +307,6 @@ final class ConvertTest extends TestCase
         $this->assertCount(8, ConvertImageGifOutputFormat::cases());
     }
 
-    public function testConvertImageGifMetadataStripBackingValue(): void
-    {
-        $enum = ConvertImageGifMetadata::from('strip');
-        $this->assertSame(ConvertImageGifMetadata::Strip, $enum);
-        $this->assertSame('strip', $enum->value);
-    }
-
-    public function testConvertImageGifMetadataKeepBackingValue(): void
-    {
-        $enum = ConvertImageGifMetadata::from('keep');
-        $this->assertSame(ConvertImageGifMetadata::Keep, $enum);
-        $this->assertSame('keep', $enum->value);
-    }
-
-    public function testConvertImageGifMetadataCaseCount(): void
-    {
-        $this->assertCount(2, ConvertImageGifMetadata::cases());
-    }
-
     public function testConvertImageGifFitMaxBackingValue(): void
     {
         $enum = ConvertImageGifFit::from('max');
@@ -385,7 +365,6 @@ final class ConvertTest extends TestCase
             output_format: ConvertImageGifOutputFormat::Jpeg,
         );
         $this->assertInstanceOf(ConvertImageGifOptions::class, $obj);
-        $this->assertSame(ConvertImageGifMetadata::Strip, $obj->metadata);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->background);
         $this->assertNull($obj->width);
@@ -401,7 +380,6 @@ final class ConvertTest extends TestCase
             output_format: ConvertImageGifOutputFormat::Jpeg,
             quality: 1,
             background: 'test_value',
-            metadata: ConvertImageGifMetadata::Strip,
             width: 1,
             height: 1,
             fit: ConvertImageGifFit::Max,
@@ -439,9 +417,23 @@ final class ConvertTest extends TestCase
         $this->assertSame('gif', $enum->value);
     }
 
+    public function testConvertVideoOutputFormatMovBackingValue(): void
+    {
+        $enum = ConvertVideoOutputFormat::from('mov');
+        $this->assertSame(ConvertVideoOutputFormat::Mov, $enum);
+        $this->assertSame('mov', $enum->value);
+    }
+
+    public function testConvertVideoOutputFormatMkvBackingValue(): void
+    {
+        $enum = ConvertVideoOutputFormat::from('mkv');
+        $this->assertSame(ConvertVideoOutputFormat::Mkv, $enum);
+        $this->assertSame('mkv', $enum->value);
+    }
+
     public function testConvertVideoOutputFormatCaseCount(): void
     {
-        $this->assertCount(4, ConvertVideoOutputFormat::cases());
+        $this->assertCount(6, ConvertVideoOutputFormat::cases());
     }
 
     public function testConvertVideoDitherNoneBackingValue(): void

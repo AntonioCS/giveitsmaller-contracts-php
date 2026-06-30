@@ -12,4 +12,6 @@ enum ConvertVideoOutputFormat: string
     case Webm = 'webm';
     case Ogg = 'ogg';
     case Gif = 'gif';
+    case Mov = 'mov';
+    case Mkv = 'mkv';
 }

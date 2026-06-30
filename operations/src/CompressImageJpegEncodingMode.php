@@ -10,4 +10,5 @@ enum CompressImageJpegEncodingMode: string
 {
     case Quality = 'quality';
     case TargetSize = 'target_size';
+    case AutoQuality = 'auto_quality';
 }

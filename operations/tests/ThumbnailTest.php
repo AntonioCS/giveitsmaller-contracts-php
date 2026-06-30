@@ -74,13 +74,12 @@ final class ThumbnailTest extends TestCase
 
     public function testThumbnailImageOptionsDefaultConstruction(): void
     {
-        $obj = new ThumbnailImageOptions(
-            width: 1,
-            height: 1,
-        );
+        $obj = new ThumbnailImageOptions();
         $this->assertInstanceOf(ThumbnailImageOptions::class, $obj);
         $this->assertSame(ThumbnailImageFit::Crop, $obj->fit);
         $this->assertSame(ThumbnailImageFormat::Jpg, $obj->format);
+        $this->assertNull($obj->width);
+        $this->assertNull($obj->height);
         $this->assertNull($obj->quality);
         $this->assertNull($obj->background);
     }
@@ -152,14 +151,13 @@ final class ThumbnailTest extends TestCase
 
     public function testThumbnailVideoOptionsDefaultConstruction(): void
     {
-        $obj = new ThumbnailVideoOptions(
-            width: 1,
-            height: 1,
-        );
+        $obj = new ThumbnailVideoOptions();
         $this->assertInstanceOf(ThumbnailVideoOptions::class, $obj);
         $this->assertSame('00:00:01', $obj->timestamp);
         $this->assertSame(ThumbnailVideoFit::Crop, $obj->fit);
         $this->assertSame(ThumbnailVideoFormat::Jpg, $obj->format);
+        $this->assertNull($obj->width);
+        $this->assertNull($obj->height);
         $this->assertNull($obj->quality);
     }
 
@@ -249,15 +247,14 @@ final class ThumbnailTest extends TestCase
 
     public function testThumbnailDocumentOptionsDefaultConstruction(): void
     {
-        $obj = new ThumbnailDocumentOptions(
-            width: 1,
-            height: 1,
-        );
+        $obj = new ThumbnailDocumentOptions();
         $this->assertInstanceOf(ThumbnailDocumentOptions::class, $obj);
         $this->assertSame(ThumbnailDocumentSource::Page, $obj->source);
         $this->assertSame(ThumbnailDocumentFit::Crop, $obj->fit);
         $this->assertSame(ThumbnailDocumentFormat::Jpg, $obj->format);
         $this->assertNull($obj->page);
+        $this->assertNull($obj->width);
+        $this->assertNull($obj->height);
         $this->assertNull($obj->quality);
     }
 
